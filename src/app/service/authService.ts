@@ -91,3 +91,40 @@ export const syncGoogleUser = async (email: string, name: string, image: string)
     throw new Error(message);
   }
 };
+// 👉 Forgot Password API
+export const forgotPassword = async (email: string) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/api/users/forgot-password`,
+      { email },
+      { withCredentials: true }
+    )
+    return response
+  } catch (error: any) {
+    const axiosError = error as AxiosError<any>
+    const message =
+      axiosError.response?.data?.message || 'Failed to send OTP for password reset'
+    throw new Error(message)
+  }
+}
+
+// 👉 Reset Password API
+export const resetPassword = async (
+  email: string,
+  otp: number,
+  newPassword: string
+) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/api/users/reset-password`,
+      { email, otp, newPassword },
+      { withCredentials: true }
+    )
+    return response
+  } catch (error: any) {
+    const axiosError = error as AxiosError<any>
+    const message =
+      axiosError.response?.data?.message || 'Password reset failed'
+    throw new Error(message)
+  }
+}
