@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 
 // Define the shape of a module item
 interface Module {
-  id: string;
+  _id: string;
   title: string;
   status?: boolean;
 }
@@ -57,8 +57,8 @@ export const ModuleList: React.FC<ModuleListProps> = ({
     setModules(itemsCopy);
 
     const bulkUpdateData = updatedModules.map((module) => ({
-      id: module.id,
-      position: itemsCopy.findIndex((item) => item.id === module.id),
+      id: module._id,
+      position: itemsCopy.findIndex((item) => item._id === module._id),
     }));
 
     // onReorder(bulkUpdateData);
@@ -72,7 +72,7 @@ export const ModuleList: React.FC<ModuleListProps> = ({
         {(provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
             {modules.map((module, index) => (
-              <Draggable key={module.id} draggableId={module.id} index={index}>
+              <Draggable key={module._id} draggableId={module._id} index={index}>
                 {(provided) => (
                   <div
                     className={cn(
@@ -103,7 +103,7 @@ export const ModuleList: React.FC<ModuleListProps> = ({
                         {module.status? "Published" : "Draft"}
                       </Badge>
                       <Pencil
-                        onClick={() => onEdit(module.id)}
+                        onClick={() => onEdit(module._id)}
                         className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
                       />
                     </div>

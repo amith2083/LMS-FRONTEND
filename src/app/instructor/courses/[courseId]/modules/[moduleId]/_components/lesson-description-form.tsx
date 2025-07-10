@@ -19,7 +19,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
-import { useUpdateLesson } from "@/app/hooks/useLesson";
+import { useUpdateLesson } from "@/app/hooks/useLesssonQueries";
+
 
 // import { updateLesson } from "@/app/actions/lesson";
 
@@ -53,16 +54,19 @@ export const LessonDescriptionForm: React.FC<LessonDescriptionFormProps> = ({
   });
 
   const { isSubmitting, isValid } = form.formState;
-const { mutateAsync } = useUpdateLesson(lessonId);
+const { mutateAsync } = useUpdateLesson();
   const onSubmit = async (values: FormValues) => {
     try {
-      // await updateLesson(lessonId, values);
-      await mutateAsync(values)
+    await mutateAsync({
+      id: lessonId,         
+      data: values,         
+    });
       setDescription(values?.description);
       toast.success("Lesson updated");
       toggleEdit();
       // router.refresh();
-    } catch (error) {
+    } catch (error:any) {
+      console.log(error.mesage)
       toast.error("Something went wrong");
     }
   };

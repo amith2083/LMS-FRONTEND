@@ -19,6 +19,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ModuleList } from "./module-list-form";
+import { useCreateModule } from "@/app/hooks/useModuleQueries";
+import { getSlug } from "@/lib/slug";
 
 ;
 
@@ -29,7 +31,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 type Module = {
-  id: string;
+  _id: string;
   title: string;
   status?: boolean;
   order:number
@@ -90,16 +92,17 @@ export const ModulesForm: React.FC<ModulesFormProps> = ({
       //  formData.append("order", nextOrder.toString());
 
       const moduleCreated = await createModule.mutateAsync(payload); 
-
+console.log('modulecreated',moduleCreated)
       setModules((modules) => [
         ...modules,
         {
-         id: moduleCreated._id.toString(),
+         _id: moduleCreated._id,
           title: moduleCreated.title,
             order: nextOrder,
         },
       ]);
       toast.success("Module created");
+      form.reset();
       toggleCreating();
       
     } catch (error:any) {

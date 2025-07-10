@@ -20,114 +20,83 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { LessonList } from "./lesson-list";
 import { LessonModal } from "./lesson-modal";
-import { getSlug } from "@/lib/convertData";
+import { useCreateLesson, useLessonById } from "@/app/hooks/useLesssonQueries";
+import { getSlug } from "@/lib/slug";
+import { Lesson } from "@/app/types/lesson";
 
-
-import { useCreateLesson, useLesson } from "@/app/hooks/useLesson";
-
-
-interface Lesson {
-  id: string;
-  title: string;
-}
-
-interface LessonFormProps {
-  initialData?: Lesson[];
-  moduleId: string;
-  courseId:string
-}
- type FormValues = z.infer<typeof formSchema>;
 const formSchema = z.object({
   title: z.string().min(1),
 });
-interface ReorderData {
+
+type FormValues = z.infer<typeof formSchema>;
+interface LessonFormProps {
+  initialData?: Lesson[];
+  moduleId: string;
+  courseId: string;
+}
+
+type ReorderData = {
   id: string;
   position: number;
-}
- 
-export const LessonForm: React.FC<LessonFormProps> = ({ initialData=[], moduleId,courseId }) => {
+};
+
+export const LessonForm: React.FC<LessonFormProps> = ({
+  initialData = [],
+  moduleId,
+  courseId,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [lessons, setLessons] = useState<Lesson[]>(initialData);
+
   const router = useRouter();
+  const [lessons, setLessons] = useState<Lesson[]>(initialData);
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [lessonToEdit, setLessonToEdit] = useState<Lesson | null>(null);
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
-  const { data: foundLesson, isLoading: loadingLesson } = useLesson(selectedLessonId || "");
 
-  const toggleCreating = () => setIsCreating((current) => !current);
-  const toggleEditing = () => setIsEditing((current) => !current);
+  const { data: foundLesson } = useLessonById(selectedLessonId || "");
+  const createLesson = useCreateLesson(moduleId);
 
-  const form = useForm({
+  const toggleCreating = () => setIsCreating((prev) => !prev);
+
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
     },
   });
+
   useEffect(() => {
-  if (foundLesson) {
-    setLessonToEdit(foundLesson);
-    setIsEditing(true);
-  }
-}, [foundLesson]);
- const createLesson = useCreateLesson();
+    if (foundLesson) {
+      setLessonToEdit(foundLesson);
+      setIsEditing(true);
+    }
+  }, [foundLesson]);
+
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values:FormValues) => {
-      try {
+  const onSubmit = async (values: FormValues) => {
+    try {
       const payload = {
-  title: values.title,
-  slug: getSlug(values.title),
-  moduleId,
-  order: lessons.length.toString(),
-};
-        // const formData = new FormData();
-        // formData.append("title", values?.title);
-        // formData.append("slug", getSlug(values?.title));
-        // formData.append("moduleId",moduleId);
-        // formData.append("order", lessons.length.toString())
-  
-        const lesson = await createLesson.mutateAsync(payload); 
-  
-        setLessons((lessons) => [
-          ...lessons,
-          {
-            id: lesson?._id.toString(),
-            title: values.title,
-          },
-        ]);
-        toast.success("Lesson created");
-        toggleCreating();
-       
-      } catch (error) {
-        toast.error("Something went wrong");
-      }
-    }; 
- 
-  // const onReorder = async (updateData:ReorderData[]) => {
-  //   console.log({ updateData });
-  //   try {
-  //     setIsUpdating(true);
-  //     await reOrderLesson(updateData);
-  //     toast.success("Lesson reordered");
-  //     router.refresh();
-  //   } catch {
-  //     toast.error("Something went wrong");
-  //   } finally {
-  //     setIsUpdating(false);
-  //   }
-  // };
+        title: values.title,
+        slug: getSlug(values.title),
+        order: lessons.length.toString(),
+      };
 
-  // const onEdit = (id:string) => {
-  //   console.log('id',id)
-  //       // const foundLesson = lessons.find(lessons => lessons.id === id);
-  //   //     console.log('foundlesson',foundLesson)
-  //   // setLessonToEdit(foundLesson||null);
-  //   setIsEditing(true);
-  // };
+      const lesson = await createLesson.mutateAsync(payload);
+
+      setLessons((prev) => [...prev, lesson]);
+      toast.success("Lesson created");
+      toggleCreating();
+      form.reset();
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
+    }
+  };
+
   const onEdit = (id: string) => {
-  setSelectedLessonId(id); // only update state, don't call hooks here
-};
+    setSelectedLessonId(id);
+  };
 
   return (
     <div className="relative mt-6 border bg-slate-100 rounded-md p-4">
@@ -137,7 +106,7 @@ export const LessonForm: React.FC<LessonFormProps> = ({ initialData=[], moduleId
         </div>
       )}
       <div className="font-medium flex items-center justify-between">
-        Module Lessions
+        Module Lessons
         <Button variant="ghost" onClick={toggleCreating}>
           {isCreating ? (
             <>Cancel</>
@@ -178,6 +147,7 @@ export const LessonForm: React.FC<LessonFormProps> = ({ initialData=[], moduleId
           </form>
         </Form>
       )}
+
       {!isCreating && (
         <div
           className={cn(
@@ -186,24 +156,41 @@ export const LessonForm: React.FC<LessonFormProps> = ({ initialData=[], moduleId
           )}
         >
           {!lessons?.length && "No module"}
-          <LessonList
-            onEdit={onEdit}
-            // onReorder={onReorder}
-            items={lessons || []}
-          />
+          <LessonList onEdit={onEdit} items={lessons} />
         </div>
       )}
+
       {!isCreating && (
         <p className="text-xs text-muted-foreground mt-4">
           Drag & Drop to reorder the modules
         </p>
       )}
-      <LessonModal open={isEditing} setOpen={setIsEditing} courseId={courseId} lesson={lessonToEdit} moduleId={moduleId}  onClose={() => {
-    if (lessonToEdit) {
-      setLessons(prev => prev.filter(lesson => lesson.id !== lessonToEdit.id));
-    
-    }
-  }}  />
+
+      {lessonToEdit && (
+        <LessonModal
+          open={isEditing}
+          setOpen={setIsEditing}
+          courseId={courseId}
+          lesson={lessonToEdit}
+          moduleId={moduleId}
+          onClose={() => {
+            setLessonToEdit(null);
+            setSelectedLessonId(null);
+          }}
+          onDeleted={(id) => {
+            setLessons((prev) => prev.filter((l) => l._id !== id));
+          }}
+          // onUpdated={(updatedLesson: Lesson) => {
+          //   setLessons((prev) =>
+          //     prev.map((l) =>
+          //       l._id === updatedLesson._id
+          //         ? { ...l, title: updatedLesson.title }
+          //         : l
+          //     )
+          //   );
+          // }}
+        />
+      )}
     </div>
   );
 };

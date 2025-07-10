@@ -17,8 +17,9 @@ import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { getSlug } from "@/lib/convertData";
-import { useUpdateModule } from "@/app/hooks/useModule";
+import { useUpdateModule } from "@/app/hooks/useModuleQueries";
+import { getSlug } from "@/lib/slug";
+
 
 type FormValues = z.infer<typeof formSchema>;
 const formSchema = z.object({
@@ -44,7 +45,7 @@ export const ModuleTitleForm = ({ initialData, courseId, chapterId }:ModuleTitle
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
   });
-const { mutateAsync } = useUpdateModule(chapterId);
+const { mutateAsync } = useUpdateModule();
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values:FormValues) => {
@@ -52,7 +53,7 @@ const { mutateAsync } = useUpdateModule(chapterId);
       values["slug"] = getSlug(values.title)
       // await updateModule(chapterId,values);
       console.log('val',values)
-           await mutateAsync(values);
+           await mutateAsync({id:chapterId,data:values});
       toast.success("Module title updated");
       toggleEdit();
       // router.refresh();

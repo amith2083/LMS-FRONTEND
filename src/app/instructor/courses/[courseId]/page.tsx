@@ -7,7 +7,7 @@ import { SubTitleForm } from "./_components/sub-title-form";
 import { DescriptionForm } from "./_components/description";
 import { ImageForm } from "./_components/image-form";
 // import { QuizSetForm } from "./_components/quiz-form";
-// import { ModulesForm } from "./_components/module-form";
+import { ModulesForm } from "./_components/module-form";
 import { PriceForm } from "./_components/price-form";
 import AlertBanner from "@/components/alert-banner";
 import { IconBadge } from "@/components/icon-badge";
@@ -25,7 +25,7 @@ const EditCourse = () => {
   const { data: categories = [], isLoading: isLoadingCategories } = useCategories();
 
   // const { data: allQuizSets, isLoading } = useGetQuizsets();
-console.log('cat',categories)
+
   if (isLoadingCourse) return <p className="p-6">Loading...</p>;
   if (!course) return <p className="p-6 text-red-500">Course not found.</p>;
   const mappedCategories = categories?.map((c) => {
@@ -37,7 +37,8 @@ console.log('cat',categories)
   });
   // Sanitize fucntion for handle ObjectID and Buffer
 
-  // const modules = (course?.modules).sort((a, b) => a.order - b.order) || [];
+  const modules = (course?.modules).sort((a, b) => a.order - b.order) || [];
+  console.log('modules',modules)
 
   // let mappedQuizSet = [];
   // if (allQuizSets && allQuizSets.length > 0) {
@@ -100,7 +101,7 @@ console.log('cat',categories)
                 <IconBadge icon={ListChecks} />
                 <h2 className="text-xl">Course Modules</h2>
               </div>
-              {/* <ModulesForm initialData={modules} courseId={courseId} /> */}
+              <ModulesForm initialData={modules} courseId={courseId} />
             </div>
             <div>
               <div className="flex items-center gap-x-2">

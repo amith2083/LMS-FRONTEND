@@ -3,22 +3,25 @@
 import { Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-// import { changeLessonPublishState, deleteLesson } from "@/app/actions/lesson";
+
 import { toast } from "sonner";
-import { useDeleteLesson, useToggleLessonPublish } from "@/app/hooks/useLesson";
+
+import { useDeleteLesson, useUpdateLesson } from "@/app/hooks/useLesssonQueries";
+
 
 
 
 
 interface Lesson {
-  id: string;
+  _id: string;
   active: boolean;
 }
 
 interface LessonActionsProps {
   lesson: Lesson;
   moduleId: string;
-  onDelete: () => void;
+  // onDelete: () => void;
+    onDelete: (id: string) => void;
 }
 
 export const LessonActions: React.FC<LessonActionsProps> = ({
@@ -28,8 +31,8 @@ export const LessonActions: React.FC<LessonActionsProps> = ({
 }) => {
   const [published, setPublished] = useState<boolean>(lesson?.active);
   const [loading, setLoading] = useState<boolean>(false);
-   const toggleMutation = useToggleLessonPublish(lesson.id);
-    const deleteMutation = useDeleteLesson(lesson.id, moduleId);
+    const toggleMutation = useUpdateLesson();
+    const deleteMutation = useDeleteLesson();
 
 
   const handleTogglePublish = async () => {
@@ -37,8 +40,11 @@ export const LessonActions: React.FC<LessonActionsProps> = ({
     setLoading(true);
     try {
       // const newState = await changeLessonPublishState(lesson.id);
-       const newState = await toggleMutation.mutateAsync();
-      setPublished(newState);
+       await toggleMutation.mutateAsync({
+            id: lesson._id,
+            data: { status: !published },
+          });
+ setPublished((prev) => !prev);
       toast.success("The lesson has been updated");
      
     } catch (e: any) {
@@ -59,9 +65,11 @@ export const LessonActions: React.FC<LessonActionsProps> = ({
     setLoading(true);
     try {
       // await deleteLesson(lesson.id, moduleId);
-       await deleteMutation.mutateAsync()
-      onDelete();
+   await deleteMutation.mutateAsync({ id: lesson._id, moduleId });
+      // onDelete();
+      onDelete(lesson._id);
          toast.success("The lesson has been deleted");
+         
     } catch (e: any) {
       toast.error(e.message || "An error occurred");
     } finally {

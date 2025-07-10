@@ -17,8 +17,9 @@ import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { getSlug } from "@/lib/convertData";
-import { useUpdateLesson } from "@/app/hooks/useLesson";
+import { useUpdateLesson } from "@/app/hooks/useLesssonQueries";
+import { getSlug } from "@/lib/slug";
+
 
 
 type FormValues = z.infer<typeof formSchema>;
@@ -46,14 +47,17 @@ export const LessonTitleForm: React.FC<LessonTitleFormProps> = ({ initialData, c
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
   });
-const { mutateAsync } = useUpdateLesson(lessonId);
+const { mutateAsync } = useUpdateLesson();
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values:FormValues) => {
     try {
       values["slug"] = getSlug(values.title);
       // await updateLesson(lessonId,values);
-      await mutateAsync(values)
+    await mutateAsync({
+      id: lessonId,         
+      data: values,         
+    });
       setTitle(values.title);
       toast.success("Lesson updated");
       toggleEdit();

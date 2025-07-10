@@ -16,26 +16,17 @@ import Link from "next/link";
 import { LessonTitleForm } from "./lesson-title-form";
 import { LessonDescriptionForm } from "./lesson-description-form";
 import { LessonAccessForm } from "./lesson-access-form";
-import { VideoUrlForm } from "./video-url-form";
+// import { VideoUrlForm } from "./video-url-form";
 import { LessonActions } from "./lesson-actions";
-
-interface Lesson {
-  id: string;
-  title: string;
-  description: string;
-  access: "free" | "private";
-  video_url?: string;
-  duration?: number;
-}
-
+import { Lesson } from "@/app/types/lesson";
 interface LessonModalProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   courseId: string;
   lesson: Lesson;
   moduleId: string;
-  onClose?: () => void; // Optional callback on modal close
-  
+  onClose?: () => void;
+  onDeleted: (id: string) => void;
 }
 export const LessonModal: FC<LessonModalProps> = ({
   open,
@@ -44,11 +35,15 @@ export const LessonModal: FC<LessonModalProps> = ({
   lesson,
   moduleId,
   onClose,
+    onDeleted,
+  
+  
 }) => {
   
-  const postDelete=()=>{
+  const postDelete=(id:string)=>{
     setOpen(false);
     onClose?.();
+      onDeleted(id);
   }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -90,12 +85,12 @@ export const LessonModal: FC<LessonModalProps> = ({
                <LessonTitleForm
                   initialData={{title: lesson?.title}}
                   courseId={courseId}
-                  lessonId={lesson?.id}
+                  lessonId={lesson?._id}
                 />
                <LessonDescriptionForm
                   initialData={{description: lesson?.description}}
                   courseId={courseId}
-                  lessonId={lesson?.id}
+                  lessonId={lesson?._id}
                 />
               </div>
               <div>
@@ -106,7 +101,7 @@ export const LessonModal: FC<LessonModalProps> = ({
               <LessonAccessForm
                  initialData={{isFree: lesson?.access !== 'private'}}
                  courseId={courseId}
-                 lessonId={lesson?.id}
+                 lessonId={lesson?._id}
                 />
               </div>
             </div>
@@ -115,14 +110,14 @@ export const LessonModal: FC<LessonModalProps> = ({
                 <IconBadge icon={Video} />
                 <h2 className="text-xl">Add a video</h2>
               </div>
-                <VideoUrlForm
+                {/* <VideoUrlForm
                 initialData={{
                   url: lesson?.video_url,
                   duration: lesson?.duration
                 }}
                 courseId={courseId}
                 lessonId={lesson?.id}
-              />
+              /> */}
             </div>
           </div>
         </div>

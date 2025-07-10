@@ -13,40 +13,40 @@ import { ModuleTitleForm } from "./_components/module-title-form";
 import { LessonForm } from "./_components/lesson-form";
 import { CourseActions } from "../../_components/course-action";
 
-import { replaceMongoIdInArray } from "@/lib/convertData";
 
-import { sanitizeData } from "@/utils/sanitize";
 
 import { ModuleActions } from "./_components/module-action";
-import { useGetModule } from "@/app/hooks/useModule";
+
 import { useMemo } from "react";
 import { useParams } from "next/navigation";
+import { useModuleById } from "@/app/hooks/useModuleQueries";
 
 
 const Module = () => {
     const params = useParams();
   const courseId = params?.courseId as string;
   const moduleId = params?.moduleId as string;
-  const { data: moduleData, isLoading, error } = useGetModule(moduleId);
+  const { data: moduleData, isLoading, error } = useModuleById(moduleId);
 
-  const sanitizeModule = useMemo(() => {
-    if (!moduleData) return null;
-    return sanitizeData(moduleData);
-  }, [moduleData]);
+  // const sanitizeModule = useMemo(() => {
+  //   if (!moduleData) return null;
+  //   return moduleData;
+  // }, [moduleData]);
 
-  const rawlessons = useMemo(() => {
+  const lessons = useMemo(() => {
     if (!moduleData?.lessonIds) return [];
   
-    return replaceMongoIdInArray(moduleData?.lessonIds).sort(
+    return (moduleData?.lessonIds).sort(
       (a, b) => a.order - b.order
     );
   }, [moduleData]);
 
 
 
-  const lessons = sanitizeData(rawlessons);
+
   if (isLoading) return <p>Loading...</p>;
   if (error || !moduleData) return <p>Error loading module</p>;
+  console.log('lesson',lessons)
 
   return (
     <>
@@ -68,7 +68,7 @@ const Module = () => {
               Back to course setup
             </Link>
             <div className="flex items-center justify-end">
-              <ModuleActions module={sanitizeModule} courseId={courseId} />
+              <ModuleActions module={moduleData} courseId={courseId} />
             </div>
           </div>
         </div>

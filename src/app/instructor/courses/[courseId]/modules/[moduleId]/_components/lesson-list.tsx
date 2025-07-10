@@ -12,23 +12,18 @@ import { Grip, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { CirclePlay } from "lucide-react";
+import { Lesson } from "@/app/types/lesson";
 
-
-interface LessonItem {
-  id: string;
-  title: string;
-  active?: boolean;
-}
 
 interface LessonListProps {
-  items: LessonItem[];
-  // onReorder: (updatedLessons: { id: string; position: number }[]) => void;
+  items: Lesson[];
   onEdit: (id: string) => void;
 }
+
 export const LessonList: React.FC<LessonListProps> = ({ items, onEdit }) => {
  
   const [isMounted, setIsMounted] = useState(false);
-  const [lessons, setLessons] = useState<LessonItem[]>(items);
+  const [lessons, setLessons] = useState(items);
 
   useEffect(() => {
     setIsMounted(true);
@@ -53,8 +48,8 @@ export const LessonList: React.FC<LessonListProps> = ({ items, onEdit }) => {
     setLessons(items);
 
     const bulkUpdateData = updatedModules.map((module) => ({
-      id: module.id,
-      position: items.findIndex((item) => item.id === module.id),
+      id: module._id,
+      position: items.findIndex((item) => item._id === module._id),
     }));
 
     // onReorder(bulkUpdateData);
@@ -70,7 +65,7 @@ export const LessonList: React.FC<LessonListProps> = ({ items, onEdit }) => {
         {(provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
             {lessons.map((lesson, index) => (
-              <Draggable key={lesson.id} draggableId={lesson.id} index={index}>
+              <Draggable key={lesson._id} draggableId={lesson._id} index={index}>
                 {(provided) => (
                   <div
                     className={cn(
@@ -105,7 +100,7 @@ export const LessonList: React.FC<LessonListProps> = ({ items, onEdit }) => {
                         {lesson.active ? "Published" : "Draft"}
                       </Badge>
                       <Pencil
-                        onClick={() => onEdit(lesson.id)}
+                        onClick={() => onEdit(lesson._id)}
                         className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
                       />
                     </div>

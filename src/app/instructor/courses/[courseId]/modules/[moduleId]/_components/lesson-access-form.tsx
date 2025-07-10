@@ -18,7 +18,8 @@ import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useUpdateLesson } from "@/app/hooks/useLesson";
+import { useUpdateLesson } from "@/app/hooks/useLesssonQueries";
+
 
 // import { updateLesson } from "@/app/actions/lesson";
 
@@ -47,7 +48,7 @@ export const LessonAccessForm: React.FC<LessonAccessFormProps> = ({ initialData,
       isFree: !!initialData.isFree,
     },
   });
- const { mutateAsync } = useUpdateLesson(lessonId);
+ const { mutateAsync } = useUpdateLesson();
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values:FormValues) => {
@@ -56,7 +57,7 @@ export const LessonAccessForm: React.FC<LessonAccessFormProps> = ({ initialData,
   access: values.isFree ? "public" : "private",
 };
       // await updateLesson(lessonId,payload);
-      await mutateAsync(payload)
+   await mutateAsync({ id: lessonId, data: payload });
       setFree(!free); 
       toast.success("Lesson updated");
       toggleEdit();
