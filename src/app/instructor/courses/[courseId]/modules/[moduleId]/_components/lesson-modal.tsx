@@ -1,3 +1,4 @@
+'use client'
 import { FC } from "react";
 import { IconBadge } from "@/components/icon-badge";
 import {
@@ -16,7 +17,7 @@ import Link from "next/link";
 import { LessonTitleForm } from "./lesson-title-form";
 import { LessonDescriptionForm } from "./lesson-description-form";
 import { LessonAccessForm } from "./lesson-access-form";
-// import { VideoUrlForm } from "./video-url-form";
+import { VideoUrlForm } from "./video-url-form";
 import { LessonActions } from "./lesson-actions";
 import { Lesson } from "@/app/types/lesson";
 interface LessonModalProps {
@@ -110,14 +111,14 @@ export const LessonModal: FC<LessonModalProps> = ({
                 <IconBadge icon={Video} />
                 <h2 className="text-xl">Add a video</h2>
               </div>
-                {/* <VideoUrlForm
+                <VideoUrlForm
                 initialData={{
-                  url: lesson?.video_url,
+                  url: lesson?.videoKey,
                   duration: lesson?.duration
                 }}
                 courseId={courseId}
-                lessonId={lesson?.id}
-              /> */}
+                lessonId={lesson?._id}
+              />
             </div>
           </div>
         </div>

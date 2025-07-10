@@ -32,6 +32,7 @@ export const getLessonById = async (id: string) => {
 
 // Update a lesson
 export const updateLesson = async (id: string, data: any) => {
+  console.log('idinlessonservice',id,data)
   try {
     const response = await axios.put(`${BASE_URL}/api/lessons/${id}`, data, {
       withCredentials: true,

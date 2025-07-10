@@ -1,19 +1,21 @@
 "use client";
+import { usePlaybackSignedUrl } from "@/app/hooks/useLesssonQueries";
 import { useEffect, useState } from "react";
 
 export const VideoPlayer = ({ videoKey }: { videoKey: string }) => {
+  //  const { data, isLoading, isError } = usePlaybackSignedUrl().mutateAsync
+  //   ? { data: null, isLoading: true, isError: false }
+  //   : usePlaybackSignedUrl(); // fallback for SSR
+
+  const { mutateAsync } = usePlaybackSignedUrl();
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSignedUrl = async () => {
       try {
-        const res = await fetch("/api/s3playback", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key: videoKey }),
-        });
-        const data = await res.json();
-        setSignedUrl(data.signedUrl);
+        const data = await mutateAsync({ key: videoKey });
+        setSignedUrl(data.signedUrl)
+        
         console.log('urlget',data.signedUrl)
       } catch (err) {
         console.error("Failed to load signed URL", err);
@@ -21,7 +23,7 @@ export const VideoPlayer = ({ videoKey }: { videoKey: string }) => {
     };
 
     fetchSignedUrl();
-  }, [videoKey]);
+  }, [videoKey,mutateAsync]);
 
   if (!signedUrl) return <p>Loading video...</p>;
 

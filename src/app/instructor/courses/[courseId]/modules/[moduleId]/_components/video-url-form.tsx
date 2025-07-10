@@ -19,8 +19,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { VideoPlayer } from "@/components/video-player";
+
+import { useUpdateLesson, useUploadSignedUrl } from "@/app/hooks/useLesssonQueries";
 import { formatDuration } from "@/lib/duration";
-import { useUpdateLesson } from "@/app/hooks/useLesson";
+
 
 
 type FormValues = z.infer<typeof formSchema>;
@@ -43,7 +45,9 @@ interface VideoUrlFormProps {
 }
 
 export const VideoUrlForm: React.FC<VideoUrlFormProps>  = ({ initialData, courseId, lessonId }) => {
+  console.log('id',lessonId)
   const router = useRouter();
+
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => setIsEditing((current) => !current);
@@ -58,7 +62,8 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps>  = ({ initialData, course
   });
 
   const { isSubmitting, isValid } = form.formState;
-const { mutateAsync } = useUpdateLesson(lessonId);
+ const uploadSignedUrl = useUploadSignedUrl();
+  const { mutateAsync: updateLesson } = useUpdateLesson();
   const onSubmit = async (values:FormValues) => {
   
     try {
@@ -70,20 +75,15 @@ const { mutateAsync } = useUpdateLesson(lessonId);
         const totalDuration = hours * 3600 + minutes * 60 + seconds;
             console.log("Duration in seconds:", totalDuration);
          // 1. Get signed URL
-    const res = await fetch("/api/s3upload", {
-      method: "POST",
-      body: JSON.stringify({
-        fileName: file.name,
-        fileType: file.type,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+   
 
-    const { signedUrl, fileUrl,key } = await res.json();
+const { signedUrl, fileUrl, key } = await uploadSignedUrl.mutateAsync({
+  fileName: file.name,
+  fileType: file.type,
+});
      console.log("Signed URL:", signedUrl);
         console.log("File URL:", fileUrl);
+        console.log('key',key)
 
     // 2. Upload file directly to S3
    const uploadRes= await fetch(signedUrl, {
@@ -94,14 +94,12 @@ const { mutateAsync } = useUpdateLesson(lessonId);
       },
     });
   console.log("S3 Upload response:", uploadRes.status);
-        const payload = {
-          video_url: key,
-          duration: totalDuration,
-        };
+       
         // await updateLesson(lessonId,payload)
         // Update local state so UI reflects the change
-        await mutateAsync(payload)
-      setState({
+      //  await updateLesson({ id: lessonId, data: { video_url: key, duration } });
+      await updateLesson({ id: lessonId, data: { videoKey: key, duration: totalDuration } });
+        setState({
         url: key,
         duration: values.duration,
       });
@@ -109,8 +107,8 @@ const { mutateAsync } = useUpdateLesson(lessonId);
         toggleEdit();
       // router.refresh()
     }
-   } catch {
-     console.error("Error in onSubmit:", err)
+   } catch(err:any) {
+     console.error("Error in onSubmit:", err.message)
       toast.error("Something went wrong");
     }
   };

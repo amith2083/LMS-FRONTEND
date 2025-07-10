@@ -32,6 +32,7 @@ export const useUpdateLesson = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) =>
+      
       updateLesson(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["lesson", id] });

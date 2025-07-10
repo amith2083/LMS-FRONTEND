@@ -4,8 +4,9 @@ export interface Lesson {
   title: string;
   description: string;
   access: "free" | "private";
-  video_url?: string;
+  videoKey?: string;
   duration?: number;
   active: boolean;
    slug?: string;
+
 }
