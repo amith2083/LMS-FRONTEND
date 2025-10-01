@@ -14,8 +14,10 @@ const { auth } = NextAuth(authConfig);
 
 export async function middleware(req: NextRequest) {
   const { nextUrl } = req;
+ 
 
   const token = await getToken({ req, secret: process.env.AUTH_SECRET });
+  console.log('tokenis',token)
   const isAuthenticated = !!token;
 
   const userRole = token?.role;
@@ -44,7 +46,7 @@ export async function middleware(req: NextRequest) {
 
   if (
     isAuthenticated &&
-    nextUrl.pathname === "/admin-login" &&
+    nextUrl.pathname === "admin/admin-login" &&
     userRole === "admin"
   ) {
     return NextResponse.redirect(new URL("/admin/admindashboard", nextUrl));
@@ -52,12 +54,12 @@ export async function middleware(req: NextRequest) {
 
   if (isAdminRoute) {
     if (!isAuthenticated) {
-      if (nextUrl.pathname !== "/admin-login") {
-        return NextResponse.redirect(new URL("/admin-login", nextUrl));
+      if (nextUrl.pathname !== "/admin/admin-login") {
+        return NextResponse.redirect(new URL("admin/admin-login", nextUrl));
       }
     } else if (userRole !== "admin") {
-      if (nextUrl.pathname !== "/admin-login") {
-        return NextResponse.redirect(new URL("/admin-login", nextUrl));
+      if (nextUrl.pathname !== "admin/admin-login") {
+        return NextResponse.redirect(new URL("admin/admin-login", nextUrl));
       }
     }
   }

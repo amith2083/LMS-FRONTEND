@@ -14,14 +14,15 @@ import { Trash } from "lucide-react";
 import { CircleCheck } from "lucide-react";
 import { Circle } from "lucide-react";
 import { QuizCardActions } from "./_components/quiz-card-action";
-import { useQuizsetDetails } from "@/app/hooks/useQuiz";
 import { useParams } from "next/navigation";
+import { useQuizsetById } from "@/app/hooks/useQuizQueries";
 
 const EditQuizSet = () => {
   const params = useParams();
   const quizSetId = params?.quizSetId as string;
 
-  const { data: quizSet, isLoading, error } = useQuizsetDetails(quizSetId);
+  const { data: quizSet, isLoading, error } = useQuizsetById(quizSetId);
+  console.log('quizset',quizSet)
 
   if (isLoading) {
     return (
@@ -72,7 +73,7 @@ const EditQuizSet = () => {
           <QuizSetAction
             quizSetId={quizSetId}
             quiz={quizSet?.active}
-            quizId={quizSet?.id}
+            quizId={quizSet?._id}
           />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2  gap-6 mt-16">

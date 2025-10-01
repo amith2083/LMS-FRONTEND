@@ -1,11 +1,12 @@
-import axios, { AxiosError } from "axios";
+import axiosInstance from "@/lib/axios";
+import  { AxiosError } from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL as string;
+
 
 // Get module by ID
 export const getModuleById = async (id: string) => {
   try {
-    const response = await axios.get(`${BASE_URL}/api/modules/${id}`, {
+    const response = await axiosInstance.get(`/api/modules/${id}`, {
       withCredentials: true,
     });
     return response.data;
@@ -20,7 +21,7 @@ export const getModuleById = async (id: string) => {
 // Create module
 export const createModule = async (data: any) => {
   try {
-    const response = await axios.post(`${BASE_URL}/api/modules`, data, {
+    const response = await axiosInstance.post('/api/modules', data, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -38,7 +39,7 @@ export const createModule = async (data: any) => {
 // Update module (title, description, status etc.)
 export const updateModule = async (id: string, data: any) => {
   try {
-    const response = await axios.put(`${BASE_URL}/api/modules/${id}`, data, {
+    const response = await axiosInstance.put(`/api/modules/${id}`, data, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -59,8 +60,8 @@ export const deleteModule = async (
   courseId:string) => {
 
   try {
-    const response = await axios.delete(
-      `${BASE_URL}/api/modules/${id}?courseId=${courseId}`,
+    const response = await axiosInstance.delete(
+      `/api/modules/${id}?courseId=${courseId}`,
       {
         withCredentials: true,
       }

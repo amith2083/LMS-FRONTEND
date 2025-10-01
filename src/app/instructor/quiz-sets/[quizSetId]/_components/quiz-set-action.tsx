@@ -7,61 +7,65 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 // import { changeQuizPublishState, deleteQuiz } from "@/app/actions/quiz";
 import { toast } from "sonner";
-import { useDeleteQuizset, useToggleQuizsetStatus } from "@/app/hooks/useQuiz";
+import { useDeleteQuizset, useTogglePublishQuizset } from "@/app/hooks/useQuizQueries";
+
  
 export const QuizSetAction = ({ quizSetId,quiz,quizId }) => {
 
   const [action, setAction] = useState(null);
-  const [published, setPublished] = useState(false);
+  // const [published, setPublished] = useState(false);
+  
   const router = useRouter();
-const toggleStatus = useToggleQuizsetStatus(quizSetId);
-const deleteQuizset = useDeleteQuizset(quizSetId);
-  async function handleSubmit(event) {
-    event.preventDefault();
+ const { mutateAsync: toggleStatus, isPending: isToggling } = useTogglePublishQuizset();
+  const { mutateAsync: deleteQuizset, isPending: isDeleting } = useDeleteQuizset();
+const handleToggle = async () => {
     try {
+      await toggleStatus(quizSetId);
+      toast.success(`Quiz set ${quiz ? "unpublished" : "published"}`);
+    } catch (error) {
+      // toast.error("Failed to toggle quiz set status");
+      console.error("Toggle error:", error);
+    toast.error(`Failed to toggle quiz set status: ${error.message || "Unknown error"}`);
+
+      
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      if (published) {
+        toast.error("A published quiz set cannot be deleted. Unpublish it first.");
+        return;
+      }
+      await deleteQuizset(quizSetId);
+      toast.success("Quiz set deleted");
+      router.push("/instructor/quiz-sets");
+    } catch (error) {
+      toast.error("Failed to delete quiz set");
+    }
+  };
         
-    switch (action) {
-        case "change-active": {
-          // const activeState = await changeQuizPublishState(quizSetId);
-           await toggleStatus.mutateAsync()
-          setPublished(!published)
-          toast.success("The Quiz has been updated");
-          // router.refresh();
-          break;
-        }
-        case "delete": {
-          if (published) {
-            toast.error("A published quiz can not be deleted. First Unpublish it, Then delete");
-          } else {
-            // await deleteQuiz(quizSetId, quizId);
-              await deleteQuizset.mutateAsync();
-            toast.success("Quiz has been deleted");
-            router.push(`/instructor/quiz-sets`); 
-          } 
-            break; 
-        } 
-        default:{
-            throw new Error("Invalid Action");
-        }    
-     } 
-    } catch (e) {
-        toast.error(`Error: ${e.message}`);
-    } 
-}
+  
 
 
 
   return (
-    <form onSubmit={handleSubmit}>
     <div className="flex items-center gap-x-2">
-      <Button variant="outline" size="sm" onClick={() => setAction("change-active")}>
-        {published ? "Unpublish" : "Publish"}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleToggle}
+        disabled={isToggling || isDeleting}
+      >
+        {quiz ? "Unpublish" : "Publish"}
       </Button>
-
-      <Button type="submit" name="action" value="delete" size="sm" onClick={() => setAction("delete")}>
+      <Button
+        size="sm"
+        onClick={handleDelete}
+        disabled={isToggling || isDeleting}
+      >
         <Trash className="h-4 w-4" />
       </Button>
     </div>
-    </form>
   );
 };

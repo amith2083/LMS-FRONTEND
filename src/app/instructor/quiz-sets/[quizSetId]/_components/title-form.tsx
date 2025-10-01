@@ -19,7 +19,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 // import { updateQuizSet } from "@/app/actions/quiz";
 import { toast } from "sonner";
-import { useUpdateQuizset } from "@/app/hooks/useQuiz";
+import { useUpdateQuizset } from "@/app/hooks/useQuizQueries";
+
 
 const formSchema = z.object({
   title: z.string().min(1, {
@@ -29,7 +30,7 @@ const formSchema = z.object({
 
 export const TitleForm = ({ initialData = {},quizSetId }) => {
   const router = useRouter();
-  const { mutateAsync, isPending } = useUpdateQuizset(quizSetId);
+  const { mutateAsync, isPending } = useUpdateQuizset();
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => setIsEditing((current) => !current);
@@ -43,8 +44,8 @@ export const TitleForm = ({ initialData = {},quizSetId }) => {
 
   const onSubmit = async (values) => {
     try {
-      // await updateQuizSet(quizSetId,values)
-      await mutateAsync({ data: values })
+     
+     await mutateAsync({ id: quizSetId, data: values });
       toast.success("Quize Tittle Updated");
       toggleEdit();
       // router.refresh();
@@ -68,7 +69,7 @@ export const TitleForm = ({ initialData = {},quizSetId }) => {
           )}
         </Button>
       </div>
-      {!isEditing && <p className="text-sm mt-2">{initialData.title}</p>}
+      {!isEditing && <p className="text-sm mt-2">{initialData?.title}</p>}
       {isEditing && (
         <Form {...form}>
           <form

@@ -1,10 +1,11 @@
-import NextAuth, { NextAuthConfig } from "next-auth";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import authConfig from "./auth.config";
+
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  ...authConfig,
+
+   secret: process.env.AUTH_SECRET, 
   providers: [
     CredentialsProvider({
       async authorize(credentials) {
@@ -53,7 +54,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       console.log("token", token);
-      console.log("token", user);
+      console.log("userintoken", user);
       if (user) {
         token.id = user?.id;
         token.role = user?.role;
@@ -70,9 +71,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.isVerified = token.isVerified;
         session.user.isBlocked = token.isBlocked;
       }
+      console.log('session',session)
       return session;
     },
   },
+
 
   debug: true,
 });

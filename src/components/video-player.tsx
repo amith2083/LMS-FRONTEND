@@ -25,7 +25,7 @@ export const VideoPlayer = ({ videoKey }: { videoKey: string }) => {
     fetchSignedUrl();
   }, [videoKey,mutateAsync]);
 
-  if (!signedUrl) return <p>Loading video...</p>;
+  if (!signedUrl) return <p>No video uploaded yet</p>;
 
   return (
     <div className="relative aspect-video">

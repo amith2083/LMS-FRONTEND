@@ -6,16 +6,37 @@ import {
   updateCourse,
   deleteCourse,
   updateCourseImage,
+  getCoursesByInstructorId,
+  getCourseForAdminById,
 } from "../service/courseService";
-import { Coming_Soon } from "next/font/google";
+// import { useSession } from "next-auth/react";
+interface User {
+  id: string;
+  role: "admin" | "student" | "instructor";
+  isVerified?: boolean;
+  isBlocked?: boolean;
+}
+export const useCourses = () => {
+  console.log('trigger')
+  // const { data: session, status } = useSession();
+  // console.log('session',session)
+  // const user = session?.user as User | undefined;
 
-// Fetch all courses
-export const useCourses = () =>
-  useQuery({
+  return useQuery({
     queryKey: ["courses"],
     queryFn: getCourses,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
+    // enabled: status === "authenticated" && !!user,
   });
+};
+
+// Fetch all courses
+// export const useCourses = () =>
+//   useQuery({
+//     queryKey: ["courses"],
+//     queryFn: getCourses,
+//     staleTime: 5 * 60 * 1000, // 5 minutes
+//   });
 
 // Fetch a course by ID
 export const useCourseById = (id: string) =>
@@ -23,6 +44,27 @@ export const useCourseById = (id: string) =>
     queryKey: ["course", id],
     queryFn: () => getCourseById(id),
     enabled: !!id, // don't run if ID is falsy
+  });
+  // New hook to get courses by instructor ID
+export const useCoursesByInstructorId = (instructorId: string) =>
+{
+  console.log("Instructor ID in hook:", instructorId);
+
+  return useQuery({
+    
+    queryKey: [ "instructor", instructorId],
+      
+    queryFn: () => getCoursesByInstructorId(instructorId),
+    enabled: !!instructorId,
+  });
+}
+
+// New hook to get course for admin by ID
+export const useCourseForAdminById = (id: string) =>
+  useQuery({
+    queryKey: ["course", "admin", id],
+    queryFn: () => getCourseForAdminById(id),
+    enabled: !!id,
   });
 
 // Create a course
@@ -42,11 +84,14 @@ export const useUpdateCourse = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
-      updateCourse(id, data),
+    mutationFn: ({ id, data }: { id: string; data: any }) =>{
+      console.log('++',id,data);
+      return updateCourse(id, data);
+    },
     onSuccess: () => {
      queryClient.invalidateQueries({ queryKey: ["course"] }); 
     },
+  
   });
 };
 //  update course image

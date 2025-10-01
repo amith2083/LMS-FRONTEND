@@ -42,7 +42,7 @@ export const SignupForm = ({ role }: SignupFormProps) => {
     e.preventDefault();
 
     // setErrorMessage(null);
-       setLoading(true);
+     
 
     const form = e.currentTarget;
     const formData = new FormData(form);
@@ -70,6 +70,7 @@ export const SignupForm = ({ role }: SignupFormProps) => {
       return;
     }
     setFormErrors({});
+    setLoading(true);
 
     // If validation passes, continue to submit
     const validData = result.data;
@@ -104,7 +105,7 @@ export const SignupForm = ({ role }: SignupFormProps) => {
        
       }
     } catch (error: any) {
-      console.log(error)
+      
       toast.error(error.message || "An unexpected error occurred");
     } finally {
   setLoading(false);

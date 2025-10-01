@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Loader2, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ModuleList } from "./module-list-form";
 import { useCreateModule } from "@/app/hooks/useModuleQueries";
@@ -49,6 +49,9 @@ export const ModulesForm: React.FC<ModulesFormProps> = ({
   courseId,
 }) => {
  const [modules, setModules] = useState<Module[]>(initialData ?? []);
+ useEffect(() => {
+    setModules(initialData ?? []);
+  }, [initialData]);
  
  // Find highest existing order
     const lastOrder = modules.length

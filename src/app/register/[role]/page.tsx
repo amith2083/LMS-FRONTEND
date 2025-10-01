@@ -14,11 +14,11 @@ const Page = () => {
    const params = useParams();
   const role = params?.role as string;
 
-  console.log(role);
+ 
 
   return (
     <div className='w-full flex h-screen  justify-center items-center '>
-      <div className='container'>
+      <div className='container '>
         <SignupForm role={role} />
       </div>
     </div>

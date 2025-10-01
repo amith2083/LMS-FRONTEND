@@ -19,19 +19,7 @@ export const Navbar = () => {
   const [loggedInUser, setLoggedInUser] = useState(null);
   const router = useRouter()
 
-  useEffect(() => {  
-      async function fetchMe() {
-          try {
-              const response = await fetch("/api/me");
-              const data = await response.json();
-             // console.log(data);
-              setLoggedInUser(data);
-          } catch (error) {
-              console.log(error)
-          }
-      }
-      fetchMe();
-  },[]);
+ 
  const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
     try {

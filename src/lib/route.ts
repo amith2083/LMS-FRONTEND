@@ -9,7 +9,7 @@ export const PUBLIC_ROUTES = [
     '/courses',
     "/forgot-password",
     "/reset-password",
-    "/admin-login",
+    "/admin/admin-login",
     "/otp"
     // '/api/register'
 ]

@@ -1,12 +1,13 @@
-import axios, { AxiosError } from "axios";
+import axiosInstance from "@/lib/axios";
+import  { AxiosError } from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL as string;
+
 
 // Create a Lesson
 export const createLesson = async (data: any, moduleId: string) => {
   try {
-    const response = await axios.post(
-      `${BASE_URL}/api/lessons?moduleId=${moduleId}`,
+    const response = await axiosInstance.post(
+      `/api/lessons?moduleId=${moduleId}`,
       data,
       { withCredentials: true }
     );
@@ -20,7 +21,7 @@ export const createLesson = async (data: any, moduleId: string) => {
 // Get a single lesson
 export const getLessonById = async (id: string) => {
   try {
-    const response = await axios.get(`${BASE_URL}/api/lessons/${id}`, {
+    const response = await axiosInstance.get(`/api/lessons/${id}`, {
       withCredentials: true,
     });
     return response.data;
@@ -34,7 +35,7 @@ export const getLessonById = async (id: string) => {
 export const updateLesson = async (id: string, data: any) => {
   console.log('idinlessonservice',id,data)
   try {
-    const response = await axios.put(`${BASE_URL}/api/lessons/${id}`, data, {
+    const response = await axiosInstance.put(`/api/lessons/${id}`, data, {
       withCredentials: true,
     });
     return response.data;
@@ -47,8 +48,8 @@ export const updateLesson = async (id: string, data: any) => {
 // Delete a lesson
 export const deleteLesson = async (id: string, moduleId: string) => {
   try {
-    const response = await axios.delete(
-      `${BASE_URL}/api/lessons/${id}?moduleId=${moduleId}`,
+    const response = await axiosInstance.delete(
+      `/api/lessons/${id}?moduleId=${moduleId}`,
       { withCredentials: true }
     );
     return response.data;
@@ -60,8 +61,8 @@ export const deleteLesson = async (id: string, moduleId: string) => {
 
 // Get signed upload URL for video
 export const getVideoUploadUrl = async (fileName: string, fileType: string) => {
-  const response = await axios.post(
-    `${BASE_URL}/api/lessons/upload-url`,
+  const response = await axiosInstance.post(
+    `/api/lessons/upload-url`,
     { fileName, fileType },
     { withCredentials: true }
   );
@@ -70,8 +71,8 @@ export const getVideoUploadUrl = async (fileName: string, fileType: string) => {
 
 // Get signed playback URL
 export const getVideoPlaybackUrl = async (key: string) => {
-  const response = await axios.post(
-    `${BASE_URL}/api/lessons/playback-url`,
+  const response = await axiosInstance.post(
+    `/api/lessons/playback-url`,
     { key },
     { withCredentials: true }
   );

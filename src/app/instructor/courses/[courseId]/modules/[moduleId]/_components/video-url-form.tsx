@@ -45,7 +45,7 @@ interface VideoUrlFormProps {
 }
 
 export const VideoUrlForm: React.FC<VideoUrlFormProps>  = ({ initialData, courseId, lessonId }) => {
-  console.log('id',lessonId)
+
   const router = useRouter();
 
   const [isEditing, setIsEditing] = useState(false);

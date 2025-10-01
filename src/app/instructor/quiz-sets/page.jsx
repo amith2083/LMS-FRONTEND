@@ -1,20 +1,15 @@
-'use client'
-// import { getAllQuizSets } from "@/queries/quizzes";
-import { useGetQuizsets } from "@/app/hooks/useQuiz";
+"use client";
+import { useQuizsets } from "@/app/hooks/useQuizQueries";
+
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 
- 
 const QuizSets = () => {
+  const { data: quizSetsall, isLoading, error } = useQuizsets();
 
-  // const quizSetsall = await getAllQuizSets();
-  const{data:quizSetsall,isLoading,error}= useGetQuizsets()
-  console.log('quizall',quizSetsall)
-    if (isLoading) {
+  if (isLoading) {
     return (
-      <div className="p-6 text-center text-gray-500">
-        Loading quiz sets...
-      </div>
+      <div className="p-6 text-center text-gray-500">Loading quiz sets...</div>
     );
   }
 
@@ -28,20 +23,18 @@ const QuizSets = () => {
 
   if (!quizSetsall || quizSetsall.length === 0) {
     return (
-      <div className="p-6 text-center text-gray-500">
-        No quiz sets found.
-      </div>
+      <div className="p-6 text-center text-gray-500">No quiz sets found.</div>
     );
   }
-  const mappedQuizSets = quizSetsall.map(q => {
+  const mappedQuizSets = quizSetsall.map((q) => {
     return {
-    id: q.id,
-    title: q.title,
-    isPublished: q.active,
-    totalQuiz: q.quizIds.length,
-    }
-  })
- 
+      id: q._id,
+      title: q.title,
+      isPublished: q.active,
+      totalQuiz: q.quizIds.length,
+    };
+  });
+
   //console.log(mappedQuizSets);
 
   return (

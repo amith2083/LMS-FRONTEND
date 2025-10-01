@@ -8,7 +8,9 @@ export default function authConfig(): NextAuthConfig {
     },
     jwt: {
       maxAge: 30 * 60,
+      
+      
     },
-    providers: [], // Populate dynamically if needed
+    providers: [], 
   };
 }

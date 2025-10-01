@@ -71,7 +71,7 @@ export const ModuleActions: React.FC<ModuleActionsProps> = ({
      
          toast.success("The Module has been deleted");
          router.push(`/instructor/courses/${courseId}`)
-         router.refresh();
+        //  router.refresh();
     } catch (e: any) {
       toast.error(e.message || "An error occurred");
     } finally {

@@ -1,13 +1,14 @@
-import axios, { AxiosError } from "axios";
+import axiosInstance from "@/lib/axios";
+import  { AxiosError } from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL as string;
+
 
 //  Get All Courses
 export const getCourses = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/api/courses`, {
-      withCredentials: true,
-    });
+  const response = await axiosInstance.get("/api/courses");
+  console.log('res',response.data)
+  
     return response.data;
   } catch (error: any) {
     const axiosError = error as AxiosError<any>;
@@ -20,9 +21,7 @@ export const getCourses = async () => {
 //  Get Single Course by ID
 export const getCourseById = async (id: string) => {
   try {
-    const response = await axios.get(`${BASE_URL}/api/courses/${id}`, {
-      withCredentials: true,
-    });
+   const response = await axiosInstance.get(`/api/courses/${id}`);
     return response.data;
   } catch (error: any) {
     const axiosError = error as AxiosError<any>;
@@ -31,12 +30,34 @@ export const getCourseById = async (id: string) => {
     throw new Error(message);
   }
 };
+export const getCoursesByInstructorId = async (instructorId: string) => {
+  try {
+    const response = await axiosInstance.get(`/api/courses/instructor/${instructorId}`);
+    return response.data;
+  } catch (error: any) {
+    const axiosError = error as AxiosError<any>;
+    const message = axiosError.response?.data?.message || "Failed to fetch instructor courses";
+    throw new Error(message);
+  }
+};
+
+// Get Course for Admin by ID (status: true)
+export const getCourseForAdminById = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/api/courses/admin/${id}`);
+    return response.data;
+  } catch (error: any) {
+    const axiosError = error as AxiosError<any>;
+    const message = axiosError.response?.data?.message || "Failed to fetch course for admin";
+    throw new Error(message);
+  }
+};
 
 //  Create New Course
 export const createCourse = async (courseData: any) => {
     console.log('cousrsedata',courseData)
   try {
-    const response = await axios.post(`${BASE_URL}/api/courses`, courseData, {
+    const response = await axiosInstance.post('/api/courses', courseData, {
       headers: { "Content-Type": "application/json" },
       withCredentials: true,
     });
@@ -52,19 +73,13 @@ export const createCourse = async (courseData: any) => {
 //  Update Course
 export const updateCourse = async (id: string, courseData: any) => {
   try {
-    const response = await axios.put(
-      `${BASE_URL}/api/courses/${id}`,
-      courseData,
-      {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      }
-    );
+  const response = await axiosInstance.put(`/api/courses/${id}`, courseData, {
+      headers: { "Content-Type": "application/json" },
+    });
     return response.data;
   } catch (error: any) {
     const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to update course";
+    const message = axiosError.response?.data?.message || "Failed to update course";
     throw new Error(message);
   }
 };
@@ -94,16 +109,9 @@ export const updateCourseImage = async (courseId: string, file: File) => {
   const formData = new FormData();
   formData.append("image", file); // must match Multer config
 
-  const response = await axios.put(
-    `${BASE_URL}/api/courses/${courseId}/image`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      withCredentials: true,
-    }
-  );
+ const response = await axiosInstance.put(`/api/courses/${courseId}/image`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
 
   return response.data;
 };
@@ -111,9 +119,7 @@ export const updateCourseImage = async (courseId: string, file: File) => {
 //  Delete Course
 export const deleteCourse = async (id: string) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/api/courses/${id}`, {
-      withCredentials: true,
-    });
+    const response = await axiosInstance.delete(`/api/courses/${id}`);
     return response.data;
   } catch (error: any) {
     const axiosError = error as AxiosError<any>;

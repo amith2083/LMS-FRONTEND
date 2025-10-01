@@ -1,6 +1,5 @@
 "use client";
 import * as z from "zod";
-// import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -24,19 +23,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+
+import { useCreateQuizset } from "@/app/hooks/useQuizQueries";
 import { toast } from "sonner";
-import { useCreateQuizset } from "@/app/hooks/useQuiz";
+
 // import { doCreateQuizSet } from "@/app/actions/quiz";
 
 const formSchema = z.object({
   title: z.string().min(1, {
     message: "Title is required!",
   }),
-}); 
+});
 
 const AddQuizSetForm = () => {
   const router = useRouter();
-   const { mutateAsync } = useCreateQuizset();
+ 
+  const { mutateAsync } = useCreateQuizset();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -50,8 +52,8 @@ const AddQuizSetForm = () => {
   const onSubmit = async (values) => {
     try {
       // const quizSetId = await doCreateQuizSet(values);
-      console.log('values',values)
-      const  newQuizset = await mutateAsync(values)
+      console.log("values", values);
+      const newQuizset = await mutateAsync(values);
       console.log("Created Quizset:", newQuizset);
       router.push(`/instructor/quiz-sets/${newQuizset._id}`);
       toast.success("Quiz Set Created");

@@ -1,7 +1,7 @@
 "use client";
 
 import * as z from "zod";
-// import axios from "axios";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -22,8 +22,9 @@ import { useRouter } from "next/navigation";
 import { PlusCircle } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { useAddQuizToQuizset } from "@/app/hooks/useQuiz";
-// import { addQuizToQuizSet } from "@/app/actions/quiz";
+import { useAddQuizToQuizset } from "@/app/hooks/useQuizQueries";
+
+
 
 const formSchema = z.object({
   title: z
@@ -83,9 +84,10 @@ const formSchema = z.object({
 });
 
 export const AddQuizForm = ({ quizSetId }) => {
-  console.log("QuizSet ID:", quizSetId);
+ 
   const router = useRouter();
-  const { mutateAsync, isLoading } = useAddQuizToQuizset(quizSetId);
+  const { mutateAsync, isPending } = useAddQuizToQuizset();
+   console.log("QuizSet ID:", quizSetId);
 
  
   const form = useForm({
@@ -155,6 +157,7 @@ export const AddQuizForm = ({ quizSetId }) => {
   // };
 const onSubmit = async (values) => {
   console.log("Form Submitted with values:", values);
+   console.log("QuizSet ID in submit:", quizSetId);
 
   try {
     const correctness = [
@@ -193,7 +196,10 @@ const onSubmit = async (values) => {
 
     console.log("Final quizData to submit:", quizData);
 
-    const result = await mutateAsync(quizData);
+  const result = await mutateAsync({
+      quizsetId: quizSetId,
+      quizData,
+    });
 
     console.log("Server Response:", result);
     toast.success("Quiz added successfully");
@@ -227,7 +233,7 @@ const onSubmit = async (values) => {
                   <FormLabel>Quiz Title</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={isSubmitting|| isLoading}
+                      disabled={isSubmitting|| isPending}
                       placeholder="Enter quiz question"
                       {...field}
                     />
@@ -245,7 +251,7 @@ const onSubmit = async (values) => {
                   <FormLabel>Quiz Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      disabled={isSubmitting|| isLoading}
+                      disabled={isSubmitting|| isPending}
                       placeholder="Enter quiz description"
                       {...field}
                     />
@@ -282,7 +288,7 @@ const onSubmit = async (values) => {
                       <FormItem>
                         <FormControl>
                           <Input
-                            disabled={isSubmitting|| isLoading}
+                            disabled={isSubmitting|| isPending}
                             placeholder="Enter quiz question"
                             {...field}
                           />
@@ -364,7 +370,7 @@ const onSubmit = async (values) => {
                       <FormItem>
                         <FormControl>
                           <Input
-                            disabled={isSubmitting|| isLoading}
+                            disabled={isSubmitting|| isPending}
                             placeholder="Enter quiz question"
                             {...field}
                           />
@@ -405,7 +411,7 @@ const onSubmit = async (values) => {
                       <FormItem>
                         <FormControl>
                           <Input
-                            disabled={isSubmitting|| isLoading}
+                            disabled={isSubmitting|| isPending}
                             placeholder="Enter quiz question"
                             {...field}
                           />
