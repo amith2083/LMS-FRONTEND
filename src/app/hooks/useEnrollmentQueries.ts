@@ -7,10 +7,11 @@ import {
   getEnrollmentsForUser,
   createEnrollment,
   confirmEnrollment,
+  hasEnrollmentForCourse,
 
 
 } from "../service/enrollmentService";
-import { IEnrollment } from "../interfaces/enrollment/IEnrollment";
+
 
 // Fetch all enrollments (e.g., for admin)
 export const useEnrollments = () => {
@@ -44,6 +45,15 @@ export const useEnrollmentsForUser = () => {
   return useQuery({
     queryKey: ["enrollments", "user"],
     queryFn: getEnrollmentsForUser,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+// Check if user is enrolled in a specific course
+export const useHasEnrollmentForCourse = (courseId: string) => {
+  return useQuery({
+    queryKey: ["enrollment", "check", courseId],
+    queryFn: () => hasEnrollmentForCourse(courseId),
+    enabled: !!courseId, // only runs if courseId exists
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };

@@ -25,20 +25,20 @@ const navLinks = [
 ];
 
 const Navbar = () => {
-  const { data: session, status } = useSession();
+const { data: session, status } = useSession();
   const router = useRouter();
-  const [loginSession, setLoginSession] = useState<Session | null>(null);
-  console.log('nav',loginSession)
 
-  useEffect(() => {
-    setLoginSession(session);
-  }, [session]);
+ 
+
+ 
 
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
     try {
       await logout();
+     
       await signOut({ redirect: false });
+     
       router.push("/login");
     } catch (error) {
       console.error("Logout error:", error);
@@ -62,7 +62,7 @@ const Navbar = () => {
                 key={index}
                 href={item.href}
               >
-                <AnimatedShinyText className="px-4 py-1 rounded-full">
+                <AnimatedShinyText className="px- 3 py-1 rounded-full">
                   {item.title}
                 </AnimatedShinyText>
               </Link>
@@ -108,10 +108,10 @@ const Navbar = () => {
               <div className="cursor-pointer relative">
                 <Avatar className="h-10 w-10 border-2 border-primary/20 hover:border-primary transition-all duration-300">
                   <AvatarImage
-                    src="https://sharethelife.org/wp-content/uploads/2021/01/Blank-profile-circle.png"
+                    src={session?.user?.profilePicture}
                     alt="User"
                   />
-                  <AvatarFallback>CN</AvatarFallback>
+                  <AvatarFallback>Hi</AvatarFallback>
                 </Avatar>
               </div>
             </DropdownMenuTrigger>

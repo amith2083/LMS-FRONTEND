@@ -1,81 +1,88 @@
-import NextAuth from "next-auth";
+
+import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
+import axios from "axios";
 
+export const authOptions: NextAuthOptions = {
+  // Session configuration
+  session: {
+    strategy: "jwt",
+    maxAge: 50 * 60, // 50 minutes (in seconds)
+  },
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+  // JWT configuration
+  jwt: {
+    maxAge: 50 * 60, // 50 minutes (in seconds) – must match session.maxAge
+  },
 
-   secret: process.env.AUTH_SECRET, 
   providers: [
     CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
       async authorize(credentials) {
-        console.log("cred", credentials);
-        return {
-          id: credentials?.id,
-          name: credentials?.name,
-          email: credentials?.email,
-          role: credentials?.role,
-          isVerified: credentials?.isVerified,
-          isBlocked: credentials?.isBlocked,
-          ProfilePicture: credentials?.ProfilePicture,
-        };
-      },
-    }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
-      },
-      async profile(profile) {
-        const res = await fetch(
-          `${process.env.BACKEND_URL}/api/users/auth/google-sync`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: profile.email,
-              name: profile.name,
-              image: profile.picture,
-            }),
-          }
-        );
+        if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await res.json();
-        return user;
+        try {
+          const res = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/auth/login`,
+            {
+              email: credentials.email,
+              password: credentials.password,
+            },
+            { withCredentials: true }
+          );
+
+          if (res.status !== 200) {
+            throw new Error(res.data.message ?? "Invalid credentials");
+          }
+
+          const user = res.data;
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            isVerified: user.isVerified,
+            isBlocked: user.isBlocked,
+            profilePicture: user.profilePicture,
+          };
+        } catch (err: any) {
+          throw new Error(err.response?.data?.message ?? "Login failed");
+        }
       },
     }),
   ],
 
   callbacks: {
     async jwt({ token, user }) {
-      console.log("token", token);
-      console.log("userintoken", user);
       if (user) {
-        token.id = user?.id;
-        token.role = user?.role;
-        token.isVerified = user?.isVerified;
+        token.id = user.id;
+        token.role = user.role;
+        token.isVerified = user.isVerified;
         token.isBlocked = user.isBlocked;
+        token.profilePicture = user.profilePicture;
       }
       return token;
     },
     async session({ session, token }) {
-      console.log("tokeninsession", token);
-      if (session.user && token) {
-        session.user.id = token.id;
-        session.user.role = token.role;
-        session.user.isVerified = token.isVerified;
-        session.user.isBlocked = token.isBlocked;
+      if (token) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+        session.user.isVerified = token.isVerified as boolean;
+        session.user.isBlocked = token.isBlocked as boolean;
+        session.user.profilePicture = token.profilePicture as string;
       }
-      console.log('session',session)
       return session;
     },
   },
 
+  // pages: {
+  //   signIn: "/login",
+  // },
 
-  debug: true,
-});
+  secret: process.env.NEXTAUTH_SECRET,
+};
+

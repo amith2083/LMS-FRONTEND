@@ -15,7 +15,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
-import { loginUser } from "@/app/service/authService";
+import { setTokens } from "@/app/service/authService";
+
 
 interface LoginResponse {
   error?: string;
@@ -23,8 +24,9 @@ interface LoginResponse {
 }
 
 export function LoginForm() {
-  const [error, setError] = useState("");
+
   // const { setError, error, setUser, setLoading, isLoading } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -37,10 +39,11 @@ export function LoginForm() {
   }, [searchParams]);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
+    setIsLoading(true);
+
 
     // setError('')
-    try{
+  
       const formData = new FormData(e.currentTarget as HTMLFormElement);
 
       const email = formData.get("email") as string;
@@ -52,28 +55,29 @@ export function LoginForm() {
       // });
       // console.log("res", result);
 
-// 1. First check using your API
-let user;
-    try {
-      user =await loginUser(email, password); 
+try {
+      // Step 1: NextAuth sign-in
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (res?.error) {
+        toast.error(res.error);
+        return;
+      }
+
+      // Step 2: Set tokens via backend
+      await setTokens(email);
+
+      toast.success("Login successful!");
+      router.push("/");
     } catch (error: any) {
       toast.error(error.message);
-      return; // Stop here if login fails
+    } finally {
+      setIsLoading(false);
     }
-      const result = await signIn("credentials", {
-      redirect: false,
-      ...user,
-    });
-
-    if (result?.error) {
-      toast.error(result.error);
-    } else {
-      router.push("/");
-    }
-  } catch (error: any) {
-    toast.error(error.message || "Unexpected error occurred.");
-  }
-      
   };
 
   return (
@@ -116,13 +120,9 @@ let user;
               </div>
               <Input id="password" type="password" name="password" required />
             </div>
-            <Button
-              type="submit"
-              className="w-1/2 mx-auto cursor-pointer"
-              variant="black"
-            >
-              Login
-            </Button>
+            <Button type="submit" disabled={isLoading}>
+        {isLoading ? "Logging in..." : "Login"}
+      </Button>
           </div>
         </form>
         {/* {error && (

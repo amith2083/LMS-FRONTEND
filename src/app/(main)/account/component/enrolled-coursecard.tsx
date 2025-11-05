@@ -3,17 +3,20 @@ import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { BookOpen } from "lucide-react";
 import Image from "next/image";
-import {  useCategoryDetails } from "@/app/hooks/useCategories";
+
+import { useCategoryById } from '@/app/hooks/useCategoryQueries';
 // import { getCategoryDetails } from '@/queries/categories';
 // import { getReport } from '@/queries/reports';
 
 const EnrolledCourseCard =  ({enrollment}) => {
-   console.log(enrollment);
-    // const courseCategory = await getCategoryDetails(enrollment?.course?.category?._id);
-     const { data:courseCategory , isLoading: isLoadingCategory } = useCategoryDetails(enrollment?.course?.category?._id);
-     console.log('coursecategory',courseCategory)
+   
 
-    const filter = {course: enrollment?.course?._id, student:enrollment?.student?._id }
+    // const courseCategory = await getCategoryDetails(enrollment?.course?.category?._id);
+     const { data:courseCategory , isLoading: isLoadingCategory } = useCategoryById(enrollment?.course?.category);
+   
+    
+
+    const filter = {course: enrollment?.course?._id, student:enrollment?.student }
 
     // const report = await getReport(filter);
     //console.log(report);
@@ -47,7 +50,7 @@ const EnrolledCourseCard =  ({enrollment}) => {
     >
         <div className="relative w-full aspect-video rounded-md overflow-hidden">
             <Image
-                src={`/assets/images/courses/${enrollment?.course?.thumbnail}`}
+                src={enrollment?.course?.thumbnail}
                 alt={enrollment?.course?.title}
                 className="object-cover"
                 fill

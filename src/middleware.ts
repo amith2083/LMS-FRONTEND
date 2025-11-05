@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { LOGIN, PUBLIC_ROUTES, ROOT } from "@/lib/route";
-import authConfig from "@/lib/auth.config";
+
 import type { NextRequest } from "next/server";
 
 // export function middleware(request: NextRequest) {
@@ -10,25 +10,35 @@ import type { NextRequest } from "next/server";
 //   return NextResponse.next();
 // }
 
-const { auth } = NextAuth(authConfig);
+// const { auth } = NextAuth(authConfig);
 
 export async function middleware(req: NextRequest) {
   const { nextUrl } = req;
- 
 
   const token = await getToken({ req, secret: process.env.AUTH_SECRET });
-  console.log('tokenis',token)
+
+  const refreshToken = req.cookies.get("refreshToken")?.value;
+
+  console.log("tokenis❤️❤️❤️❤️", token);
+
   const isAuthenticated = !!token;
 
   const userRole = token?.role;
 
   const isBlocked = String(token?.isBlocked) === "true";
-  
 
   const isPublicRoute =
     PUBLIC_ROUTES.some((route) => nextUrl.pathname.startsWith(route)) ||
     nextUrl.pathname === ROOT;
   const isAdminRoute = nextUrl.pathname.startsWith("/admin");
+
+  if (!refreshToken && !isPublicRoute) {
+    const loginUrl = new URL(LOGIN, nextUrl);
+    const response = NextResponse.redirect(loginUrl);
+    response.cookies.set("next-auth.session-token", "", { maxAge: 0 });
+    response.cookies.set("next-auth.csrf-token", "", { maxAge: 0 });
+    return response;
+  }
 
   if (isAuthenticated && isBlocked && nextUrl.pathname !== LOGIN) {
     const loginUrl = new URL(LOGIN, nextUrl);
@@ -65,7 +75,10 @@ export async function middleware(req: NextRequest) {
   }
 
   if (!isAuthenticated && !isPublicRoute) {
-    return NextResponse.redirect(new URL(LOGIN, nextUrl));
+    const response = NextResponse.redirect(new URL(LOGIN, nextUrl));
+    response.cookies.set("refreshToken", "", { maxAge: 0 });
+    response.cookies.set("accessToken", "", { maxAge: 0 });
+    return response;
   }
 
   return NextResponse.next();

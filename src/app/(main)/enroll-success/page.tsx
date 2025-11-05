@@ -3,8 +3,10 @@ import { CircleCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import axiosInstance from "@/lib/axios";
-import { auth } from "@/lib/auth";
+
 import { headers } from "next/headers"; // Add this import
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 const Success = async ({ searchParams }: { searchParams: { session_id?: string; courseId?: string } }) => {
   const { session_id, courseId } = searchParams;
@@ -14,7 +16,7 @@ const Success = async ({ searchParams }: { searchParams: { session_id?: string; 
     throw new Error("Missing session_id or courseId");
   }
 
-  const session = await auth(); // This works fine for session check
+  const session = await getServerSession(authOptions); // This works fine for session check
   console.log('session', session);
   if (!session?.user?.id) {
     redirect("/login");
@@ -80,6 +82,9 @@ const Success = async ({ searchParams }: { searchParams: { session_id?: string; 
         <div className="flex items-center gap-3">
           <Button asChild size="sm">
             <Link href="/courses">Browse Courses</Link>
+          </Button>
+          <Button asChild variant='outline' size="sm">
+            <Link href={`/courses/${courseId}/lesson`}>Play Course</Link>
           </Button>
         </div>
       </div>

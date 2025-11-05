@@ -1,15 +1,24 @@
 'use client';
 
-import { useLoggedInUser } from "@/app/hooks/useUser";
-import { useEnrollmentsForUser } from "@/app/hooks/useEnrollment";
+
+
 import SkeletonBox from "../../component/skeleton";
 import EnrolledCourseCard from "../../component/enrolled-coursecard";
+import { useSession } from "next-auth/react";
+import { useUserById } from "@/app/hooks/useUserQueries";
+import { useEnrollmentsForUser } from "@/app/hooks/useEnrollmentQueries";
+import Link from "next/link";
+import { en } from "zod/v4/locales";
 
 function EnrolledCourses() {
-  const { data: loggedInUser, isLoading: isLoadingUser } = useLoggedInUser();
-  const { data: enrollments, isLoading: isLoadingEnrollments } = useEnrollmentsForUser(loggedInUser?.id);
 
-  if (isLoadingUser || isLoadingEnrollments) {
+    const { data: enrollments, isLoading: isLoadingEnrollments } = useEnrollmentsForUser();
+    console.log('enroll',enrollments)
+
+
+
+
+  if ( isLoadingEnrollments) {
     return (
       <div className="grid sm:grid-cols-2 gap-6">
         {[1, 2].map((_, i) => (
@@ -29,7 +38,9 @@ function EnrolledCourses() {
     <div className="grid sm:grid-cols-2 gap-6">
       {enrollments && enrollments.length > 0 ? (
         enrollments.map((enrollment) => (
-          <EnrolledCourseCard key={enrollment?.id} enrollment={enrollment} />
+          <Link key={enrollment?._id} href={`/courses/${enrollment?.course?._id.toString()}/lesson`}>
+          <EnrolledCourseCard key={enrollment?._id} enrollment={enrollment} />
+          </Link>
         ))
       ) : (
         <p className="text-center font-semibold text-red-500 col-span-2">

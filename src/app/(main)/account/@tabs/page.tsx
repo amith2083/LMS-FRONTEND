@@ -1,15 +1,24 @@
 'use client';
 
-import { useLoggedInUser } from '@/app/hooks/useUser';
+
 import SkeletonBox from '../component/skeleton';
 import PersonalDetails from '../component/personal-details';
 import ContactInfo from '../component/contact-info';
 import ChangePassword from '../component/change-password';
+import { useSession } from 'next-auth/react';
+import { useUserById } from '@/app/hooks/useUserQueries';
 
 export default function Profile() {
-  const { data: loggedInUser, isLoading: isLoadingUser } = useLoggedInUser();
 
-  if (isLoadingUser) {
+ const { data: session, status } = useSession();
+  const isLoadingUser = status === "loading";
+  const userId = session?.user?.id;
+
+  // Fetch full user data
+  const { data: loggedInUser, isLoading } = useUserById(userId!);
+
+  const loading = isLoadingUser || isLoading;
+  if (loading) {
     return (
       <div className="space-y-4 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <SkeletonBox className="h-10 w-1/2" />
@@ -30,7 +39,7 @@ export default function Profile() {
       <PersonalDetails userInfo={loggedInUser} />
       <div className="grid lg:grid-cols-2 grid-cols-1 gap-5">
         <ContactInfo userInfo={loggedInUser} />
-        <ChangePassword userId={loggedInUser?.id} />
+        {/* <ChangePassword userId={loggedInUser?.id} /> */}
       </div>
     </div>
   );

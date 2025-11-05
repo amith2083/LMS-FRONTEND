@@ -15,12 +15,14 @@ const CourseCard = ({course}) => {
         <Link key={course._id} href={`/courses/${course._id}`}>
         <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
           <div className="relative w-full aspect-video rounded-md overflow-hidden">
-            <Image
-              src={course?.thumbnail}
-              alt={"course"}
-              className="object-cover"
-              fill
-            />
+         {course.thumbnail && (
+  <Image
+    src={course.thumbnail}
+    alt="course"
+    className="object-cover"
+    fill
+  />
+)}
           </div>
           <div className="flex flex-col pt-2">
             <div className="text-lg md:text-base font-medium group-hover:text-sky-700 line-clamp-2">

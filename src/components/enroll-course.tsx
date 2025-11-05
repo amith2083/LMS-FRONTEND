@@ -12,18 +12,21 @@ import { toast } from "sonner";
 
 const EnrollCourse = ({ asLink, courseId }) => {
 const { data: session, status } = useSession();
-  const router = useRouter();
-  const createEnrollmentMutation = useCreateEnrollment();
  const [loginSession, setLoginSession] = useState<Session | null>(null);
-
-console.log("+++ session:", loginSession);
-
   useEffect(() => {
     setLoginSession(session);
   }, [session]);
+   const createEnrollmentMutation = useCreateEnrollment();
+  const router = useRouter();
+
+
+
+
+
+ 
 
   const handleEnroll = async (e: React.FormEvent) => {
-    e.preventDefault();
+     e.preventDefault();
   
 
    

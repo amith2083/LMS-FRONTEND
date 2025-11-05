@@ -9,24 +9,29 @@ import {
   getCoursesByInstructorId,
   getCourseForAdminById,
 } from "../service/courseService";
-// import { useSession } from "next-auth/react";
+
 interface User {
   id: string;
   role: "admin" | "student" | "instructor";
   isVerified?: boolean;
   isBlocked?: boolean;
 }
-export const useCourses = () => {
-  console.log('trigger')
-  // const { data: session, status } = useSession();
-  // console.log('session',session)
-  // const user = session?.user as User | undefined;
+export const useCourses = (params?: {
+  search?: string;
+  categories?: string[];
+  price?: string[];
+  sort?: string;
+  page?: number;
+  limit?: number;
+}) => {
+ 
 
   return useQuery({
-    queryKey: ["courses"],
-    queryFn: getCourses,
+    queryKey: ["courses", params],
+    queryFn: () => getCourses(params),
     staleTime: 5 * 60 * 1000,
-    // enabled: status === "authenticated" && !!user,
+    keepPreviousData: true, // For smooth pagination/filtering
+    throwOnError: true, // Bubble errors to boundary
   });
 };
 

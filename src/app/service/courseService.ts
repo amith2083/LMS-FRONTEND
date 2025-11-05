@@ -3,12 +3,18 @@ import  { AxiosError } from "axios";
 
 
 
-//  Get All Courses
-export const getCourses = async () => {
+// Get All Courses with filters
+export const getCourses = async (params?: {
+  search?: string;
+  categories?: string[];
+  price?: string[];
+  sort?: string;
+  page?: number;
+  limit?: number;
+}) => {
   try {
-  const response = await axiosInstance.get("/api/courses");
-  console.log('res',response.data)
-  
+    const response = await axiosInstance.get("/api/courses", { params });
+
     return response.data;
   } catch (error: any) {
     const axiosError = error as AxiosError<any>;

@@ -10,7 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Phone, Globe, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import { Form, FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form';
-import { useUpdateUser } from '@/app/hooks/useUser';
+import { useUpdateUser } from '@/app/hooks/useUserQueries';
+
 
 const formSchema = z.object({
   phone: z.string().min(10, 'Phone must be at least 10 digits'),
@@ -30,12 +31,18 @@ export default function ContactInfo({ userInfo }) {
       website: userInfo?.website || '',
     },
   });
+  const { mutateAsync, isPending } = useUpdateUser();
 
-  const { mutateAsync, isPending } = useUpdateUser(userInfo?.id);
+
+
 
   const onSubmit = async (values: FormValues) => {
     try {
-      await mutateAsync({ data: { phone: Number(values.phone), website: values.website } });
+       await mutateAsync({
+        id: userInfo.id, 
+        data: { phone: Number(values.phone), website: values.website },
+      });
+
       toast.success('Contact info updated');
       toggleEdit();
     } catch (error: any) {

@@ -30,10 +30,21 @@ export const getLessonById = async (id: string) => {
     throw new Error(axiosError.response?.data?.message || "Failed to get lesson");
   }
 };
+export const getLessonBySlug = async(slug:string)=> {
+   try {
+    const response = await axiosInstance.get(`/api/lessons/slug/${slug}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error: any) {
+    const axiosError = error as AxiosError<any>;
+    throw new Error(axiosError.response?.data?.message || "Failed to get lesson");
+  }
+};
 
 // Update a lesson
 export const updateLesson = async (id: string, data: any) => {
-  console.log('idinlessonservice',id,data)
+ 
   try {
     const response = await axiosInstance.put(`/api/lessons/${id}`, data, {
       withCredentials: true,

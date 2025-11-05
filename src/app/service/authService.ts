@@ -50,21 +50,15 @@ export const resendOtp = async (email: string) => {
   }
 };
 // Login API (for credentials login)
-export const loginUser = async (email: string, password: string) => {
+export const setTokens = async (email: string) => {
   try {
-    const response = await axiosInstance.post(
-      "/api/users/auth/login",
-      { email, password },
-      {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      }
-    );
+    const response = await axiosInstance.post("/api/users/auth/set-tokens", {
+      email,
+    });
     return response.data;
   } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message = axiosError.response?.data?.message || "Login failed";
-    console.log("message", message);
+    const message =
+      error.response?.data?.message || "Failed to set tokens";
     throw new Error(message);
   }
 };

@@ -7,6 +7,7 @@ import { formatMyDate } from "@/lib/date";
 
 
 const CourseDetails = ({course}) => {
+  console.log('mod',course)
     const lastModifiedDate = formatMyDate(course.modifiedOn)
     
     return (
@@ -26,7 +27,7 @@ const CourseDetails = ({course}) => {
             <div className="flex items-center gap-2">
               <img
                 className="w-[40px] h-[40px] rounded-full"
-               src={course?.instructor?.profilePicture}
+               src={course?.instructor?.profilePicture }
                 alt={course?.instructor?.name}
               />
               <p className="font-bold">{course?.instructor?.name}</p>

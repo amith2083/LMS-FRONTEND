@@ -4,10 +4,17 @@ import { buttonVariants } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 import EnrollCourse from '@/components/enroll-course';
-import { SessionProvider } from 'next-auth/react';
+
+import { useHasEnrollmentForCourse } from '@/app/hooks/useEnrollmentQueries';
 
 
 const CourseDetailsIntro =  ({course}) => {
+  
+
+
+
+
+  const { data: isEnrolled, isLoading } = useHasEnrollmentForCourse( course?._id);
 
     return (
         <div className="overflow-x-hidden  grainy">
@@ -26,17 +33,32 @@ const CourseDetailsIntro =  ({course}) => {
                 </p>
 
                 <div className="mt-6 flex items-center justify-center flex-wrap gap-3">
-                  <SessionProvider>
-                 <EnrollCourse courseId={course?._id}/>
-                 </SessionProvider>
-                  {/* <Link
+                  {isLoading ? (
+                  <button
+                    disabled
+                    className={cn(buttonVariants({ variant: 'outline', size: 'lg' }))}
+                  >
+                    Checking enrollment...
+                  </button>
+                ) : isEnrolled ? (
+                  <Link
+                    href={`/courses/${course?._id}/lesson`}
+                    className={cn(buttonVariants({ variant: 'default', size: 'lg' }))}
+                  >
+                    Go to Course
+                  </Link>
+                ) : (
+                  <EnrollCourse courseId={course?._id} />
+                )}
+                
+                  <Link
                     href=""
                     className={cn(
                       buttonVariants({ variant: "outline", size: "lg" })
                     )}
                   >
                     See Intro
-                  </Link> */}
+                  </Link>
                   <Link
                     href=""
                     className={cn(
@@ -58,7 +80,7 @@ const CourseDetailsIntro =  ({course}) => {
                       className="mx-auto rounded-lg max-w-sm object-cover"
                       width={300}
                       height={400}
-                      src={`${course?.thumbnail}`}
+                       src={course?.thumbnail}
                       alt=""
                     />
                   </div>

@@ -7,21 +7,7 @@ const axiosInstance: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
-// Add CSRF token to requests
-axiosInstance.interceptors.request.use(
-  async (config) => {
-    if (["post", "put", "delete","patch"].includes(config.method?.toLowerCase() || "")) {
-      try {
-        const response = await axios.get(`${BASE_URL}/csrf-token`, { withCredentials: true });
-        config.headers["X-CSRF-Token"] = response.data.csrfToken;
-      } catch (error) {
-        console.error("Failed to fetch CSRF token:", error);
-      }
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+
 
 // Handle 401 errors and attempt token refresh
 axiosInstance.interceptors.response.use(
@@ -35,6 +21,7 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(error.config); // Retry original request
       } catch (refreshError) {
         console.log('erroris',refreshError)
+        
         window.location.href = "/login";
         return Promise.reject(new Error("Unauthorized"));
       }

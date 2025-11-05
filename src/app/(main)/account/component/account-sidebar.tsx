@@ -1,18 +1,28 @@
-"use client";
+'use client';
 
 import React from "react";
-import { useLoggedInUser } from "@/app/hooks/useUser";
 import SkeletonBox from "./skeleton";
 import Image from "next/image";
 import Menu from "./account-menu";
+import { useSession } from "next-auth/react";
+import { useUserById } from "@/app/hooks/useUserQueries";
+
 
 const AccountSidebar = () => {
-  const { data: loggedInUser, isLoading: isLoadingUser } = useLoggedInUser();
+  const { data: session, status } = useSession();
+  const isLoadingUser = status === "loading";
+  const userId = session?.user?.id;
+
+  // Fetch full user data
+  const { data: user, isLoading } = useUserById(userId!);
+
+
+  const loading = isLoadingUser || isLoading;
 
   return (
     <div className="lg:w-1/4 w-full md:px-3">
       <div className="rounded-xl shadow-md bg-gradient-to-br from-white via-indigo-50 to-white dark:from-slate-800 dark:to-slate-900 p-6">
-        {isLoadingUser ? (
+        {loading ? (
           <div className="space-y-4 text-center">
             <SkeletonBox className="h-28 w-28 mx-auto rounded-full" />
             <SkeletonBox className="h-5 w-1/2 mx-auto" />
@@ -24,8 +34,8 @@ const AccountSidebar = () => {
             <div className="text-center mb-6">
               <div className="relative w-28 h-28 mx-auto">
                 <Image
-                  src={loggedInUser?.profilePicture || "/default-avatar.png"}
-                  alt={loggedInUser?.name}
+                  src={user?.profilePicture}
+                  alt={user?.name || "User avatar"}
                   width={112}
                   height={112}
                   className="rounded-full border-4 border-white shadow-md dark:border-slate-800"
@@ -33,13 +43,13 @@ const AccountSidebar = () => {
               </div>
               <div className="mt-4">
                 <h5 className="text-xl font-bold text-gray-800 dark:text-white">
-                  {loggedInUser?.name}
+                  {user?.name}
                 </h5>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {loggedInUser?.email}
+                  {user?.email}
                 </p>
                 <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 mt-1">
-                  Role: {loggedInUser?.role}
+                  Role: {user?.role}
                 </p>
               </div>
             </div>

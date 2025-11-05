@@ -68,6 +68,23 @@ export const getEnrollmentsForUser = async (): Promise<Enrollment[]> => {
     throw new Error(message);
   }
 };
+// Check if user is enrolled in a course
+export const hasEnrollmentForCourse = async (courseId: string): Promise<boolean> => {
+  try {
+   
+    
+  
+    const response = await axiosInstance.get(`/api/enrollments/course/${courseId}/check`, 
+      {  withCredentials: true}
+    );
+    return response.data.enrolled; // backend returns { enrolled: true/false }
+  } catch (error: any) {
+    const axiosError = error as AxiosError<any>;
+    const message =
+      axiosError.response?.data?.message || "Failed to check enrollment status";
+    throw new Error(message);
+  }
+};
 
 // Create a new enrollment
 export const createEnrollment = async (

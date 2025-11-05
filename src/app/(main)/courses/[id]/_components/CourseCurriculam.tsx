@@ -13,7 +13,7 @@ import {
 import CourseModuleList from './module/CourseModuleList';
 
 const CourseCurriculam = ({course}) => {
-  console.log('====',course)
+  
 
   const totalDuration = course?.modules.map( (item) =>
   { return  item.lessonIds.reduce(function(acc,obj)

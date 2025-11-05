@@ -15,6 +15,7 @@ export const useCategories = () =>
     queryKey: ["categories"],
     queryFn: getCategories,
     staleTime: 5 * 60 * 1000,
+    throwOnError: true, // Bubble errors to boundary
   });
 
 // Fetch single category
