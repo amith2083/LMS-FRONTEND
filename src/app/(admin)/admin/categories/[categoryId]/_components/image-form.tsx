@@ -11,6 +11,7 @@ import * as z from "zod";
 import { UploadDropzone } from "@/components/file-upload";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useUpdateCategoryImage } from "@/app/hooks/useCategoryQueries";
 
 const formSchema = z.object({
   imageUrl: z.string().min(1, {
@@ -27,40 +28,14 @@ interface ImageFormProps {
 
 export const ImageForm: React.FC<ImageFormProps> = ({ initialData, categoryId }) => {
 
-  const [file, setFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const updateCategoryImage = useUpdateCategoryImage();
 
-  useEffect(() => {
-    if (file) {
-      async function uploadFile(){
-        try {
-          const formData = new FormData();
-          formData.append("files", file[0]);
-          formData.append("destination", "./public/assets/images/categories");
-          formData.append("categoryId",categoryId);
-          const response = await fetch("/api/upload", {
-            method: "POST",
-            body: formData
-          });
-          const result = await response.text();
-          console.log(result);
-          if (response.status === 200) {
-            initialData.imageUrl = `/assets/images/categories/${file[0].path}`;
-            toast.success(result);
-            toggleEdit();
-            router.refresh(); 
-          }
 
-        } catch (e) {
-           toast.error(e.message);
-        }
-      }
-      uploadFile();
-    }
-
-  },[file]);
+ 
 
 
 
@@ -68,13 +43,16 @@ export const ImageForm: React.FC<ImageFormProps> = ({ initialData, categoryId })
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
-  const onSubmit = async (values:FormValues) => {
+ const handleUpload = async () => {
+    if (!selectedFile) return;
+
     try {
-      toast.success("Category updated");
+      // await updateCourseImage.mutateAsync({ id: courseId, file: selectedFile });
+      await updateCategoryImage.mutateAsync({ categoryId, file: selectedFile });
+      toast.success("Category image updated!");
       toggleEdit();
-      router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (e: any) {
+      toast.error(e.message || "Image upload failed");
     }
   };
 
@@ -114,10 +92,16 @@ export const ImageForm: React.FC<ImageFormProps> = ({ initialData, categoryId })
           </div>
         ))}
       {isEditing && (
-        <div>
-          <UploadDropzone onUpload={(file) => setFile(file)} />
-          <div className="text-xs text-muted-foreground mt-4">
-            16:9 aspect ratio recommended
+        <div className="space-y-4">
+          <UploadDropzone onUpload={(files) => setSelectedFile(files[0])} />
+          <Button
+            onClick={handleUpload}
+            disabled={!selectedFile || updateCategoryImage.isPending}
+          >
+            Upload
+          </Button>
+          <div className="text-xs text-muted-foreground">
+            Recommended: 16:9 aspect ratio
           </div>
         </div>
       )}

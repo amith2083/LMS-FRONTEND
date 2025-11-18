@@ -7,8 +7,9 @@ import {
   deleteCourse,
   updateCourseImage,
   getCoursesByInstructorId,
-  getCourseForAdminById,
+  getCoursesForAdmin
 } from "../service/courseService";
+import { CoursesResponse } from "../types/course";
 
 interface User {
   id: string;
@@ -18,15 +19,15 @@ interface User {
 }
 export const useCourses = (params?: {
   search?: string;
-  categories?: string[];
-  price?: string[];
+  category?: string;
+  price?: string;
   sort?: string;
   page?: number;
   limit?: number;
 }) => {
  
 
-  return useQuery({
+  return useQuery<CoursesResponse>({
     queryKey: ["courses", params],
     queryFn: () => getCourses(params),
     staleTime: 5 * 60 * 1000,
@@ -65,11 +66,11 @@ export const useCoursesByInstructorId = (instructorId: string) =>
 }
 
 // New hook to get course for admin by ID
-export const useCourseForAdminById = (id: string) =>
+export const useCoursesForAdmin = () =>
   useQuery({
-    queryKey: ["course", "admin", id],
-    queryFn: () => getCourseForAdminById(id),
-    enabled: !!id,
+    queryKey: [ "adminCourse", ],
+    queryFn: () => getCoursesForAdmin(),
+    
   });
 
 // Create a course
@@ -90,7 +91,7 @@ export const useUpdateCourse = () => {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) =>{
-      console.log('++',id,data);
+  
       return updateCourse(id, data);
     },
     onSuccess: () => {

@@ -11,52 +11,36 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 import { setTokens } from "@/app/service/authService";
 
-
-interface LoginResponse {
-  error?: string;
-  data?: any;
-}
-
 export function LoginForm() {
-
-  // const { setError, error, setUser, setLoading, isLoading } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-
   const searchParams = useSearchParams();
-  
+  const pathname = usePathname();                     
+
+  // Detect admin login page
+  const isAdmin = pathname?.startsWith("/admin/login"); 
 
   useEffect(() => {
     if (searchParams.get("blocked") === "true") {
       toast.error("Your account is blocked. Please contact admin.");
     }
   }, [searchParams]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
-    // setError('')
-  
-      const formData = new FormData(e.currentTarget as HTMLFormElement);
-
-      const email = formData.get("email") as string;
-      const password = formData.get("password") as string;
-      // const result = await signIn("credentials", {
-      //   redirect: false,
-      //   email,
-      //   password,
-      // });
-      // console.log("res", result);
-
-try {
-      // Step 1: NextAuth sign-in
+    try {
       const res = await signIn("credentials", {
         email,
         password,
@@ -68,11 +52,17 @@ try {
         return;
       }
 
-      // Step 2: Set tokens via backend
+      // Set extra tokens (your backend)
       await setTokens(email);
 
       toast.success("Login successful!");
-      router.push("/");
+
+      // ---- CONDITIONAL REDIRECT ----
+      if (isAdmin) {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/");
+      }
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -121,37 +111,41 @@ try {
               <Input id="password" type="password" name="password" required />
             </div>
             <Button type="submit" disabled={isLoading}>
-        {isLoading ? "Logging in..." : "Login"}
-      </Button>
+              {isLoading ? "Logging in..." : "Login"}
+            </Button>
           </div>
         </form>
-        {/* {error && (
-        <p className="text-red-500 text-center">
-          {error}
-        </p>
-      )} */}
 
-        <div className="text-center mt-2"> Or</div>
+        {/* ---- SHOW "OR" + GOOGLE ONLY FOR NON-ADMIN ---- */}
+        {!isAdmin && (
+          <>
+            <div className="text-center mt-2"> Or</div>
 
-        <Button
-          onClick={() => {
-            signIn("google", { callbackUrl: "/select-role" });
-          }}
-          className="w-full cursor-pointer"
-        >
-          <FcGoogle className="h-5 w-5" />
-          Continue with Google
-        </Button>
-        <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link href="/register/instructor" className="underline">
-            Instructor
-          </Link>
-          <span> or </span>
-          <Link href="/register/student" className="underline">
-            Student
-          </Link>
-        </div>
+            <Button
+              onClick={() => {
+                signIn("google", { callbackUrl: "/select-role" });
+              }}
+              className="w-full cursor-pointer"
+            >
+              <FcGoogle className="h-5 w-5" />
+              Continue with Google
+            </Button>
+          </>
+        )}
+
+        {/* ---- REGISTER LINKS (only for normal users) ---- */}
+        {!isAdmin && (
+          <div className="mt-4 text-center text-sm">
+            Don&apos;t have an account?{" "}
+            <Link href="/register/instructor" className="underline">
+              Instructor
+            </Link>
+            <span> or </span>
+            <Link href="/register/student" className="underline">
+              Student
+            </Link>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

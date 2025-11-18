@@ -7,6 +7,7 @@ import {
   updateCategory,
   deleteCategory,
   toggleCategoryPublishState,
+  updateCategoryImage,
 } from "../service/categoryService";
 
 // Fetch all categories
@@ -43,7 +44,20 @@ export const useUpdateCategory = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) => updateCategory(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["category"] });
+    },
+  });
+};
+//  update category image
+export const useUpdateCategoryImage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ categoryId, file }: { categoryId: string; file:File }) =>
+     
+      updateCategoryImage(categoryId, file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["category"] }); 
     },
   });
 };

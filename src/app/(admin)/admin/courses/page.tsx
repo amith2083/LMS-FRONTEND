@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import axios, { getAdapter } from "axios";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
-import { getCourseDetails } from "@/queries/courses";
+import { useCoursesForAdmin } from "@/app/hooks/useCourseQueries";
+
 
 interface CourseType {
   id: string;
@@ -32,19 +33,16 @@ interface CourseType {
 }
 
 const ListCourses = () => {
+  const{data:courses,isLoading}= useCoursesForAdmin()
   const [selectedCourse, setSelectedCourse] = useState<CourseType | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [courses, setCourses] = useState<CourseType[]>([]);
+
   console.log("courses", courses);
 
-  useEffect(() => {
-    fetchCourses();
-  }, []);
-
-  const fetchCourses = async () => {
-    const res = await axios.get<CourseType[]>("/api/admin/courses");
-    setCourses(res.data);
-  };
+ if (isLoading) {
+    return <div>Loading...</div>;
+  }
+ 
 
   const handleApprove = async (courseId: string) => {
     const result = await Swal.fire({
@@ -59,14 +57,14 @@ const ListCourses = () => {
       try {
         await axios.put("/api/admin/courses", { courseId });
         toast.success("Course approved successfully");
-        fetchCourses();
+      
       } catch (err: any) {
         toast.error(err?.response?.data?.message || "Approval failed");
       }
     }
   };
   const viewCourseDetails = (id: string) => {
-    const course = courses.find((c) => c.id === id);
+    const course = courses.find((c) => c._id === id);
     console.log('viewcourse',course)
     if (course) {
       setSelectedCourse(course);
@@ -117,14 +115,14 @@ const ListCourses = () => {
               <td className="p-2 border space-x-2">
     <button
       className="px-3 py-1 bg-gray-600 text-white rounded"
-      onClick={() => viewCourseDetails(course.id)}
+      onClick={() => viewCourseDetails(course._id)}
     >
       View
     </button>
     {!course.isApproved && (
       <button
         className="px-3 py-1 bg-blue-600 text-white rounded"
-        onClick={() => handleApprove(course.id)}
+        onClick={() => handleApprove(course._id)}
       >
         Approve
       </button>
@@ -142,7 +140,7 @@ const ListCourses = () => {
             <p className="mb-2 text-gray-700">{selectedCourse.description}</p>
             {selectedCourse.thumbnail && (
               <img
-                src={`/assets/images/courses/${selectedCourse.thumbnail}`}
+                src={selectedCourse.thumbnail}
                 alt="Course thumbnail"
                 className="w-[300px] h-[180px] object-cover rounded mb-4"
               />

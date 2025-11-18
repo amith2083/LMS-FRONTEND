@@ -2,10 +2,11 @@
 import { getInstructorDashboardData, COURSE_DATA } from "@/lib/dashboardHelper";
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
-import { sanitizeData } from "@/utils/sanitize";
-import { GetAllCategories } from "@/queries/categories";
-import { useGetCategories } from "@/app/hooks/useCategories";
+
+
+
 import { JSX } from "react";
+import { useCategories } from "@/app/hooks/useCategoryQueries";
 
 // Define a generic type for course objects (you can replace it with a specific interface if you have one)
 interface Category {
@@ -14,8 +15,8 @@ interface Category {
 
 const CategoryPage =  (): JSX.Element => {
   // const rawData = await GetAllCategories();
-    const { data: rawData, isLoading,error } = useGetCategories();
-  const categories: Category[] = sanitizeData(rawData || []);
+    const { data: categories, isLoading,error } = useCategories();
+ 
   console.log(categories);
   if (isLoading) {
     return <div>Loading...</div>;

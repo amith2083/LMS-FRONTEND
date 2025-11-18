@@ -79,7 +79,7 @@ export const CourseSidebar = async({courseId }) => {
         <SidebarModules courseId ={courseId} modules ={updatedModules}/>
 
         <div className="w-full px-6">
-        <GiveReview/>
+        <GiveReview courseId={courseId} />
         <DownloadCertificate/>
         </div> 
 

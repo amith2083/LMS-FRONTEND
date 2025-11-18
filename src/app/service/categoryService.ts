@@ -62,6 +62,16 @@ export const updateCategory = async (id: string, data: any) => {
     throw new Error(message);
   }
 };
+export const updateCategoryImage = async (categoryId: string, file: File) => {
+  const formData = new FormData();
+  formData.append("image", file); // must match Multer config
+
+ const response = await axiosInstance.put(`/api/categories/${categoryId}/image`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+  return response.data;
+};
 
 // Delete category
 export const deleteCategory = async (id: string) => {

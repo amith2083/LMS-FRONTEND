@@ -1,8 +1,10 @@
 "use client";
 
-import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -10,56 +12,53 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import { Pencil } from "lucide-react";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-import { toast } from "sonner";
-import { useUpdateCategory } from "@/app/hooks/useCategories";
+import { useState } from "react";
+import { useUpdateCategory } from "@/app/hooks/useCategoryQueries";
 
 
 const formSchema = z.object({
-  title: z.string().min(1, {
-    message: "Title is required",
+  description: z.string().min(1, {
+    message: "Description is required",
   }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
-
-interface TitleFormProps {
+interface DescriptionFormProps {
   initialData: {
-    title: string;
+    description: string;
   };
   categoryId: string;
 }
 
-export const TitleForm: React.FC<TitleFormProps> = ({
+export const DescriptionForm: React.FC<DescriptionFormProps> = ({
   initialData,
   categoryId,
 }) => {
   const router = useRouter();
+  const { mutateAsync } = useUpdateCategory();
   const [isEditing, setIsEditing] = useState(false);
-  
-    const { mutateAsync } = useUpdateCategory(categoryId);
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
-  const form = useForm<FormValues>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: {
+      description: initialData?.description || "",
+    },
   });
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit: SubmitHandler<FormValues> = async (values) => {
+  const onSubmit = async (values: FormValues) => {
     try {
-      // await updateCategory(categoryId, values);
-   await mutateAsync({ data: values });
+     await mutateAsync({id:categoryId,data:values})
+      toast.success("Category updated");
       toggleEdit();
-      // router.refresh();
-      toast.success("Category has been updated");
+      router.refresh();
     } catch (error) {
       toast.error("Something went wrong");
     }
@@ -68,19 +67,28 @@ export const TitleForm: React.FC<TitleFormProps> = ({
   return (
     <div className="mt-6 border bg-gray-50 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Category title
+        Category Description
         <Button variant="ghost" onClick={toggleEdit}>
           {isEditing ? (
             <>Cancel</>
           ) : (
             <>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit Title
+              Edit Description
             </>
           )}
         </Button>
       </div>
-      {!isEditing && <p className="text-sm mt-2">{initialData.title}</p>}
+      {!isEditing && (
+        <p
+          className={cn(
+            "text-sm mt-2",
+            !initialData.description && "text-slate-500 italic"
+          )}
+        >
+          {initialData.description || "No description"}
+        </p>
+      )}
       {isEditing && (
         <Form {...form}>
           <form
@@ -89,13 +97,13 @@ export const TitleForm: React.FC<TitleFormProps> = ({
           >
             <FormField
               control={form.control}
-              name="title"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
+                    <Textarea
                       disabled={isSubmitting}
-                      placeholder=""
+                      placeholder="e.g. 'This course is about...'"
                       {...field}
                     />
                   </FormControl>

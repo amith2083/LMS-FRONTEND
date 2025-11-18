@@ -1,19 +1,21 @@
 import axiosInstance from "@/lib/axios";
 import  { AxiosError } from "axios";
+import { CoursesResponse } from "../types/course";
 
 
 
 // Get All Courses with filters
 export const getCourses = async (params?: {
   search?: string;
-  categories?: string[];
-  price?: string[];
+  category?: string;
+  price?: string;
   sort?: string;
   page?: number;
   limit?: number;
-}) => {
+}): Promise<CoursesResponse> => {
   try {
     const response = await axiosInstance.get("/api/courses", { params });
+    console.log('res',response.data)
 
     return response.data;
   } catch (error: any) {
@@ -48,9 +50,10 @@ export const getCoursesByInstructorId = async (instructorId: string) => {
 };
 
 // Get Course for Admin by ID (status: true)
-export const getCourseForAdminById = async (id: string) => {
+export const getCoursesForAdmin = async () => {
   try {
-    const response = await axiosInstance.get(`/api/courses/admin/${id}`);
+    const response = await axiosInstance.get('/api/courses/admin');
+    console.log('res',response.data)
     return response.data;
   } catch (error: any) {
     const axiosError = error as AxiosError<any>;

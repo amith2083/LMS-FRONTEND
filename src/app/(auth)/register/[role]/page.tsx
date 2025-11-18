@@ -17,8 +17,8 @@ const Page = () => {
  
 
   return (
-    <div className='w-full flex h-screen  justify-center items-center '>
-      <div className='container '>
+    <div className='w-full flex h-screen bg-blue-300  justify-center items-center"> '>
+      <div className='container bg-amber-200'>
         <SignupForm role={role} />
       </div>
     </div>

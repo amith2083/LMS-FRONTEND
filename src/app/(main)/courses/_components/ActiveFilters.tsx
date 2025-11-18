@@ -1,83 +1,77 @@
-'use client'
+'use client';
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
+import { useCategories } from '@/app/hooks/useCategoryQueries';
 
 interface ActiveFiltersProps {
   filter: {
-    categories: string[];
-    price: string[];
+    selectedCategory: string;
+    price: string;          // <-- string
     sort: string;
   };
-  onCategoriesChange: (categories: string[]) => void;
-  onPriceChange: (price: string[]) => void;
+  onCategoryChange: (cat: string) => void;
+  onPriceChange: (price: string) => void;   // <-- string
   onSortChange: (sort: string) => void;
 }
 
-const ActiveFilters = ({ filter, onCategoriesChange, onPriceChange, onSortChange }: ActiveFiltersProps) => {
-  const applyArrayFilter = ({ type, value }: { type: string; value: string }) => {
-    if (type === 'sort') {
-      onSortChange(value === filter.sort ? '' : value);
-      return;
-    }
-    const isFilterApplied = filter[type as keyof typeof filter].includes(value as any);
+/** Helper – toggle a value inside an array */
+const toggle = (arr: string[], val: string) =>
+  arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val];
 
-    if (isFilterApplied) {
-      const current = filter[type as keyof typeof filter] as string[];
-      const newFilters = current.filter((v) => v !== value);
-      if (type === 'categories') onCategoriesChange(newFilters);
-      if (type === 'price') onPriceChange(newFilters);
-    } else {
-      const current = filter[type as keyof typeof filter] as string[];
-      const newFilters = [...current, value];
-      if (type === 'categories') onCategoriesChange(newFilters);
-      if (type === 'price') onPriceChange(newFilters);
-    }
-  };
+export default function ActiveFilters({
+  filter,
+  onCategoryChange,
+  onPriceChange,
+  onSortChange,
+}: ActiveFiltersProps) {
+  // Resolve category title for the pill
+  const { data: categories = [] } = useCategories();
+ const catTitle = filter.selectedCategory
+    ? categories.find(c => c._id === filter.selectedCategory)?.title
+    : null;
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      {/* active categories */}
-      {filter.categories.length > 0 &&
-        filter.categories.map((category) => (
-          <Button
-            key={category}
-            variant="ghost"
-            className="text-xs h-7 bg-muted rounded-full gap-1 text-sky-700"
-            onClick={() =>
-              applyArrayFilter({ type: "categories", value: category })
-            }
-          >
-            {category}
-            <X className="w-3" />
-          </Button>
-        ))}
-      {/* active prices */}
-      {filter.price.length > 0 &&
-        filter.price.map((p) => (
-          <Button
-            key={p}
-            variant="ghost"
-            className="text-xs h-7 bg-muted rounded-full gap-1 text-sky-700"
-            onClick={() => applyArrayFilter({ type: "price", value: p })}
-          >
-            {p}
-            <X className="w-3" />
-          </Button>
-        ))}
-      {/* active sort */}
+    <div className="flex flex-wrap items-center gap-2">
+      {/* Category pill */}
+      {catTitle && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 rounded-full bg-muted text-sky-700 gap-1"
+          onClick={() => onCategoryChange('')}
+        >
+          {catTitle}
+          <X className="w-3 h-3" />
+        </Button>
+      )}
+
+      {/* Price pill – only if price is set */}
+      {filter.price && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 rounded-full bg-muted text-sky-700 gap-1"
+          onClick={() => onPriceChange('')}
+        >
+          {filter.price.charAt(0).toUpperCase() + filter.price.slice(1)}
+          <X className="w-3 h-3" />
+        </Button>
+      )}
+
+  {/* Sort pill */}
       {filter.sort && (
         <Button
           variant="ghost"
-          className="text-xs h-7 bg-muted rounded-full gap-1 text-sky-700"
-          onClick={() => applyArrayFilter({ type: "sort", value: filter.sort })}
+          size="sm"
+          className="h-7 rounded-full bg-muted text-sky-700 gap-1"
+          onClick={() => onSortChange('')}
         >
-          {filter.sort}
-          <X className="w-3" />
+          {filter.sort.replace(/-/g, ' ')}
+          <X className="w-3 h-3" />
         </Button>
       )}
     </div>
   );
-};
-
-export default ActiveFilters;
+}

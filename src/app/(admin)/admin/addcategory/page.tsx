@@ -17,7 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { useCreateCategory } from "@/app/hooks/useCategories";
+import { useCreateCategory } from "@/app/hooks/useCategoryQueries";
+
 
 
 const formSchema = z.object({
@@ -105,7 +106,7 @@ export default function AddCategory() {
               >
                 Cancel
               </Button>
-              <Button type="submit" variant="black" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Creating..." : "Create"}
               </Button>
             </div>

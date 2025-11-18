@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
+import { useUsers } from "@/app/hooks/useUserQueries";
 
 interface UserType {
   _id: string;
@@ -16,15 +17,9 @@ interface UserType {
 }
 
 const ListUsers = () => {
-  const [users, setUsers] = useState<UserType[]>([]);
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+ const{data:users,isLoading}=useUsers();
 
-  const fetchUsers = async () => {
-    const res = await axios.get<UserType[]>("/api/users");
-    setUsers(res.data);
-  };
+
 
   // const toggleBlock = async (userId: string, isBlocked: boolean) => {
   //   await axios.put("/api/admin/users_block_unblock", {
@@ -42,7 +37,7 @@ const ListUsers = () => {
       toast.success(
         `User ${!isBlocked ? "blocked" : "unblocked"} successfully`
       );
-      fetchUsers(); // Refresh the list
+     
     } catch (err: any) {
       toast.error(
         err?.response?.data?.message || "Failed to update user status"
@@ -68,13 +63,15 @@ const ListUsers = () => {
       try {
         await axios.put("/api/admin/users_approval", { userId });
         toast.success("User approved successfully");
-        fetchUsers();
+      
       } catch (err: any) {
         toast.error(err?.response?.data?.message || "Approval failed");
       }
     }
   };
-
+ if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">User Management</h1>

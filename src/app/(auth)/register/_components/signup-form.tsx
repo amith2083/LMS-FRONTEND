@@ -39,13 +39,16 @@ export const SignupForm = ({ role }: SignupFormProps) => {
     return score; // score is 0–5
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log('e',e)
     e.preventDefault();
 
     // setErrorMessage(null);
      
 
     const form = e.currentTarget;
+    console.log('form11',form)
     const formData = new FormData(form);
+    console.log('formdata',formData)
     // Build a plain object from FormData
     const formValues = {
       name: formData.get("name")?.toString() || "",
@@ -113,6 +116,7 @@ export const SignupForm = ({ role }: SignupFormProps) => {
   };
 
   return (
+    
     <Card className="mx-auto max-w-sm">
       <CardHeader>
         <CardTitle className="text-xl">
@@ -129,20 +133,17 @@ export const SignupForm = ({ role }: SignupFormProps) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} encType="multipart/form-data">
-          <div className="grid gap-4">
-            <div className="grid ">
-              <div className="grid gap-2">
-                <Label htmlFor="first-name"> Name</Label>
-                <Input id="first-name" name="name" placeholder="Max" required />
+          <div className="flex flex-col gap-6">
+          
+              <div className="grid  gap-2">
+                <Label htmlFor="name"> Name</Label>
+                <Input id="name" name="name" placeholder="Ami" required />
                 {formErrors.name && (
                   <p className="text-red-500 text-sm">{formErrors.name}</p>
                 )}
               </div>
-              {/* <div className="grid gap-2">
-              <Label htmlFor="last-name">Last name</Label>
-              <Input id="last-name" placeholder="Robinson" required />
-            </div> */}
-            </div>
+           
+            
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -243,8 +244,8 @@ export const SignupForm = ({ role }: SignupFormProps) => {
 
             <Button
   type="submit"
-  className="w-full cursor-pointer flex items-center justify-center"
-  variant="black"
+  className="w-full cursor-pointer flex items-center justify-center hover:scale-115"
+
   disabled={loading}
 >
   {loading ? (
@@ -282,5 +283,6 @@ export const SignupForm = ({ role }: SignupFormProps) => {
         </div>
       </CardContent>
     </Card>
+    
   );
 };

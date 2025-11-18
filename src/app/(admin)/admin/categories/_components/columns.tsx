@@ -15,7 +15,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 // Define the shape of your course data
 export interface Category {
-  id: string;
+  _id: string;
   title: string;
  
   status: boolean;
@@ -75,7 +75,7 @@ export const columns: ColumnDef<Category>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const id = row.original.id;
+      const id = row.original._id;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

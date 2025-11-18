@@ -12,12 +12,13 @@ import { ImageForm } from "./_components/image-form";
 
 import AlertBanner from "@/components/alert-banner";
 import { IconBadge } from "@/components/icon-badge";
-import { sanitizeData } from "@/utils/sanitize";
+
 
 import { getCategory } from "@/queries/categories";
 import { Category } from "@/model/category";
 import { CategoryActions } from "./_components/category-actions";
 import { useCategoryDetails } from "@/app/hooks/useCategories";
+import { useCategoryById } from "@/app/hooks/useCategoryQueries";
 
 
 
@@ -32,7 +33,7 @@ const EditCategory =  ({ params }: CategoryPageProps) => {
     const{categoryId}= params
    
 console.log('EditCategory categoryId', categoryId);
- const { data:category ,isLoading,error } = useCategoryDetails(categoryId);
+ const { data:category ,isLoading,error } = useCategoryById(categoryId);
  console.log('cater',category)
  if (isLoading) {
     return <div>Loading...</div>;
@@ -79,13 +80,10 @@ console.log('EditCategory categoryId', categoryId);
               categoryId={categoryId}
             />
             <ImageForm
-              initialData={{
-    imageUrl: category?.thumbnail
-      ? `/assets/images/categories/${category.thumbnail}`
-      : '/assets/images/categories/default.png'
-  }}
-              categoryId={categoryId}
-            />
+                        initialData={{
+                          imageUrl:category?.thumbnail}}
+                        categoryId={categoryId}
+                      />
            
           </div>
           

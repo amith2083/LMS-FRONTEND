@@ -56,20 +56,20 @@ export async function middleware(req: NextRequest) {
 
   if (
     isAuthenticated &&
-    nextUrl.pathname === "admin/admin-login" &&
+    nextUrl.pathname === "/admin/login" &&
     userRole === "admin"
   ) {
-    return NextResponse.redirect(new URL("/admin/admindashboard", nextUrl));
+    return NextResponse.redirect(new URL("/admin/dashboard", nextUrl));
   }
 
   if (isAdminRoute) {
     if (!isAuthenticated) {
-      if (nextUrl.pathname !== "/admin/admin-login") {
-        return NextResponse.redirect(new URL("admin/admin-login", nextUrl));
+      if (nextUrl.pathname !== "/admin/login") {
+        return NextResponse.redirect(new URL("/admin/login", nextUrl));
       }
     } else if (userRole !== "admin") {
-      if (nextUrl.pathname !== "admin/admin-login") {
-        return NextResponse.redirect(new URL("admin/admin-login", nextUrl));
+      if (nextUrl.pathname !== "/admin/login") {
+        return NextResponse.redirect(new URL("/admin/login", nextUrl));
       }
     }
   }

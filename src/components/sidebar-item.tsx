@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export const SidebarItem = ({ icon: Icon, label, href }) => {
   const pathname = usePathname();
@@ -10,14 +11,12 @@ export const SidebarItem = ({ icon: Icon, label, href }) => {
 
   const isActive = pathname === href;
 
-  const onClick = () => {
-    router.push(href);
-  };
+ 
 
   return (
-    <button
-      onClick={onClick}
-      type="button"
+    <Link
+      
+      href={href}
       className={cn(
         "flex items-center gap-x-2 text-slate-500 text-sm font-[500] pl-6 transition-all hover:text-slate-600 hover:bg-slate-300/20",
         isActive &&
@@ -37,6 +36,6 @@ export const SidebarItem = ({ icon: Icon, label, href }) => {
           isActive && "opacity-100"
         )}
       />
-    </button>
+    </Link>
   );
 };

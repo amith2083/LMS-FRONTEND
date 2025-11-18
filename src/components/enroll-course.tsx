@@ -10,7 +10,7 @@ import { useCreateEnrollment } from "@/app/hooks/useEnrollmentQueries";
 import { toast } from "sonner";
 
 
-const EnrollCourse = ({ asLink, courseId }) => {
+const EnrollCourse = ({ asLink, courseId}) => {
 const { data: session, status } = useSession();
  const [loginSession, setLoginSession] = useState<Session | null>(null);
   useEffect(() => {

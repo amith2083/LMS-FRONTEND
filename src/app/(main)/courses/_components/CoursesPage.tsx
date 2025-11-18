@@ -1,4 +1,4 @@
-// app/courses/_components/CoursesPage.tsx (Full Code with TanStack Query Error Handling)
+
 'use client';
 
 import ActiveFilters from "./ActiveFilters";
@@ -12,27 +12,45 @@ import { SkeletonWrapper } from "react-skeletonify";
 import { useCourses } from "@/app/hooks/useCourseQueries";
 import { useCategories } from "@/app/hooks/useCategoryQueries";
 import { useQueryClient } from "@tanstack/react-query"; // For manual retry
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const CoursesPage = () => {
   const queryClient = useQueryClient(); // For retry invalidation
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const [categories, setCategories] = useState<string[]>([]);
-  const [price, setPrice] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory]= useState<string>('');
+const [price, setPrice] = useState<string>('');
   const [sort, setSort] = useState('');
 
   // Reset page when filters change
   useEffect(() => {
     setPage(1);
-  }, [search, categories, price, sort]);
+  }, [search, selectedCategory, price, sort]);
 
-  const params = { search, categories, price, sort, page, limit: 9 };
+  const params = {
+    search,
+    category: selectedCategory || undefined,
+    price: price || undefined,
+    sort: sort || undefined,
+    page,
+    limit: 2,
+  };
   const { 
     data, 
     isLoading: isCoursesLoading, 
     error: coursesError, 
     isError: isCoursesError 
   } = useCourses(params);
+  console.log('data',data)
+ 
   
   const { 
     data: allCategories = [], 
@@ -59,90 +77,8 @@ const CoursesPage = () => {
     return () => clearTimeout(timeoutId);
   }, []);
 
-  // Handle courses error fallback
-  if (isCoursesError) {
-    return (
-      <section className="container space-y-6 py-6">
-        {/* Keep header and filters for usability */}
-        <div className="flex items-baseline justify-between border-b pb-6">
-          <SearchCourse onSearchChange={debouncedSearch} />
-          <div className="flex items-center gap-2">
-            <SortCourse sort={sort} onSortChange={setSort} />
-            <FilterCourseMobile
-              categories={categories}
-              price={price}
-              onCategoriesChange={setCategories}
-              onPriceChange={setPrice}
-            />
-          </div>
-        </div>
-        <ActiveFilters
-          filter={{ categories, price, sort }}
-          onCategoriesChange={setCategories}
-          onPriceChange={setPrice}
-          onSortChange={setSort}
-        />
-        {/* Error fallback for grid */}
-        <div className="p-4 border rounded bg-red-50">
-          <h2 className="text-red-600 mb-2">Failed to load courses: {coursesError?.message}</h2>
-          <button
-            onClick={() => queryClient.invalidateQueries({ queryKey: ['courses', params] })}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-          >
-            Retry Courses
-          </button>
-        </div>
-      </section>
-    );
-  }
+ 
 
-  // Handle categories error (show basic filters without data)
-  if (isCategoriesError) {
-    return (
-      <section className="container space-y-6 py-6">
-        {/* Header */}
-        <div className="flex items-baseline justify-between border-b pb-6">
-          <SearchCourse onSearchChange={debouncedSearch} />
-          <div className="flex items-center gap-2">
-            <SortCourse sort={sort} onSortChange={setSort} />
-            <FilterCourseMobile
-              categories={categories}
-              price={price}
-              onCategoriesChange={setCategories}
-              onPriceChange={setPrice}
-            />
-          </div>
-        </div>
-        <ActiveFilters
-          filter={{ categories, price, sort }}
-          onCategoriesChange={setCategories}
-          onPriceChange={setPrice}
-          onSortChange={setSort}
-        />
-        {/* Error for filters */}
-        <div className="p-4 border rounded bg-red-50 lg:col-span-4">
-          <h2 className="text-red-600 mb-2">Failed to load categories: {categoriesError?.message}</h2>
-          <button
-            onClick={() => queryClient.invalidateQueries({ queryKey: ['categories'] })}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-          >
-            Retry Filters
-          </button>
-        </div>
-        {/* Show courses if available */}
-        <div className="lg:col-span-3">
-          <SkeletonWrapper loading={isCoursesLoading}>
-            <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
-              {(isCoursesLoading ? Array.from({ length: 6 }) : courses).map((courseOrIndex, i) => {
-                const course = isCoursesLoading ? { ...dummyCourse, _id: `dummy-${i}` } : courseOrIndex;
-                return <CourseCard key={course._id} course={course} />;
-              })}
-            </div>
-          </SkeletonWrapper>
-        </div>
-      </section>
-    );
-  }
 
   // Normal render (no errors)
   return (
@@ -153,9 +89,11 @@ const CoursesPage = () => {
         <div className="flex items-center justify-end gap-2 max-lg:w-full">
           <SortCourse sort={sort} onSortChange={setSort} />
           <FilterCourseMobile
-            categories={categories}
-            price={price}
-            onCategoriesChange={setCategories}
+           categories={allCategories}
+              isLoading={false}
+            selectedCategory={selectedCategory}
+            selectedPrice={price}
+            onCategoryChange={setSelectedCategory}
             onPriceChange={setPrice}
           />
         </div>
@@ -163,8 +101,8 @@ const CoursesPage = () => {
       {/* header ends */}
       {/* active filters */}
       <ActiveFilters
-        filter={{ categories, price, sort }}
-        onCategoriesChange={setCategories}
+        filter={{ selectedCategory, price, sort }}
+        onCategoryChange={setSelectedCategory}
         onPriceChange={setPrice}
         onSortChange={setSort}
       />
@@ -176,9 +114,9 @@ const CoursesPage = () => {
             <FilterCourse
               categories={allCategories}
               isLoading={false}
-              selectedCategories={categories}
+              selectedCategory={selectedCategory}
               selectedPrice={price}
-              onCategoriesChange={setCategories}
+              onCategoryChange={setSelectedCategory}
               onPriceChange={setPrice}
             />
           </SkeletonWrapper>
@@ -196,30 +134,84 @@ const CoursesPage = () => {
           </div>
         </div>
       </section>
-      {/* Pagination */}
-      {data?.totalPages > 1 && (
-        <div className="flex justify-center gap-4">
-          <button
-            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-            disabled={page === 1}
-            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-          >
-            Prev
-          </button>
-          <span className="px-4 py-2">{page} / {data.totalPages}</span>
-          <button
-            onClick={() =>
-              setPage((prev) =>
-                data?.totalPages && prev < data.totalPages ? prev + 1 : prev
-              )
-            }
-            disabled={page === data?.totalPages}
-            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+   
+     {/* ---------- PAGINATION  ---------- */}
+  {data?.totalPages && data.totalPages > 1 && (
+  <Pagination className="mt-8">
+    <PaginationContent className="flex items-center gap-1">
+
+      {/* ← PREV */}
+      <PaginationItem>
+        <PaginationPrevious
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            if (page > 1) setPage(page - 1);
+          }}
+          className={page === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+        />
+      </PaginationItem>
+
+      {/* Page 1 */}
+      <PaginationItem>
+        <PaginationLink href="#" isActive={page === 1} onClick={(e) => { e.preventDefault(); setPage(1); }}>
+          1
+        </PaginationLink>
+      </PaginationItem>
+
+      {/* ... if gap */}
+      {page > 3 && <PaginationItem><PaginationEllipsis /></PaginationItem>}
+
+      {/* Page before current */}
+      {page > 2 && (
+        <PaginationItem>
+          <PaginationLink href="#" onClick={(e) => { e.preventDefault(); setPage(page - 1); }}>
+            {page - 1}
+          </PaginationLink>
+        </PaginationItem>
       )}
+
+      {/* Current page */}
+      {page !== 1 && page !== data.totalPages && (
+        <PaginationItem>
+          <PaginationLink href="#" isActive>{page}</PaginationLink>
+        </PaginationItem>
+      )}
+
+      {/* Page after current */}
+      {page < data.totalPages - 1 && (
+        <PaginationItem>
+          <PaginationLink href="#" onClick={(e) => { e.preventDefault(); setPage(page + 1); }}>
+            {page + 1}
+          </PaginationLink>
+        </PaginationItem>
+      )}
+
+      {/* ... if gap */}
+      {page < data.totalPages - 2 && <PaginationItem><PaginationEllipsis /></PaginationItem>}
+
+      {/* Last page */}
+      <PaginationItem>
+        <PaginationLink href="#" isActive={page === data.totalPages} onClick={(e) => { e.preventDefault(); setPage(data.totalPages); }}>
+          {data.totalPages}
+        </PaginationLink>
+      </PaginationItem>
+
+      {/* → NEXT */}
+      <PaginationItem>
+        <PaginationNext
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            if (page < data.totalPages) setPage(page + 1);
+          }}
+          className={page === data.totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+        />
+      </PaginationItem>
+
+    </PaginationContent>
+  </Pagination>
+)}
     </section>
   );
 };

@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useState, FormEvent, act } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useDeleteCategory, useToggleCategoryStatus } from "@/app/hooks/useCategories";
+import { useDeleteCategory, useTogglePublishCategory } from "@/app/hooks/useCategoryQueries";
+
 
 
 
@@ -18,8 +19,8 @@ export  const CategoryActions: React.FC<CategoryActionsProps> = ({ categoryId, s
   const [action, setAction] = useState<"change-active" | "delete" | null>(null);
   const [published, setPublished] = useState<boolean>(status);
   const router = useRouter();
-     const toggleMutation = useToggleCategoryStatus(categoryId);
-    const deleteMutation = useDeleteCategory(categoryId);
+     const toggleMutation = useTogglePublishCategory();
+    const deleteMutation = useDeleteCategory();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

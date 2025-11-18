@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { createTestimonial } from "@/app/service/testimonialService";
 
 const formSchema = z.object({
   rating: z.coerce
@@ -30,7 +31,7 @@ const formSchema = z.object({
   }),
 });
 
-export const ReviewModal = ({ open, setOpen }) => {
+export const ReviewModal = ({ open, setOpen,courseId }) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,6 +44,7 @@ export const ReviewModal = ({ open, setOpen }) => {
 
   const onSubmit = async (values) => {
     try {
+       await createTestimonial(values,courseId);
       toast.success("Review added");
       setOpen(false);
     } catch (error) {
