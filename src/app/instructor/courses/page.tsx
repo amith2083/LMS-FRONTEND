@@ -1,12 +1,11 @@
-"use client";
+"use client"
 import { useCourses, useCoursesByInstructorId } from "@/app/hooks/useCourseQueries";
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 import { useSession } from "next-auth/react";
+import { string } from "zod";
 
-interface Course {
-  [key: string]: any;
-}
+
 
 const CoursesPage = () => {
  const { data: session, status } = useSession();
@@ -17,10 +16,9 @@ const CoursesPage = () => {
     return <p>Access denied: Only instructors can view this page.</p>;
   }
 
-  const { data: courses, isLoading, error } = useCoursesByInstructorId(instructorId || "");
+  const { data: courses, isLoading, error } = useCoursesByInstructorId(instructorId ??'');
 
-  console.log("course", courses);
-  console.log("session", session);
+
 
   if (status === "loading") return <p>Loading ...</p>;
   if (status === "unauthenticated") return <p>Please sign in to view courses</p>;

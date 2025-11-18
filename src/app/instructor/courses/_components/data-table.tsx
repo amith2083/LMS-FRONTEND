@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+
 import {
   ColumnDef,
   flexRender,
@@ -25,7 +25,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { PlusCircle } from "lucide-react";
-// import { usePathname } from "next/navigation";
+import { useState } from "react";
+
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[];
@@ -36,10 +37,9 @@ export function DataTable<TData>({
   columns,
   data,
 }: DataTableProps<TData>) {
-//   const pathname = usePathname();
-// const isCategoryPage = pathname.includes("/admin/categories");
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
   );
 
@@ -48,10 +48,13 @@ export function DataTable<TData>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+       getSortedRowModel: getSortedRowModel(),
+         getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
+ 
     onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
+  // ADD THIS LINE
+  initialState: { pagination: { pageSize: 8 } },
     state: {
       sorting,
       columnFilters,
@@ -62,7 +65,7 @@ export function DataTable<TData>({
     <div>
       <div className="flex items-center justify-between py-4">
         <Input
-          placeholder="Filter courses..."
+          placeholder="Search courses..."
           value={table.getColumn("title")?.getFilterValue() as string ?? ""}
           onChange={(event) =>
             table.getColumn("title")?.setFilterValue(event.target.value)
@@ -76,13 +79,13 @@ export function DataTable<TData>({
           </Button>
         </Link>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border-2">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} >
                     {header.isPlaceholder
                       ? null
                       : flexRender(

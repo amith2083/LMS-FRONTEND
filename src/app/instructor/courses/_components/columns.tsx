@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { GraduationCap, Star, ArrowUpDown, MoreHorizontal, Pencil } from "lucide-react";
+import { GraduationCap, Star, ArrowUpDown, MoreHorizontal, Pencil, ArrowUp, ArrowDown } from "lucide-react";
 import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
+import { formatPrice } from "@/lib/formatPrice";
 
 // Define the shape of your course data
 export interface Course {
@@ -27,29 +28,42 @@ export const columns: ColumnDef<Course>[] = [
     accessorKey: "title",
     header: ({ column }) => (
       <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        variant="ghost" className="hover:bg-blue-200"
+        onClick={() => column.toggleSorting()}
       >
-        Title <ArrowUpDown className="ml-2 h-4 w-4" />
+        Title {column.getIsSorted() === "asc" ? (
+      <ArrowUp className="ml-2 h-4 w-4" />
+    ) : column.getIsSorted() === "desc" ? (
+      <ArrowDown className="ml-2 h-4 w-4" />
+    ) : (
+      <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+    )}
       </Button>
     ),
   },
   {
     accessorKey: "price",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    header: ({ column }) => {
+     
+   
+    return(  <Button
+        variant="ghost" className="hover:bg-blue-200"
+        onClick={() => column.toggleSorting()}
       >
-        Price <ArrowUpDown className="ml-2 h-4 w-4" />
+        Price {column.getIsSorted() === "asc" ? (
+      <ArrowUp className="ml-2 h-4 w-4" />
+    ) : column.getIsSorted() === "desc" ? (
+      <ArrowDown className="ml-2 h-4 w-4" />
+    ) : (
+      <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+    )}
       </Button>
-    ),
+      
+    )},
     cell: ({ row }) => {
+     
       const price = parseFloat(row.getValue("price") || "0");
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(price);
+      const formatted = formatPrice(price);
       return <div>{formatted}</div>;
     },
   },
@@ -57,16 +71,22 @@ export const columns: ColumnDef<Course>[] = [
     accessorKey: "status",
     header: ({ column }) => (
       <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        variant="ghost"className="hover:bg-blue-200"
+        onClick={() => column.toggleSorting()}
       >
-        Published <ArrowUpDown className="ml-2 h-4 w-4" />
+        Published {column.getIsSorted() === "asc" ? (
+      <ArrowUp className="ml-2 h-4 w-4" />
+    ) : column.getIsSorted() === "desc" ? (
+      <ArrowDown className="ml-2 h-4 w-4" />
+    ) : (
+      <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+    )}
       </Button>
     ),
     cell: ({ row }) => {
       const status = row.getValue("status") as boolean;
       return (
-        <Badge className={cn("bg-gray-500", status && "bg-green-600")}>
+        <Badge className={cn("bg-gray-500", status ? "bg-green-600":'bg-black')}>
           {status ? "Published" : "Unpublished"}
         </Badge>
       );

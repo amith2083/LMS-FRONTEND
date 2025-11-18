@@ -54,7 +54,7 @@ export const useCourseById = (id: string) =>
   // New hook to get courses by instructor ID
 export const useCoursesByInstructorId = (instructorId: string) =>
 {
-  console.log("Instructor ID in hook:", instructorId);
+  
 
   return useQuery({
     
