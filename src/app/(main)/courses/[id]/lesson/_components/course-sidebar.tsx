@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+
 import { CourseProgress } from "@/components/course-progress";
 import {
   Accordion,
@@ -29,11 +29,12 @@ export const CourseSidebar = async({courseId }) => {
   const accessToken = cookieStore.get('accessToken')?.value;
   const cookieHeader = accessToken ? `accessToken=${accessToken}` : '';
 
-  console.log('accessToken', cookieHeader);
+
     
     const course = await getCourseById(courseId);
+   
       const report = await getReport( courseId,cookieHeader )
-      console.log('report',report)
+     
 
   const totalCompletedModules = report?.totalCompletedModules ? report?.totalCompletedModules.length : 0;
 
@@ -44,12 +45,12 @@ export const CourseSidebar = async({courseId }) => {
 
   const updatedModules = await Promise.all(
     course?.modules.map(async (module) => {
-      const moduleId = module._id.toString();
+      const moduleId = module._id;
       const lessons = module?.lessonIds;
 
       const updatedLessons = await Promise.all(
         lessons.map(async (lesson) => {
-          const lessonId = lesson._id.toString();
+          const lessonId = lesson._id;
           // Replace Mongoose query with API call (server-safe version)
           // Note: Ensure backend endpoint uses session for userId (no need to pass explicitly)
           const watch = await getWatchByLessonAndModule(lessonId, moduleId,cookieHeader);
@@ -71,7 +72,7 @@ export const CourseSidebar = async({courseId }) => {
           {/* Check purchase */}
           {
             <div className="mt-10">
-              <CourseProgress variant="success" value= {totalProgress}/>
+              <CourseProgress size={25} variant="success" value= {totalProgress}/>
             </div>
           }
         </div>
@@ -80,7 +81,7 @@ export const CourseSidebar = async({courseId }) => {
 
         <div className="w-full px-6">
         <GiveReview courseId={courseId} />
-        <DownloadCertificate/>
+        <DownloadCertificate courseId={courseId} totalProgress={100}/>
         </div> 
 
 

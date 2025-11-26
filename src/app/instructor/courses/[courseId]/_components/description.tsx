@@ -23,7 +23,7 @@ import { useUpdateCourse } from "@/app/hooks/useCourseQueries";
 
 
 const formSchema = z.object({
-  description: z.string().min(1, {
+  description: z.string().min(3, {
     message: "Description is required",
   }),
 });

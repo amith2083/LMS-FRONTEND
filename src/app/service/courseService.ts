@@ -64,7 +64,7 @@ export const getCoursesForAdmin = async () => {
 
 //  Create New Course
 export const createCourse = async (courseData: any) => {
-    console.log('cousrsedata',courseData)
+  
   try {
     const response = await axiosInstance.post('/api/courses', courseData, {
       headers: { "Content-Type": "application/json" },

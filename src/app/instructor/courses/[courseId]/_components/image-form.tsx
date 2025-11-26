@@ -6,17 +6,14 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { UploadDropzone } from "@/components/file-upload";
 import { useUpdateCourseImage } from "@/app/hooks/useCourseQueries";
-
-export const ImageForm = ({
-  initialData,
-  courseId,
-}: {
-  initialData: { imageUrl: string };
-  courseId: string;
-}) => {
+interface ImageFormProps{
+  imageUrl:string,
+  courseId:string
+}
+export const ImageForm = ({imageUrl,courseId}:ImageFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const updateCourseImage = useUpdateCourseImage();
+  const {mutateAsync,isPending} = useUpdateCourseImage();
 
   const toggleEdit = () => setIsEditing((prev) => !prev);
 
@@ -24,8 +21,8 @@ export const ImageForm = ({
     if (!selectedFile) return;
 
     try {
-      // await updateCourseImage.mutateAsync({ id: courseId, file: selectedFile });
-      await updateCourseImage.mutateAsync({ courseId, file: selectedFile });
+     
+      await mutateAsync({ courseId, file: selectedFile });
       toast.success("Course image updated!");
       toggleEdit();
     } catch (e: any) {
@@ -40,7 +37,7 @@ export const ImageForm = ({
         <Button variant="ghost" onClick={toggleEdit}>
           {isEditing ? (
             "Cancel"
-          ) : initialData.imageUrl ? (
+          ) : imageUrl ? (
             <>
               <Pencil className="h-4 w-4 mr-2" /> Edit Image
             </>
@@ -53,7 +50,7 @@ export const ImageForm = ({
       </div>
 
       {!isEditing &&
-        (!initialData.imageUrl ? (
+        (!imageUrl ? (
           <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md">
             <ImageIcon className="h-10 w-10 text-slate-500" />
           </div>
@@ -63,7 +60,7 @@ export const ImageForm = ({
               alt="Course Thumbnail"
               fill
               className="object-cover rounded-md"
-              src={initialData.imageUrl}
+              src={imageUrl}
             />
           </div>
         ))}
@@ -73,7 +70,7 @@ export const ImageForm = ({
           <UploadDropzone onUpload={(files) => setSelectedFile(files[0])} />
           <Button
             onClick={handleUpload}
-            disabled={!selectedFile || updateCourseImage.isPending}
+            disabled={!selectedFile || isPending}
           >
             Upload
           </Button>

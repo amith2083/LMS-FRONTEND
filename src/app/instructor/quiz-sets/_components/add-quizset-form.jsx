@@ -23,21 +23,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-
 import { useCreateQuizset } from "@/app/hooks/useQuizQueries";
 import { toast } from "sonner";
 
-// import { doCreateQuizSet } from "@/app/actions/quiz";
-
 const formSchema = z.object({
-  title: z.string().min(1, {
+  title: z.string().min(3, {
     message: "Title is required!",
   }),
 });
 
 const AddQuizSetForm = () => {
   const router = useRouter();
- 
+
   const { mutateAsync } = useCreateQuizset();
 
   const form = useForm({
@@ -51,14 +48,14 @@ const AddQuizSetForm = () => {
 
   const onSubmit = async (values) => {
     try {
-      // const quizSetId = await doCreateQuizSet(values);
-      console.log("values", values);
+      // console.log("values", values);
       const newQuizset = await mutateAsync(values);
-      console.log("Created Quizset:", newQuizset);
+
       router.push(`/instructor/quiz-sets/${newQuizset._id}`);
       toast.success("Quiz Set Created");
     } catch (error) {
-      toast.error("Something went wrong");
+     
+      toast.error(error?.message||"Something went wrong");
     }
   };
   return (
@@ -79,7 +76,7 @@ const AddQuizSetForm = () => {
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="e.g 'Reactive Accelerator'"
+                      placeholder="e.g 'React'"
                       {...field}
                     />
                   </FormControl>
@@ -89,12 +86,12 @@ const AddQuizSetForm = () => {
             />
 
             <div className="flex items-center gap-x-2">
-              <Link href="/dashboard/quiz-sets">
+              <Link href="/instructor/quiz-sets">
                 <Button variant="outline" type="button">
                   Cancel
                 </Button>
               </Link>
-              <Button type="submit" disabled={!isValid || isSubmitting}>
+              <Button type="submit" disabled={isSubmitting}>
                 Continue
               </Button>
             </div>

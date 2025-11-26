@@ -108,9 +108,9 @@ export const deleteQuizFromQuizset = async (quizsetId: string, quizId: string) =
 
 // Toggle quizset publish state
 export const togglePublishQuizset = async (quizsetId: string) => {
-    console.log('====',quizsetId)
+   
   try {
-    const response = await axiosInstance.put(`/api/quizsets/${quizsetId}/toggle`, {}, {
+    const response = await axiosInstance.put(`/api/quizsets/${quizsetId}/toggle`,  {
       headers: { "Content-Type": "application/json" },
       withCredentials: true,
     });

@@ -35,7 +35,7 @@ const QuizSets = () => {
     };
   });
 
-  //console.log(mappedQuizSets);
+
 
   return (
     <div className="p-6">

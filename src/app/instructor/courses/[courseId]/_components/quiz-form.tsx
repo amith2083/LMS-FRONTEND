@@ -18,55 +18,67 @@ import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useUpdateCourse } from "@/app/hooks/useCourse";
+import { useUpdateCourse } from "@/app/hooks/useCourseQueries";
 
+interface QuizOption{
+  value: string;
+  label: string;
+  id: string;
+}
+interface QuizFormProps{
+title:string,
+courseId:string,
+options:QuizOption[]
+
+}
 
 const formSchema = z.object({
-  quizSetId: z.string().min(1),
+  value: z.string().min(1),
 });
-
+type FormValues = z.infer<typeof formSchema>;
 export const QuizSetForm = ({
-  initialData,
+  title,
   courseId,
-  options = [
-    {
-      value: "quiz_set_1",
-      label: "Quiz Set 1",
-    },
-    {
-      value: "2",
-      label: "Quiz Set 2",
-    },
-  ],
-}) => {
+  options 
+}:QuizFormProps) => {
+  console.log(title)
+    const [isEditing, setIsEditing] = useState(false);
+    const {mutateAsync} = useUpdateCourse();
   const router = useRouter();
-  const updateCourse = useUpdateCourse(courseId);
-  const [isEditing, setIsEditing] = useState(false);
-    const foundMatch = options.find(o => o.value === initialData.quizSetId);
+
+
+  
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      quizSetId: initialData?.quizSetId || "",
+     value: title || "",
     },
   });
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values) => {
-    console.log('valquiz',values)
+  const onSubmit = async (values:FormValues) => {
+ 
     try {
-        await updateCourse.mutateAsync({
-      action: "update-quizset",
-      quizSetId: values.quizSetId,
-    });
+       const selectedQuizset = options.find(option => option.value === values.value);
+    
+      
+  
+      if (!selectedQuizset) {
+      toast.error("Invalid quizset selected");
+      return;
+    }
+      await mutateAsync({id:courseId, data: { quizSet: selectedQuizset.id }})
+
+    
       toast.success("Course updated");
       toggleEdit();
       // router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (error:any) {
+      toast.error(error?.message||"Something went wrong");
     }
   };
 
@@ -89,10 +101,10 @@ export const QuizSetForm = ({
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData.quizSetId && "text-slate-500 italic"
+            !title && "text-slate-500 italic"
           )}
         >
-          {foundMatch ? <span>{foundMatch.label}</span> : <span> "No Quiz set selected"</span>}
+          {title||  "No Quiz set selected"}
         </p>
       )}
       
@@ -104,7 +116,7 @@ export const QuizSetForm = ({
           >
             <FormField
               control={form.control}
-              name="quizSetId"
+              name="value"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>

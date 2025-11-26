@@ -22,7 +22,7 @@ export interface Course {
   active: boolean;
 }
 
-// Strongly typed columns array
+
 export const columns: ColumnDef<Course>[] = [
   {
     accessorKey: "title",
@@ -31,7 +31,7 @@ export const columns: ColumnDef<Course>[] = [
         variant="ghost" className="hover:bg-blue-200"
         onClick={() => column.toggleSorting()}
       >
-        Title {column.getIsSorted() === "asc" ? (
+        Title {column.getIsSorted() === "asc" ? ( //getsorted is used to know current state i.e false,asc,desc
       <ArrowUp className="ml-2 h-4 w-4" />
     ) : column.getIsSorted() === "desc" ? (
       <ArrowDown className="ml-2 h-4 w-4" />

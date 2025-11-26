@@ -8,13 +8,13 @@ import EnrollCourse from '@/components/enroll-course';
 import { useHasEnrollmentForCourse } from '@/app/hooks/useEnrollmentQueries';
 
 
-const CourseDetailsIntro =  ({course}) => {
+const CourseDetailsIntro =  ({course,isEnrolled}) => {
   
 
 
 
 
-  const { data: isEnrolled, isLoading } = useHasEnrollmentForCourse( course?._id);
+  // const { data: isEnrolled, isLoading } = useHasEnrollmentForCourse( course?._id);
 
     return (
         <div className="overflow-x-hidden  grainy bg-amber-100">
@@ -33,14 +33,9 @@ const CourseDetailsIntro =  ({course}) => {
                 </p>
 
                 <div className="mt-6 flex items-center justify-center flex-wrap gap-3">
-                  {isLoading ? (
-                  <button
-                    disabled
-                    className={cn(buttonVariants({ variant: 'outline', size: 'lg' }))}
-                  >
-                    Checking enrollment...
-                  </button>
-                ) : isEnrolled ? (
+                
+                  
+              { isEnrolled ? (
                   <Link
                     href={`/courses/${course?._id}/lesson`}
                     className={cn(buttonVariants({ variant: 'default', size: 'lg' }))}

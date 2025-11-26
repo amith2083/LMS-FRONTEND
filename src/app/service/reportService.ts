@@ -26,31 +26,4 @@ export const getReport = async (courseId:string,cookie?: string) => {
   }
 };
 
-// Create a new watch report
-export const createWatchReport = async (
-  courseId: string,
-  lessonId: string,
-  moduleId: string,
-  status: "in-progress" | "completed"
-) => {
-  try {
-    const response = await axiosInstance.post(
-      `/api/report`,
-      {
-        courseId,
-        lessonId,
-        moduleId,
-        status,
-      },
-      { withCredentials: true }
-    );
 
-    return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to create report";
-    console.error("Error:", message);
-    throw new Error(message);
-  }
-};

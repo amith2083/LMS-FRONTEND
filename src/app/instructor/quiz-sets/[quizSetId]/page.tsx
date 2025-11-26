@@ -22,7 +22,7 @@ const EditQuizSet = () => {
   const quizSetId = params?.quizSetId as string;
 
   const { data: quizSet, isLoading, error } = useQuizsetById(quizSetId);
-  console.log('quizset',quizSet)
+
 
   if (isLoading) {
     return (
@@ -38,7 +38,7 @@ const EditQuizSet = () => {
       <div className="flex justify-center items-center h-screen">
         <AlertBanner
           label="Failed to load the quiz set. Please try again later."
-          variant="error"
+          
         />
       </div>
     );
@@ -46,7 +46,7 @@ const EditQuizSet = () => {
 
   const quizzes = quizSet?.quizIds?.map((quiz) => {
     return {
-      id: quiz._id.toString(),
+      id: quiz._id,
       title: quiz.title,
       options: quiz.options.map((option) => {
         return {
@@ -56,9 +56,7 @@ const EditQuizSet = () => {
       }),
     };
   });
-  // console.log(quizzes);
 
-  // const [quizes, setQuizes] = useState(initialQuizes);
   return (
     <>
       {!quizSet?.active && (
@@ -72,8 +70,8 @@ const EditQuizSet = () => {
         <div className="flex items-center justify-end">
           <QuizSetAction
             quizSetId={quizSetId}
-            quiz={quizSet?.active}
-            quizId={quizSet?._id}
+          active={quizSet?.active}
+          
           />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2  gap-6 mt-16">

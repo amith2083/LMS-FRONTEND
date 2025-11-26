@@ -21,7 +21,7 @@ import { useUpdateCourse } from "@/app/hooks/useCourseQueries";
 
 
 const formSchema = z.object({
-  title: z.string().min(1, {
+  title: z.string().min(3, {
     message: "Title is required",
   }),
 });
@@ -59,8 +59,8 @@ export const TitleForm: React.FC<TitleFormProps> = ({
    await mutateAsync({ id: courseId, data: values });
       toggleEdit();
       toast.success("Course title updated");
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (error:any) {
+      toast.error(error?.message||"Something went wrong");
     }
   };
 

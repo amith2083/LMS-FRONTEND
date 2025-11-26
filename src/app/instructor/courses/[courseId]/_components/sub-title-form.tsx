@@ -23,7 +23,7 @@ import { useUpdateCourse } from "@/app/hooks/useCourseQueries";
 
 
 const formSchema = z.object({
-  subtitle: z.string().min(1, {
+  subtitle: z.string().min(3, {
     message: "Title is required",
   }),
 });
@@ -58,8 +58,8 @@ export const SubTitleForm: React.FC<TitleFormProps> = ({
       toggleEdit();
 
       toast.success("Course SubTittle has been updated");
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (error:any) {
+      toast.error(error?.message||"Something went wrong");
     }
   };
 

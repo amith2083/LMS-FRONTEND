@@ -9,19 +9,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { ArrowUpDown, MoreHorizontal, Pencil } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, MoreHorizontal, Pencil } from "lucide-react";
 import Link from "next/link";
 
 export const columns = [
   {
     accessorKey: "title",
+  
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant="ghost" className="hover:bg-blue-200"
+          onClick={() => column.toggleSorting()}
         >
-          Title <ArrowUpDown className="ml-2 h-4 w-4" />
+          Title {column.getIsSorted() === "asc" ? ( //getsorted is used to know current state i.e false,asc,desc
+                <ArrowUp className="ml-2 h-4 w-4" />
+              ) : column.getIsSorted() === "desc" ? (
+                <ArrowDown className="ml-2 h-4 w-4" />
+              ) : (
+                <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+              )}
         </Button>
       );
     },
@@ -31,10 +38,16 @@ export const columns = [
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant="ghost" className="hover:bg-blue-200"
+          onClick={() => column.toggleSorting()}
         >
-          Total Quiz <ArrowUpDown className="ml-2 h-4 w-4" />
+          Total Quiz {column.getIsSorted() === "asc" ? ( //getsorted is used to know current state i.e false,asc,desc
+                <ArrowUp className="ml-2 h-4 w-4" />
+              ) : column.getIsSorted() === "desc" ? (
+                <ArrowDown className="ml-2 h-4 w-4" />
+              ) : (
+                <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+              )}
         </Button>
       );
     },
@@ -44,10 +57,16 @@ export const columns = [
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant="ghost" className="hover:bg-blue-200 "
+          onClick={() => column.toggleSorting()}
         >
-          Published <ArrowUpDown className="ml-2 h-4 w-4" />
+          Published {column.getIsSorted() === "asc" ? ( 
+                <ArrowUp className="ml-2 h-4 w-4" />
+              ) : column.getIsSorted() === "desc" ? (
+                <ArrowDown className="ml-2 h-4 w-4" />
+              ) : (
+                <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+              )}
         </Button>
       );
     },
@@ -55,7 +74,7 @@ export const columns = [
       const isPublished = row.getValue("isPublished") || false;
 
       return (
-        <Badge className={cn("bg-gray-500", isPublished && "bg-green-500")}>
+        <Badge className={cn("bg-gray-500", isPublished && "bg-green-500",'ml-4')}>
           {isPublished ? "Published" : "Unpublished"}
         </Badge>
       );
@@ -74,7 +93,7 @@ export const columns = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <Link href={`/dashboard/quiz-sets/${id}`}>
+            <Link href={`/instructor/quiz-sets/${id}`}>
               <DropdownMenuItem>
                 <Pencil className="h-4 w-4 mr-2" />
                 Edit

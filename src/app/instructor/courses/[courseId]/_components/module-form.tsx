@@ -77,13 +77,12 @@ export const ModulesForm: React.FC<ModulesFormProps> = ({
 
   const { isSubmitting, isValid } = form.formState;
 
- const createModule = useCreateModule();
+ const {mutateAsync}= useCreateModule();
    const onSubmit = async (values:FormValues):Promise<void> => {
     try {
 
       const payload = {
   title: values.title,
-  slug: getSlug(values.title),
   courseId,
   order: nextOrder.toString(),
 };
@@ -94,8 +93,8 @@ export const ModulesForm: React.FC<ModulesFormProps> = ({
       // // formData.append("order", modules.length.toString())
       //  formData.append("order", nextOrder.toString());
 
-      const moduleCreated = await createModule.mutateAsync(payload); 
-console.log('modulecreated',moduleCreated)
+      const moduleCreated = await mutateAsync(payload); 
+
       setModules((modules) => [
         ...modules,
         {

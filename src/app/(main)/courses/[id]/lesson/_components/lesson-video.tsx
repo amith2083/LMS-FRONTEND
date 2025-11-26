@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { usePlaybackSignedUrl } from "@/app/hooks/useLesssonQueries";
 import { useEffect, useState } from "react";
 import { createWatch } from "@/app/service/watchService";
+import { useCreateWatch } from "@/app/hooks/useWatchQueries";
 
 export const LessonVideo = ({
   courseId,
@@ -23,10 +24,10 @@ export const LessonVideo = ({
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(0); // seconds
 
-  const { mutateAsync } = usePlaybackSignedUrl();
-console.log('duration',duration)
-console.log('lesson',lesson)
-console.log(module)
+  const { mutateAsync:getPlaybackSignerUrl } = usePlaybackSignedUrl();
+  const { mutateAsync:createWatch } = useCreateWatch();
+
+
   /* --------------------------------------------------------------
      1. SSR safety – make sure `window` exists
      -------------------------------------------------------------- */
@@ -42,14 +43,14 @@ console.log(module)
 
     const fetchUrl = async () => {
       try {
-        const { signedUrl } = await mutateAsync({ key: lesson.videoKey });
+        const { signedUrl } = await getPlaybackSignerUrl({ key: lesson.videoKey });
         setSignedUrl(signedUrl);
       } catch (e) {
         console.error("Signed URL error:", e);
       }
     };
     fetchUrl();
-  }, [lesson?.videoKey, mutateAsync]);
+  }, [lesson?.videoKey, getPlaybackSignerUrl]);
 
   /* --------------------------------------------------------------
      3. Send “started” to your API
@@ -58,7 +59,8 @@ console.log(module)
     if (!started) return;
 
     const send = async () => {
-       await createWatch(courseId, lesson._id, moduleId, "started", 0);
+       await createWatch({courseId, lessonId:lesson._id, moduleId, state:"started", lastTime:0});
+     
       setStarted(false); // reset so we only fire once
     };
     send();
@@ -72,11 +74,11 @@ console.log(module)
 
     const send = async () => {
     
-    const res=   await createWatch(courseId,
-                     lesson._id,
+    const res=   await createWatch({courseId,
+                     lessonId:lesson._id,
                     moduleId,
-                    "completed", 
-                     duration);
+                    state:"completed", 
+                     lastTime:duration});
       if (res.ok) {
         setEnded(false);
         router.refresh();
@@ -85,15 +87,10 @@ console.log(module)
     send();
   }, [ended, courseId, lesson._id, moduleId, duration, router]);
 
-  /* --------------------------------------------------------------
-     5. No video → early return
-     -------------------------------------------------------------- */
   if (!hasWindow) return <p>Loading player…</p>;
   if (!signedUrl) return <p>No video uploaded yet</p>;
 
-  /* --------------------------------------------------------------
-     6. Native <video> with all the callbacks you need
-     -------------------------------------------------------------- */
+  
   return (
     <div className="relative w-full max-w-4xl mx-auto">
       <video
@@ -103,17 +100,17 @@ console.log(module)
         className="w-full rounded-lg shadow-lg"
         style={{ height: "470px" }} // same height you used before
         onPlay={() => {
-          console.log("handleOnStart");
+        
           setStarted(true);
         }}
         onEnded={() => {
-          console.log("handleOnEnded");
+          
           setEnded(true);
         }}
         onLoadedMetadata={(e) => {
           const vid = e.currentTarget as HTMLVideoElement;
           const dur = vid.duration;
-          console.log("handleOnDuration", dur);
+        
           setDuration(dur);
         }}
         onTimeUpdate={(e) => {

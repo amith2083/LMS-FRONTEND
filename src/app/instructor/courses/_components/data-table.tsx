@@ -53,8 +53,8 @@ export function DataTable<TData>({
     onSortingChange: setSorting,
  
     onColumnFiltersChange: setColumnFilters,
-  // ADD THIS LINE
-  initialState: { pagination: { pageSize: 8 } },
+  
+  initialState: { pagination: { pageSize: 8 } },//8 course in one page
     state: {
       sorting,
       columnFilters,

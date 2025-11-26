@@ -5,36 +5,42 @@ import { Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-// import { changeQuizPublishState, deleteQuiz } from "@/app/actions/quiz";
+
 import { toast } from "sonner";
-import { useDeleteQuizset, useTogglePublishQuizset } from "@/app/hooks/useQuizQueries";
+import {
+  useDeleteQuizset,
+  useTogglePublishQuizset,
+} from "@/app/hooks/useQuizQueries";
 
- 
-export const QuizSetAction = ({ quizSetId,quiz,quizId }) => {
+export const QuizSetAction = ({ quizSetId, active }) => {
 
-  const [action, setAction] = useState(null);
-  // const [published, setPublished] = useState(false);
-  
+  const [published, setPublished] = useState(active);
+  console.log('published',published)
+
   const router = useRouter();
- const { mutateAsync: toggleStatus, isPending: isToggling } = useTogglePublishQuizset();
-  const { mutateAsync: deleteQuizset, isPending: isDeleting } = useDeleteQuizset();
-const handleToggle = async () => {
+  const { mutateAsync: toggleStatus, isPending: isToggling } =
+    useTogglePublishQuizset();
+  const { mutateAsync: deleteQuizset, isPending: isDeleting } =
+    useDeleteQuizset();
+  const handleToggle = async () => {
     try {
       await toggleStatus(quizSetId);
-      toast.success(`Quiz set ${quiz ? "unpublished" : "published"}`);
+           setPublished((prev) => !prev);
+           
+      toast.success(`Quiz set ${active ? "unpublished" : "published"}`);
     } catch (error) {
-      // toast.error("Failed to toggle quiz set status");
-      console.error("Toggle error:", error);
-    toast.error(`Failed to toggle quiz set status: ${error.message || "Unknown error"}`);
-
-      
+      toast.error(
+        `Failed to toggle quiz set status: ${error.message || "Unknown error"}`
+      );
     }
   };
 
   const handleDelete = async () => {
     try {
       if (published) {
-        toast.error("A published quiz set cannot be deleted. Unpublish it first.");
+        toast.error(
+          "A published quiz set cannot be deleted. Unpublish it first."
+        );
         return;
       }
       await deleteQuizset(quizSetId);
@@ -44,10 +50,6 @@ const handleToggle = async () => {
       toast.error("Failed to delete quiz set");
     }
   };
-        
-  
-
-
 
   return (
     <div className="flex items-center gap-x-2">
@@ -57,7 +59,7 @@ const handleToggle = async () => {
         onClick={handleToggle}
         disabled={isToggling || isDeleting}
       >
-        {quiz ? "Unpublish" : "Publish"}
+        {active ? "Unpublish" : "Publish"}
       </Button>
       <Button
         size="sm"

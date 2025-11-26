@@ -13,19 +13,19 @@ interface CourseActionsProps {
   status: boolean;
 }
 
-export const CourseActions: React.FC<CourseActionsProps> = ({ courseId, status }) => {
+export const CourseActions = ({ courseId, status }:CourseActionsProps) => {
   const [action, setAction] = useState<"change-active" | "delete" | null>(null);
   const [published, setPublished] = useState<boolean>(status);
   const router = useRouter();
-    const toggleMutation = useUpdateCourse();
-  const deleteMutation = useDeleteCourse();
+    const {mutateAsync:toggleStatus,isPending:isUpdatingCourse} = useUpdateCourse();
+  const {mutateAsync:deleteCourse,isPending:isDeletingCourse} = useDeleteCourse();
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     try {
       switch (action) {
         case "change-active": {
-          await toggleMutation.mutateAsync({
+          await toggleStatus({
             id: courseId,
             data: { status: !published },
           });
@@ -39,7 +39,7 @@ export const CourseActions: React.FC<CourseActionsProps> = ({ courseId, status }
           if (published) {
             toast.error("A published course cannot be deleted. First unpublish it, then delete.");
           } else {
-              await deleteMutation.mutateAsync(courseId);
+              await deleteCourse(courseId);
             toast.success("The course has been deleted successfully");
             router.push("/instructor/courses");
           }
@@ -61,7 +61,7 @@ export const CourseActions: React.FC<CourseActionsProps> = ({ courseId, status }
           variant="outline"
           size="sm"
           type="submit"
-          onClick={() => setAction("change-active")}     disabled={toggleMutation.isPending}
+          onClick={() => setAction("change-active")}     disabled={isUpdatingCourse}
         >
           {published ? "Unpublish" : "Publish"}
         </Button>
@@ -69,7 +69,7 @@ export const CourseActions: React.FC<CourseActionsProps> = ({ courseId, status }
         <Button
           size="sm"
           type="submit"
-          onClick={() => setAction("delete")}    disabled={deleteMutation.isPending}
+          onClick={() => setAction("delete")}    disabled={isDeletingCourse}
         >
           <Trash className="h-4 w-4" />
         </Button>

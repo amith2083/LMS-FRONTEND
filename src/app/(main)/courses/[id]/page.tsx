@@ -9,22 +9,24 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 // import { useCourseDetails, useRelatedCourses } from "@/app/hooks/useCourse";
 import { use } from "react";
 import { useCourseById } from "@/app/hooks/useCourseQueries";
+import { useHasEnrollmentForCourse } from "@/app/hooks/useEnrollmentQueries";
 
 const SingleCoursePage = ({ params }: { params: Promise<{ id: string }> }) => {
   // const { id } = params;
   // const courseId = params.id;
   const { id: courseId } = use(params);
  
-  const { data: course, isLoading, isError } = useCourseById(courseId);
-  
-  const categoryId = course?.category?._id.toString() 
+  const { data: course, isLoading:isCourseLoading, isError } = useCourseById(courseId);
+   const { data: isEnrolled, isLoading:isHasEnrollmentLoading } = useHasEnrollmentForCourse( course?._id);
+  const categoryId = course?.category?._id
+
   // const {
   //   data: relatedCourses,
   //   isLoading: relatedLoading,
   // } = useRelatedCourses(courseId, categoryId);
   // console.log('related',relatedCourses);
 
-  if (isLoading) {
+  if (isCourseLoading|| isHasEnrollmentLoading) {
     return <LoadingSpinner size="lg" message="Fetching course details..." />; 
   }
 
@@ -32,7 +34,7 @@ const SingleCoursePage = ({ params }: { params: Promise<{ id: string }> }) => {
   
   return (
     <>
-      <CourseDetailsIntro course={course} />
+      <CourseDetailsIntro course={course} isEnrolled={isEnrolled} />
       <CourseDetails course={course} />
       {course?.testimonials && <Testimonials testimonials={course?.testimonials} />} 
       {/* {relatedCourses?.length > 0 && <RelatedCourses relatedCourses={relatedCourses} />} */}

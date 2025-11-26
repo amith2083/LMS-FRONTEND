@@ -1,30 +1,30 @@
 "use client";
 import { CircleDollarSign, ListChecks } from "lucide-react";
-
 import { CourseActions } from "./_components/course-action";
 import { TitleForm } from "./_components/title";
 import { SubTitleForm } from "./_components/sub-title-form";
 import { DescriptionForm } from "./_components/description";
 import { ImageForm } from "./_components/image-form";
-// import { QuizSetForm } from "./_components/quiz-form";
 import { ModulesForm } from "./_components/module-form";
 import { PriceForm } from "./_components/price-form";
 import AlertBanner from "@/components/alert-banner";
 import { IconBadge } from "@/components/icon-badge";
 import { CategoryForm } from "./_components/category-form";
-// import { useGetQuizsets } from "@/app/hooks/useQuiz";
 import { useParams } from "next/navigation";
 import { useCourseById } from "@/app/hooks/useCourseQueries";
 import { useCategories } from "@/app/hooks/useCategoryQueries";
+import { useQuizsets } from "@/app/hooks/useQuizQueries";
+import { QuizSetForm } from "./_components/quiz-form";
 
 const EditCourse = () => {
   const params = useParams();
   const courseId = params?.courseId as string;
 
   const { data: course, isLoading: isLoadingCourse } = useCourseById(courseId);
-  const { data: categories = [], isLoading: isLoadingCategories } = useCategories();
+  const { data: categories = [], isLoading: isLoadingCategories } =useCategories();
+  const { data: quizSets= [] } =useQuizsets();
 
-  // const { data: allQuizSets, isLoading } = useGetQuizsets();
+  
 
   if (isLoadingCourse) return <p className="p-6">Loading...</p>;
   if (!course) return <p className="p-6 text-red-500">Course not found.</p>;
@@ -35,20 +35,21 @@ const EditCourse = () => {
       id: c._id,
     };
   });
-  // Sanitize fucntion for handle ObjectID and Buffer
+ 
 
   const modules = (course?.modules).sort((a, b) => a.order - b.order) || [];
-  console.log('modules',modules)
+  
 
-  // let mappedQuizSet = [];
-  // if (allQuizSets && allQuizSets.length > 0) {
-  //   mappedQuizSet = allQuizSets.map((quizSet) => {
-  //     return {
-  //       value: quizSet.id,
-  //       label: quizSet.title,
-  //     };
-  //   });
-  // }
+  let mappedQuizSet = [];
+  if (quizSets && quizSets.length > 0) {
+    mappedQuizSet = quizSets.map((quizSet) => {
+      return {
+        value: quizSet.title,
+        label: quizSet.title,
+        id:quizSet._id
+      };
+    });
+  }
   return (
     <>
       {!course?.status && (
@@ -57,7 +58,7 @@ const EditCourse = () => {
           variant="warning"
         />
       )}
-      <div className="p-6">
+      <div className="p-6" >
         <div className="flex items-center justify-end">
           <CourseActions courseId={courseId} status={course?.status} />
         </div>
@@ -79,21 +80,22 @@ const EditCourse = () => {
               courseId={courseId}
             />
             <ImageForm
-              initialData={{
-                imageUrl:course?.thumbnail}}
+              imageUrl={
+                course?.thumbnail
+              }
               courseId={courseId}
             />
             <CategoryForm
-              initialData={{ value: course?.category?.title }}
+              title={ course?.category?.title }
               courseId={courseId}
               options={mappedCategories}
             />
 
-            {/* <QuizSetForm
-              initialData={{ quizSetId: course?.quizSet?.toString() }}
+            <QuizSetForm
+              title={ course?.quizSet?.title }
               courseId={courseId}
               options={mappedQuizSet}
-            /> */}
+            />
           </div>
           <div className="space-y-6">
             <div>

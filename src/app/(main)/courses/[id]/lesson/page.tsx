@@ -13,8 +13,7 @@ const Course = async ({ params: {id}, searchParams: { name,module} }) => {
 	const defaultLesson =(allModules[0]?.lessonIds?.toSorted((a,b) => a.order - b.order)[0]);
 
 	const lessonToPlay = name? await getLessonBySlug(name) : defaultLesson;
-	console.log('name',name)
-	console.log('pay',lessonToPlay)
+
 
 	const defaultModule = module ?? allModules[0]._id;
 	return (

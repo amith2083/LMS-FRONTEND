@@ -35,7 +35,7 @@ interface PriceFormProps {
   };
   courseId: string;
 }
-export const PriceForm:React.FC<PriceFormProps> = ({ initialData, courseId }) => {
+export const PriceForm= ({ initialData, courseId }:PriceFormProps ) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 

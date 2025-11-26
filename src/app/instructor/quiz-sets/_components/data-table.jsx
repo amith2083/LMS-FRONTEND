@@ -38,6 +38,8 @@ export function DataTable({ columns, data }) {
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    
+      initialState: { pagination: { pageSize: 8 } },//8 quizsets in one page
     state: {
       sorting,
       columnFilters,
@@ -62,14 +64,14 @@ export function DataTable({ columns, data }) {
           </Button>
         </Link>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border-2">
         <Table>
-          <TableHeader>
+          <TableHeader > 
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} >
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className={!header.column.getIsLastColumn() ? "border-r border-gray-300" : ""} >
                       {header.isPlaceholder
                         ? null
                         : flexRender(

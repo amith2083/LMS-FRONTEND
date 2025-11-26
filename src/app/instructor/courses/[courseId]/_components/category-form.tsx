@@ -20,19 +20,28 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useUpdateCourse } from "@/app/hooks/useCourseQueries";
 import { Combobox } from "@/components/ui/combobox";
-import { se } from "date-fns/locale";
 
 
+interface CategoryOption {
+  value: string;
+  label: string;
+  id: string;
+}
 
+interface CategoryFormProps{
+  title:string,
+  courseId:string,
+  options:CategoryOption[]
 
+}
 const formSchema = z.object({
   value: z.string().min(1),
 });
 type FormValues = z.infer<typeof formSchema>;
 export const CategoryForm = ({
-  initialData,
+  title,
   courseId,
-  options }) => {
+  options }:CategoryFormProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -41,7 +50,7 @@ export const CategoryForm = ({
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      value: initialData?.value || "",
+      value: title || "",
     },
   });
 
@@ -51,7 +60,7 @@ export const CategoryForm = ({
   const onSubmit = async (values:FormValues) => {
     try {
       const selectedCategory = options.find(option => option.value === values.value);
-      console.log('selected',selectedCategory)
+      
   
       if (!selectedCategory) {
       toast.error("Invalid category selected");
@@ -65,9 +74,9 @@ export const CategoryForm = ({
     }
   };
 
-  const selectedOptions = options.find(
-    (option) => option.value === initialData.value
-  );
+  // const selectedOptions = options.find(
+  //   (option) => option.value === title
+  // );
 
   return (
     <div className="mt-6 border bg-gray-50 rounded-md p-4">
@@ -88,10 +97,10 @@ export const CategoryForm = ({
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData.value && "text-slate-500 italic"
+            !title && "text-slate-500 italic"
           )}
         >
-          {selectedOptions?.label || "No category"}
+          {title|| "No category"}
         </p>
       )}
      

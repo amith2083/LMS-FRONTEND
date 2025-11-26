@@ -61,12 +61,11 @@ const AddCourse = () => {
       
       await mutateAsync(courseData);
 
-      //   router.push(`/instructor/courses/${course?._id}`);
-      // await mutateAsync(values);
+     
       router.push("/instructor/courses/");
       toast.success("Course created");
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (error:any) {
+      toast.error(error?.message||"Something went wrong");
     }
   };
 
@@ -88,7 +87,7 @@ const AddCourse = () => {
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="e.g 'Reactive Accelerator'"
+                      placeholder="e.g 'React'"
                       {...field}
                     />
                   </FormControl>
@@ -117,13 +116,13 @@ const AddCourse = () => {
                 </FormItem>
               )}
             />
-            <div className="flex items-center gap-x-2">
+            <div className="flex items-center gap-x-4 ">
               <Link href="/dashboard/courses">
                 <Button variant="outline" type="button">
                   Cancel
                 </Button>
               </Link>
-              <Button type="submit" variant="black" disabled={isSubmitting}>
+              <Button type="submit"  disabled={isSubmitting}>
                 Continue
               </Button>
             </div>
