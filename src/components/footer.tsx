@@ -30,7 +30,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative border-t bg-gradient-to-t from-muted/30 via-background to-background overflow-hidden">
+    <footer className="relative border-t bg-gradient-to-t from-muted/30 via-background to-background overflow-hidden mt-6">
       {/* Animated Border Beam */}
       <BorderBeam 
         className="opacity-40" 

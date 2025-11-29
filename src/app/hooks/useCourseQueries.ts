@@ -7,7 +7,8 @@ import {
   deleteCourse,
   updateCourseImage,
   getCoursesByInstructorId,
-  getCoursesForAdmin
+  getCoursesForAdmin,
+  getRelatedCourses
 } from "../service/courseService";
 import { CoursesResponse } from "../types/course";
 
@@ -72,6 +73,14 @@ export const useCoursesForAdmin = () =>
     queryFn: () => getCoursesForAdmin(),
     
   });
+  export const useRelatedCourses = (courseId: string) => {
+  return useQuery({
+    queryKey: ["relatedCourses", courseId],
+    queryFn: () => getRelatedCourses(courseId),
+    enabled: !!courseId,
+   
+  });
+};
 
 // Create a course
 export const useCreateCourse = () => {

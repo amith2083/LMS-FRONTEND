@@ -53,13 +53,27 @@ export const getCoursesByInstructorId = async (instructorId: string) => {
 export const getCoursesForAdmin = async () => {
   try {
     const response = await axiosInstance.get('/api/courses/admin');
-    console.log('res',response.data)
+  
     return response.data;
   } catch (error: any) {
     const axiosError = error as AxiosError<any>;
     const message = axiosError.response?.data?.message || "Failed to fetch course for admin";
     throw new Error(message);
   }
+};
+
+export const getRelatedCourses = async (courseId: string) => {
+  try {
+      const response = await axiosInstance.get(`/api/courses/related/${courseId}`);
+  return response.data;
+  } catch (error) {
+    
+    const axiosError = error as AxiosError<any>;
+    const message = axiosError.response?.data?.message || "Failed to fetch course";
+    throw new Error(message);
+    
+  }
+ 
 };
 
 //  Create New Course

@@ -26,14 +26,14 @@ const RelatedCourses = ({relatedCourses}) => {
             <CarouselContent>
               {relatedCourses.map((course) => (
                 <CarouselItem
-                  key={course.id}
+                  key={course._id}
                   className="md:basis-1/2 lg:basis-1/3"
                 >
-                  <Link href={`/courses/${course.id}`}>
+                  <Link href={`/courses/${course._id}`}>
                     <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
                       <div className="relative w-full aspect-video rounded-md overflow-hidden">
                         <Image
-                          src={`/assets/images/courses/${course?.thumbnail}`}
+                          src={course?.thumbnail}
                           alt={"course"}
                           className="object-cover"
                           fill
