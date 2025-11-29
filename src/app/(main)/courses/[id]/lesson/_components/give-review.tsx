@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ReviewModal } from "./review-modal";
 import { useState } from "react";
 
-export const GiveReview = ({courseId}) => {
+export const GiveReview = ({courseId,userId}) => {
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
     return (

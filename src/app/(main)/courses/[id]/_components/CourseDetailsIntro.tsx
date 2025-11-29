@@ -17,10 +17,10 @@ const CourseDetailsIntro =  ({course,isEnrolled}) => {
   // const { data: isEnrolled, isLoading } = useHasEnrollmentForCourse( course?._id);
 
     return (
-        <div className="overflow-x-hidden  grainy bg-amber-100">
-        <section className="pt-12  sm:pt-16 bg-red-300">
-          <div className="container bg-fuchsia-300">
-            <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8 bg-green-300">
+        <div className="overflow-x-hidden  grainy">
+        <section className="pt-12  sm:pt-16">
+          <div className="container">
+            <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
               <div className="max-w-2xl mx-auto text-center">
                 <h1 className="px-6 text-lg text-gray-600 font-inter">
                   {course?.title}

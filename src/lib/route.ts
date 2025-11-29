@@ -11,6 +11,7 @@ export const PUBLIC_ROUTES = [
     "/forgot-password",
     "/reset-password",
     '/admin/login',
-    "/otp"
-    // '/api/register'
+    "/otp",
+    
+   
 ]

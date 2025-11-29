@@ -21,6 +21,10 @@ import { cookies } from "next/headers";
 import { getWatchByLessonAndModule } from "@/app/service/watchService";
 import { getCourseById } from "@/app/service/courseService";
 import { getReport } from "@/app/service/reportService";
+import Quiz from "./quiz";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { constructNow } from "date-fns";
 
 export const CourseSidebar = async({courseId }) => {
  const cookieStore = await cookies();
@@ -28,6 +32,8 @@ export const CourseSidebar = async({courseId }) => {
   // Extract only the accessToken
   const accessToken = cookieStore.get('accessToken')?.value;
   const cookieHeader = accessToken ? `accessToken=${accessToken}` : '';
+  const session = await getServerSession(authOptions)
+
 
 
     
@@ -51,8 +57,7 @@ export const CourseSidebar = async({courseId }) => {
       const updatedLessons = await Promise.all(
         lessons.map(async (lesson) => {
           const lessonId = lesson._id;
-          // Replace Mongoose query with API call (server-safe version)
-          // Note: Ensure backend endpoint uses session for userId (no need to pass explicitly)
+      
           const watch = await getWatchByLessonAndModule(lessonId, moduleId,cookieHeader);
           if (watch?.state === 'completed') {
             lesson.state = 'completed';
@@ -64,6 +69,10 @@ export const CourseSidebar = async({courseId }) => {
       return module;
     })
   );
+  
+  const quizSet = course?.quizSet;
+  const isQuizComplete = report?.quizAssessment ? true : false;
+
   return (
     <>
       <div className="h-full border-r flex flex-col overflow-y-auto shadow-sm">
@@ -78,10 +87,16 @@ export const CourseSidebar = async({courseId }) => {
         </div>
         
         <SidebarModules courseId ={courseId} modules ={updatedModules}/>
+         <div className="w-full px-4 lg:px-14 pt-10 border-t">
+          {
+            quizSet && <Quiz courseId={courseId} quizSet={quizSet} isTaken={isQuizComplete} />
+          }
+          
+        </div>
 
         <div className="w-full px-6">
-        <GiveReview courseId={courseId} />
-        <DownloadCertificate courseId={courseId} totalProgress={100}/>
+        <GiveReview courseId={courseId} userId ={session?.user.id} />
+        <DownloadCertificate courseId={courseId} totalProgress={totalProgress}/>
         </div> 
 
 

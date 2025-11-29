@@ -7,7 +7,7 @@ import { formatMyDate } from "@/lib/date";
 
 
 const CourseDetails = ({course}) => {
-  console.log('mod',course)
+
     const lastModifiedDate = formatMyDate(course.modifiedOn)
     
     return (

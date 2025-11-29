@@ -7,14 +7,16 @@ import RelatedCourses from "./_components/RelatedCourses";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 // import { useCourseDetails, useRelatedCourses } from "@/app/hooks/useCourse";
-import { use } from "react";
+
 import { useCourseById } from "@/app/hooks/useCourseQueries";
 import { useHasEnrollmentForCourse } from "@/app/hooks/useEnrollmentQueries";
+import { useParams } from "next/navigation";
 
-const SingleCoursePage = ({ params }: { params: Promise<{ id: string }> }) => {
-  // const { id } = params;
-  // const courseId = params.id;
-  const { id: courseId } = use(params);
+const SingleCoursePage = () => {
+ 
+    const params = useParams();
+  const courseId = params?.id as string;
+  
  
   const { data: course, isLoading:isCourseLoading, isError } = useCourseById(courseId);
    const { data: isEnrolled, isLoading:isHasEnrollmentLoading } = useHasEnrollmentForCourse( course?._id);

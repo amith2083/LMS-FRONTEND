@@ -7,13 +7,14 @@ interface Data {
 export const createTestimonial = async (
   courseId: string,
   values:Data,
-  rating: number
+  
 ) => {
   try {
-    const{review,rating}= values
+ 
+  
     const response = await axiosInstance.post(
-      `/api/testimonial`,
-      { courseId, review, rating },
+      `/api/testimonial/${courseId}`,
+       values ,
       { withCredentials: true }
     );
     return response.data;
