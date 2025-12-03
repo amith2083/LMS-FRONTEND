@@ -10,7 +10,7 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormMessage, 
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Pencil } from "lucide-react";
@@ -20,22 +20,24 @@ import { toast } from "sonner";
 import { useUpdateModule } from "@/app/hooks/useModuleQueries";
 import { getSlug } from "@/lib/slug";
 
-
 type FormValues = z.infer<typeof formSchema>;
 const formSchema = z.object({
   title: z.string().min(1),
-    slug: z.string().optional()
+  slug: z.string().optional(),
 });
 interface ModuleTitleFormProps {
   initialData: {
     title: string;
-    slug?: string;
+
   };
   courseId: string;
   chapterId: string;
 }
-export const ModuleTitleForm = ({ initialData, courseId, chapterId }:ModuleTitleFormProps) => {
-
+export const ModuleTitleForm = ({
+  initialData,
+  courseId,
+  chapterId,
+}: ModuleTitleFormProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -45,18 +47,15 @@ export const ModuleTitleForm = ({ initialData, courseId, chapterId }:ModuleTitle
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
   });
-const { mutateAsync } = useUpdateModule();
+  const { mutateAsync } = useUpdateModule();
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values:FormValues) => {
+  const onSubmit = async (values: FormValues) => {
     try {
-      values["slug"] = getSlug(values.title)
-      // await updateModule(chapterId,values);
-      console.log('val',values)
-           await mutateAsync({id:chapterId,data:values});
+      await mutateAsync({ id: chapterId, data: values });
       toast.success("Module title updated");
       toggleEdit();
-      // router.refresh();
+   
     } catch {
       toast.error("Something went wrong");
     }

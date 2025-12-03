@@ -38,8 +38,7 @@ export const ModuleActions: React.FC<ModuleActionsProps> = ({
   const handleTogglePublish = async () => {
     setLoading(true);
     try {
-      // const newState = await changeModulePublishState(module.id);
-      // setPublished(newState);
+     
       await toggleMutation.mutateAsync({
             id: module._id,
             data: { status: !published },

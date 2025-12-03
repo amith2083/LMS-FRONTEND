@@ -27,7 +27,7 @@ interface LessonModalProps {
   lesson: Lesson;
   moduleId: string;
   onClose?: () => void;
-  onDeleted: (id: string) => void;
+
 }
 export const LessonModal: FC<LessonModalProps> = ({
   open,
@@ -35,8 +35,7 @@ export const LessonModal: FC<LessonModalProps> = ({
   courseId,
   lesson,
   moduleId,
-  onClose,
-    onDeleted,
+onClose
   
   
 }) => {
@@ -44,7 +43,7 @@ export const LessonModal: FC<LessonModalProps> = ({
   const postDelete=(id:string)=>{
     setOpen(false);
     onClose?.();
-      onDeleted(id);
+      
   }
   return (
     <Dialog open={open} onOpenChange={setOpen}>

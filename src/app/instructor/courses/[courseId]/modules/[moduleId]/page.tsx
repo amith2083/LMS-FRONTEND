@@ -12,41 +12,26 @@ import Link from "next/link";
 import { ModuleTitleForm } from "./_components/module-title-form";
 import { LessonForm } from "./_components/lesson-form";
 import { CourseActions } from "../../_components/course-action";
-
-
-
 import { ModuleActions } from "./_components/module-action";
-
 import { useMemo } from "react";
 import { useParams } from "next/navigation";
 import { useModuleById } from "@/app/hooks/useModuleQueries";
 
-
 const Module = () => {
-    const params = useParams();
+  const params = useParams();
   const courseId = params?.courseId as string;
   const moduleId = params?.moduleId as string;
   const { data: moduleData, isLoading, error } = useModuleById(moduleId);
-
-  // const sanitizeModule = useMemo(() => {
-  //   if (!moduleData) return null;
-  //   return moduleData;
-  // }, [moduleData]);
+  
 
   const lessons = useMemo(() => {
     if (!moduleData?.lessonIds) return [];
-  
-    return (moduleData?.lessonIds).sort(
-      (a, b) => a.order - b.order
-    );
+
+    return (moduleData?.lessonIds).sort((a, b) => a.order - b.order);
   }, [moduleData]);
-
-
-
 
   if (isLoading) return <p>Loading...</p>;
   if (error || !moduleData) return <p>Error loading module</p>;
-  console.log('lesson',lessons)
 
   return (
     <>

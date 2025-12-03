@@ -23,6 +23,7 @@ const EditCourse = () => {
   const { data: course, isLoading: isLoadingCourse } = useCourseById(courseId);
   const { data: categories = [], isLoading: isLoadingCategories } =useCategories();
   const { data: quizSets= [] } =useQuizsets();
+ 
 
   
 

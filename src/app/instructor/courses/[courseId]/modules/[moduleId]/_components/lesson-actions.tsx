@@ -42,7 +42,8 @@ export const LessonActions: React.FC<LessonActionsProps> = ({
       // const newState = await changeLessonPublishState(lesson.id);
        await toggleMutation.mutateAsync({
             id: lesson._id,
-            data: { status: !published },
+            data: { active: !published },
+            moduleId
           });
  setPublished((prev) => !prev);
       toast.success("The lesson has been updated");

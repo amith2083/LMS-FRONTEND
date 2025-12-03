@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -21,7 +20,7 @@ import { toast } from "sonner";
 import { LessonList } from "./lesson-list";
 import { LessonModal } from "./lesson-modal";
 import { useCreateLesson, useLessonById } from "@/app/hooks/useLesssonQueries";
-import { getSlug } from "@/lib/slug";
+
 import { Lesson } from "@/app/types/lesson";
 
 const formSchema = z.object({
@@ -45,30 +44,38 @@ export const LessonForm: React.FC<LessonFormProps> = ({
   moduleId,
   courseId,
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
-
-  const router = useRouter();
-  const [lessons, setLessons] = useState<Lesson[]>(initialData);
+  const [lessons, setLessons] = useState<Lesson[]>(initialData ?? []);
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [lessonToEdit, setLessonToEdit] = useState<Lesson | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
 
+  const router = useRouter();
+
   const { data: foundLesson } = useLessonById(selectedLessonId || "");
-  const createLesson = useCreateLesson(moduleId);
+  const { mutateAsync } = useCreateLesson();
+  useEffect(() => {
+    setLessons(initialData ?? []);
+  }, [initialData]);
+
+  // Find highest existing order
+  const lastOrder = lessons.length
+    ? Math.max(...lessons.map((lesson) => lesson.order ?? 0))
+    : -1;
+
+  const nextOrder = lastOrder + 1;
 
   const toggleCreating = () => setIsCreating((prev) => !prev);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
+      title: '',
     },
   });
 
   useEffect(() => {
     if (foundLesson) {
-      setLessonToEdit(foundLesson);
       setIsEditing(true);
     }
   }, [foundLesson]);
@@ -79,13 +86,13 @@ export const LessonForm: React.FC<LessonFormProps> = ({
     try {
       const payload = {
         title: values.title,
-        slug: getSlug(values.title),
-        order: lessons.length.toString(),
+
+        order: nextOrder,
       };
 
-      const lesson = await createLesson.mutateAsync(payload);
+      const lessonCreated = await mutateAsync({ data: payload, moduleId });
+      
 
-      setLessons((prev) => [...prev, lesson]);
       toast.success("Lesson created");
       toggleCreating();
       form.reset();
@@ -152,10 +159,10 @@ export const LessonForm: React.FC<LessonFormProps> = ({
         <div
           className={cn(
             "text-sm mt-2",
-            !lessons?.length && "text-slate-500 italic"
+            !initialData?.length && "text-slate-500 italic"
           )}
         >
-          {!lessons?.length && "No module"}
+          {!initialData?.length && "No module"}
           <LessonList onEdit={onEdit} items={lessons} />
         </div>
       )}
@@ -166,29 +173,16 @@ export const LessonForm: React.FC<LessonFormProps> = ({
         </p>
       )}
 
-      {lessonToEdit && (
+      {foundLesson && (
         <LessonModal
           open={isEditing}
           setOpen={setIsEditing}
           courseId={courseId}
-          lesson={lessonToEdit}
+          lesson={foundLesson}
           moduleId={moduleId}
           onClose={() => {
-            setLessonToEdit(null);
             setSelectedLessonId(null);
           }}
-          onDeleted={(id) => {
-            setLessons((prev) => prev.filter((l) => l._id !== id));
-          }}
-          // onUpdated={(updatedLesson: Lesson) => {
-          //   setLessons((prev) =>
-          //     prev.map((l) =>
-          //       l._id === updatedLesson._id
-          //         ? { ...l, title: updatedLesson.title }
-          //         : l
-          //     )
-          //   );
-          // }}
         />
       )}
     </div>

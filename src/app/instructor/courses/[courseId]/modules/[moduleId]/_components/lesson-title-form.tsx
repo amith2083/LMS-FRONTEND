@@ -31,7 +31,7 @@ const formSchema = z.object({
 interface LessonTitleFormProps {
   initialData: {
     title: string;
-    slug?: string;
+   
   };
   courseId: string;
   lessonId: string;
@@ -52,8 +52,7 @@ const { mutateAsync } = useUpdateLesson();
 
   const onSubmit = async (values:FormValues) => {
     try {
-      values["slug"] = getSlug(values.title);
-      // await updateLesson(lessonId,values);
+    
     await mutateAsync({
       id: lessonId,         
       data: values,         

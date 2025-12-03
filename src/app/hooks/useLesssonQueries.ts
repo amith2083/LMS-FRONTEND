@@ -7,6 +7,13 @@ import {
   getVideoUploadUrl,
   getVideoPlaybackUrl,
 } from "../service/lessonService";
+interface CreateLessonVariables {
+  data: {
+    title: string;
+    order?: number;
+  };
+  moduleId: string;
+}
 
 // Fetch a lesson by ID
 export const useLessonById = (id: string) =>
@@ -17,12 +24,13 @@ export const useLessonById = (id: string) =>
   });
 
 // Create a new lesson
-export const useCreateLesson = (moduleId: string) => {
+export const useCreateLesson = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: any) => createLesson(data, moduleId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["module", moduleId] });
+    mutationFn: ({ data, moduleId }:CreateLessonVariables) => createLesson(data, moduleId),
+    onSuccess: (newLesson, variables) => {
+      const{moduleId}= variables
+      queryClient.invalidateQueries({ queryKey: ["module",moduleId] });
     },
   });
 };
@@ -31,11 +39,19 @@ export const useCreateLesson = (moduleId: string) => {
 export const useUpdateLesson = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
+    mutationFn: ({ id, data,moduleId }: { id: string; data: any,moduleId:string }) =>
       
       updateLesson(id, data),
-    onSuccess: (_, { id }) => {
+    onSuccess: (updatedLesson, variables) => {
+      const { id, moduleId, } = variables;
+     
       queryClient.invalidateQueries({ queryKey: ["lesson", id] });
+      // 2. Invalidate the exact module that owns this lesson
+      if (moduleId) {
+        queryClient.invalidateQueries({
+          queryKey: ["module", moduleId],
+        });
+      }
     },
   });
 };

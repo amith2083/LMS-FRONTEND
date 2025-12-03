@@ -49,6 +49,12 @@ export const ModulesForm: React.FC<ModulesFormProps> = ({
   courseId,
 }) => {
  const [modules, setModules] = useState<Module[]>(initialData ?? []);
+ 
+  
+  const [isCreating, setIsCreating] = useState<boolean>(false);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const router = useRouter();
+
  useEffect(() => {
     setModules(initialData ?? []);
   }, [initialData]);
@@ -61,9 +67,6 @@ export const ModulesForm: React.FC<ModulesFormProps> = ({
     const nextOrder = lastOrder + 1;
 
 
-  const router = useRouter();
-  const [isCreating, setIsCreating] = useState<boolean>(false);
-  const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
   const toggleCreating = (): void =>
     setIsCreating((current) => !current);
@@ -86,23 +89,11 @@ export const ModulesForm: React.FC<ModulesFormProps> = ({
   courseId,
   order: nextOrder.toString(),
 };
-      // const formData = new FormData();
-      // formData.append("title", values?.title);
-      // formData.append("slug", getSlug(values?.title));
-      // formData.append("courseId",courseId);
-      // // formData.append("order", modules.length.toString())
-      //  formData.append("order", nextOrder.toString());
+      
 
       const moduleCreated = await mutateAsync(payload); 
-
-      setModules((modules) => [
-        ...modules,
-        {
-         _id: moduleCreated._id,
-          title: moduleCreated.title,
-            order: nextOrder,
-        },
-      ]);
+      console.log('modcreated',moduleCreated)
+;
       toast.success("Module created");
       form.reset();
       toggleCreating();

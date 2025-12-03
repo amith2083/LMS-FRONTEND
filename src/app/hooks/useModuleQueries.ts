@@ -19,8 +19,10 @@ export const useCreateModule = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createModule,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["course"] }); // Update course since module is part of it
+    onSuccess: (data, variables) => {
+      const courseId = variables.courseId;
+      
+      queryClient.invalidateQueries({ queryKey: ["course",courseId] }); // Update course since module is part of it
     },
   });
 };
@@ -31,8 +33,9 @@ export const useUpdateModule = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) =>
       updateModule(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["module"] });
+    onSuccess: (updatedModule, variables) => {
+      const{id}= variables
+      queryClient.invalidateQueries({ queryKey: ["module",id] });
     },
   });
 };
