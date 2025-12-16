@@ -12,7 +12,7 @@ const Element = () => {
         </div>  
         <div className='md:w-1/2 flex justify-center mt-6 md:mt-0'>
         <Image
-            src="/assets/images/two.png"
+            src="/assets/images/two.jpg"
             alt='Learning by doing'
             width={500}
             height={400}
@@ -26,7 +26,7 @@ const Element = () => {
   <div className='md:w-1/2 flex justify-center mb-6 md:mb-0 '>
   
   <Image
-            src="/assets/images/one.png"
+            src="/assets/images/one.jpg"
             alt='Put Your Learning'
             width={500}
             height={400}

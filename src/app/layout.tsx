@@ -33,7 +33,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
    const session = await getServerSession(authOptions);
-  console.log('session in layout',session)
+  
   return (
     <html lang="en">
       {/* Fonts are applied via className in Providers now */}

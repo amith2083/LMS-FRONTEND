@@ -1,14 +1,13 @@
 import { Tabs,TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
- 
-import CourseOverview from "./CourseOverview";
+ import CourseOverview from "./CourseOverview";
 import CourseCurriculam from "./CourseCurriculam";
 import CourseInstructor from "./CourseInstructor";
 import { formatMyDate } from "@/lib/date";
 
 
 const CourseDetails = ({course}) => {
-
-    const lastModifiedDate = formatMyDate(course.modifiedOn)
+  
+    const lastModifiedDate = formatMyDate(course.updatedAt)
     
     return (
         <section className="py-8 md:py-12 lg:py-24">

@@ -35,7 +35,7 @@ const formSchema = z.object({
 const AddQuizSetForm = () => {
   const router = useRouter();
 
-  const { mutateAsync } = useCreateQuizset();
+  const { mutateAsync,isPending } = useCreateQuizset();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -91,7 +91,7 @@ const AddQuizSetForm = () => {
                   Cancel
                 </Button>
               </Link>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isPending || isSubmitting}>
                 Continue
               </Button>
             </div>

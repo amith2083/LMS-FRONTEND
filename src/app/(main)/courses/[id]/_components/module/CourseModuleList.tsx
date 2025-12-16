@@ -15,11 +15,13 @@ import { FileQuestion } from "lucide-react";
 import CourseLessonList from './CourseLessonList';
 
 const CourseModuleList = ({module}) => {
-    console.log('mod',module)
-   // console.log(module);
+    console.log('module+',module)
+   
+  
    const totalDuration = module?.lessonIds?.reduce(function(acc,obj){
     return acc + obj.duration
    },0)
+   console.log('total',totalDuration)
 
     return (
         <div>
@@ -34,22 +36,19 @@ const CourseModuleList = ({module}) => {
         </span>
         <span className="flex items-center gap-1.5">
             <NotepadText className="w-4 h-4" />
-            10 Notes
+            {module?.lessonIds.length || 0} lessons
         </span>
-        <span className="flex items-center gap-1.5">
-            <FileQuestion className="w-4 h-4" />
-            10 Quiz
-        </span>
-        <span className="flex items-center gap-1.5">
+       
+        {/* <span className="flex items-center gap-1.5">
             <Radio className="w-4 h-4" />1 Live Class
-        </span>
+        </span> */}
         </div>
         {/* header ends */}
 
         <div className="space-y-3">
             {
-                module.lessonIds && module?.lessonIds.map(lessonId => (
-         <CourseLessonList key={lessonId._id} lessonId={lessonId._id} />
+                module.lessonIds && module?.lessonIds.map(lesson => (
+         <CourseLessonList key={lesson._id} lessonId={lesson._id} />
                 ))
             } 
     

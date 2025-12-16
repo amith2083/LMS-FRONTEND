@@ -34,8 +34,14 @@ export const useUpdateUser = () => {
     mutationFn: ({ id, data }: { id: string; data: any }) => {
       return updateUser(id, data);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] }); 
+    onSuccess: (updatedUser,variables) => {
+      const id = variables.id
+      queryClient.invalidateQueries({ queryKey: ["user",id] }); 
+     
+     // Update users list cache
+      queryClient.setQueryData(["users"], (old = []) =>
+        old.map((c) => (c._id === updatedUser._id ? updatedUser : c))
+      );
     },
   });
 };

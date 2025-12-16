@@ -41,7 +41,7 @@ const [price, setPrice] = useState<string>('');
     price: price || undefined,
     sort: sort || undefined,
     page,
-    limit: 2,
+    limit: 6,
   };
   const { 
     data, 
@@ -49,7 +49,7 @@ const [price, setPrice] = useState<string>('');
     error: coursesError, 
     isError: isCoursesError 
   } = useCourses(params);
-  console.log('data',data)
+
  
   
   const { 
@@ -61,15 +61,7 @@ const [price, setPrice] = useState<string>('');
 
   const courses = data?.courses || [];
 
-  // Dummy course for skeleton rendering
-  const dummyCourse = {
-    _id: 'dummy',
-    title: '',
-    thumbnail: null,
-    category: { title: '' },
-    modules: [],
-    price: 0,
-  };
+  
 
   // Debounced search update
   const debouncedSearch = useCallback((value: string) => {
@@ -123,14 +115,26 @@ const [price, setPrice] = useState<string>('');
 
           {/* Course grid - Skeletonized */}
           <div className="lg:col-span-3">
-            <SkeletonWrapper loading={isCoursesLoading}>
-              <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
-                {(isCoursesLoading ? Array.from({ length: 6 }) : courses).map((courseOrIndex, i) => {
-                  const course = isCoursesLoading ? { ...dummyCourse, _id: `dummy-${i}` } : courseOrIndex;
-                  return <CourseCard key={course._id} course={course} />;
-                })}
-              </div>
-            </SkeletonWrapper>
+            
+           
+              
+             <div className="lg:col-span-3 grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+              {isCoursesLoading ? (
+    Array.from({ length: 6 }).map((_, i) => (
+      <SkeletonWrapper key={i} loading={true}>
+        <CourseCard course={{}} />
+      </SkeletonWrapper>
+    ))
+  ) : (
+    courses.map(course => (
+      <CourseCard key={course._id} course={course} />
+    ))
+  )}
+          
+          </div>
+              
+              
+        
           </div>
         </div>
       </section>

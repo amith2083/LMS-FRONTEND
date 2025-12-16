@@ -17,8 +17,8 @@ export default async function CoursesPageWrapper() {
   });
 
   await queryClient.prefetchQuery({
-    queryKey: ['courses', { page: 1, limit: 2, search: '', category: '', price: '', sort: '' }],
-    queryFn: () => getCourses({ page: 1, limit: 2, search: '', category: '', price: '', sort: '' }),
+    queryKey: ['courses', { page: 1, limit: 6, search: '', category: '', price: '', sort: '' }],
+    queryFn: () => getCourses({ page: 1, limit: 6, search: '', category: '', price: '', sort: '' }),
   });
 
   return (

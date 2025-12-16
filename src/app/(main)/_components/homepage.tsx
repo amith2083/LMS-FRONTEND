@@ -20,10 +20,12 @@ import { useCategories } from "@/app/hooks/useCategoryQueries";
 import { useCourses } from "@/app/hooks/useCourseQueries";
 import ChatBot from "./chatBot";
 import { Course } from "@/app/types/course";
+import { useRouter } from "next/navigation";
 
 const HomePage = () => {
   
   const { data: categories = [],isLoading: catLoading, isFetching: catFetching } = useCategories();
+  const router = useRouter();
   
   const { data: coursesData } = useCourses({
     page: 1,
@@ -98,12 +100,6 @@ const HomePage = () => {
     <SectionTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
       Categories
     </SectionTitle>
-    <Link
-      href="/categories"
-      className="text-sm font-semibold text-primary hover:text-primary/80 flex items-center gap-2 transition-colors"
-    >
-      Browse All <ArrowRightIcon className="h-5 w-5" />
-    </Link>
   </div>
 
   <Carousel
@@ -113,17 +109,17 @@ const HomePage = () => {
     }}
     className="w-full"
   >
-    <CarouselContent className=" px-8">
+    <CarouselContent className="px-8">
       {categories.map((category: any) => (
         <CarouselItem
           key={category._id}
           className="basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 mx-4"
         >
-          <Link
-            href={`/categories/${category._id}`}
-            className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-background to-muted/50 p-3 hover:scale-105 transition-all duration-500 ease-in-out shadow-lg hover:shadow-xl group block"
+          <div
+            onClick={() => router.push(`/courses?category=${category.title}`)}
+            className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-background to-muted/50 p-3 hover:scale-105 transition-all duration-500 ease-in-out shadow-lg hover:shadow-xl group cursor-pointer"
           >
-            <div className="flex flex-col gap-4 items-center justify-between rounded-md p-6 ">
+            <div className="flex flex-col gap-4 items-center justify-between rounded-md p-6">
               <Image
                 src={
                   category.thumbnail ||
@@ -138,7 +134,7 @@ const HomePage = () => {
                 {category.title}
               </h3>
             </div>
-          </Link>
+          </div>
         </CarouselItem>
       ))}
     </CarouselContent>
@@ -153,7 +149,7 @@ const HomePage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 py-16">
         <div className="flex items-center justify-between">
           <SectionTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
-            Courses
+            Featured
           </SectionTitle>
           <Link
             href="/courses"

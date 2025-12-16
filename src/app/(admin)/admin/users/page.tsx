@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
-import { useUsers } from "@/app/hooks/useUserQueries";
+import { useUpdateUser, useUsers } from "@/app/hooks/useUserQueries";
 
 interface UserType {
   _id: string;
@@ -17,35 +17,38 @@ interface UserType {
 }
 
 const ListUsers = () => {
- const{data:users,isLoading}=useUsers();
+  const { data: users, isLoading } = useUsers();
+  const { mutateAsync, isPending } = useUpdateUser();
 
-
-
-  // const toggleBlock = async (userId: string, isBlocked: boolean) => {
-  //   await axios.put("/api/admin/users_block_unblock", {
-  //     userId,
-  //     block: !isBlocked,
-  //   });
-  //   fetchUsers(); // Refresh the list
-  // };
-  const toggleBlock = async (userId: string, isBlocked: boolean) => {
-    try {
-      await axios.put("/api/admin/users_block_unblock", {
-        userId,
-        block: !isBlocked,
+  const toggleBlock = async (id: string, isBlocked: boolean) => {
+     const result = await Swal.fire({
+      title: "Are you sure?",
+      text:`Do you want to ${isBlocked ? "unblock" : "block"} this user?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, approve it!",
+    });
+    if(result.isConfirmed){
+ try {
+      await mutateAsync({
+        id,
+        data: { isBlocked: !isBlocked },
       });
       toast.success(
         `User ${!isBlocked ? "blocked" : "unblocked"} successfully`
       );
-     
     } catch (err: any) {
       toast.error(
         err?.response?.data?.message || "Failed to update user status"
       );
     }
+    }
+   
   };
 
-  const handleApprove = async (userId: string) => {
+  const handleApprove = async (id: string, isVerified: boolean) => {
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "Do you want to approve this user?",
@@ -55,21 +58,22 @@ const ListUsers = () => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, approve it!",
     });
-    // await axios.put("/api/admin/users/approve", {
-    //   userId,
-    // });
-    // fetchUsers(); // Refresh the list
+   
     if (result.isConfirmed) {
       try {
-        await axios.put("/api/admin/users_approval", { userId });
+        await mutateAsync({
+          id,
+          data: {
+            isVerified: !isVerified,
+          },
+        });
         toast.success("User approved successfully");
-      
       } catch (err: any) {
         toast.error(err?.response?.data?.message || "Approval failed");
       }
     }
   };
- if (isLoading) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
   return (
@@ -81,7 +85,7 @@ const ListUsers = () => {
             <th className="p-2 border">Name</th>
             <th className="p-2 border">Email</th>
             <th className="p-2 border">Role</th>
-            <th className="p-2 border">Document</th> 
+            <th className="p-2 border">Document</th>
             <th className="p-2 border">Verification</th>
             <th className="p-2 border">Action</th>
           </tr>
@@ -97,7 +101,7 @@ const ListUsers = () => {
                 <td className="p-2 border">
                   {user.doc ? (
                     <a
-                      href={`/uploads/verifications/${user.doc}`}
+                      href={`${user.doc}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 underline"
@@ -117,16 +121,16 @@ const ListUsers = () => {
                       Approved
                     </button>
                   ) : (
-                    <button
+                    <button disabled={isPending}
                       className="px-3 py-1 rounded bg-blue-600 text-white"
-                      onClick={() => handleApprove(user._id)}
+                      onClick={() => handleApprove(user._id, user.isVerified)}
                     >
                       Approve
                     </button>
                   )}
                 </td>
                 <td className="p-2 border">
-                  <button
+                  <button disabled={isPending}
                     className={`px-4 py-1 rounded text-white ${
                       isBlocked ? "bg-green-600" : "bg-red-600"
                     }`}

@@ -15,7 +15,7 @@ export const getCourses = async (params?: {
 }): Promise<CoursesResponse> => {
   try {
     const response = await axiosInstance.get("/api/courses", { params });
-    console.log('res',response.data)
+
 
     return response.data;
   } catch (error: any) {
@@ -84,7 +84,7 @@ export const createCourse = async (courseData: any) => {
       headers: { "Content-Type": "application/json" },
       withCredentials: true,
     });
-    return response;
+    return response.data;
   } catch (error: any) {
     const axiosError = error as AxiosError<any>;
     const message =

@@ -46,14 +46,7 @@ const CourseDetailsIntro =  ({course,isEnrolled}) => {
                   <EnrollCourse courseId={course?._id} />
                 )}
                 
-                  <Link
-                    href=""
-                    className={cn(
-                      buttonVariants({ variant: "outline", size: "lg" })
-                    )}
-                  >
-                    See Intro
-                  </Link>
+                 
                   <Link
                     href=""
                     className={cn(

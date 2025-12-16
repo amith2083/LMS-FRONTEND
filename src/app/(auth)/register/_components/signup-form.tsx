@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,17 +38,12 @@ export const SignupForm = ({ role }: SignupFormProps) => {
     return score; // score is 0–5
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log('e',e)
     e.preventDefault();
 
-    // setErrorMessage(null);
-     
-
     const form = e.currentTarget;
-    console.log('form11',form)
+
     const formData = new FormData(form);
-    console.log('formdata',formData)
-    // Build a plain object from FormData
+
     const formValues = {
       name: formData.get("name")?.toString() || "",
       email: formData.get("email")?.toString() || "",
@@ -93,7 +87,6 @@ export const SignupForm = ({ role }: SignupFormProps) => {
     });
 
     try {
-     
       const response = await signupUser(submitFormData);
 
       // const data = await response.json();
@@ -103,22 +96,18 @@ export const SignupForm = ({ role }: SignupFormProps) => {
         localStorage.setItem("otpEmail", formData.get("email") as string);
         const email = formData.get("email") as string;
 
-       
         router.push("/otp");
-       
       }
     } catch (error: any) {
-      
       toast.error(error.message || "An unexpected error occurred");
     } finally {
-  setLoading(false);
-}
+      setLoading(false);
+    }
   };
 
   return (
-    
-    <Card className="mx-auto max-w-sm">
-      <CardHeader>
+    <Card className="shadow-2xl border-0">
+      <CardHeader className="space-y-1">
         <CardTitle className="text-xl">
           <p className="mt-5 text-3xl font-bold leading-tight text-gray-900 sm:leading-tight sm:text-5xl lg:text-3xl lg:leading-tight font-pj">
             <span className="relative inline-flex sm:inline">
@@ -134,16 +123,14 @@ export const SignupForm = ({ role }: SignupFormProps) => {
       <CardContent>
         <form onSubmit={handleSubmit} encType="multipart/form-data">
           <div className="flex flex-col gap-6">
-          
-              <div className="grid  gap-2">
-                <Label htmlFor="name"> Name</Label>
-                <Input id="name" name="name" placeholder="Ami" required />
-                {formErrors.name && (
-                  <p className="text-red-500 text-sm">{formErrors.name}</p>
-                )}
-              </div>
-           
-            
+            <div className="grid  gap-2">
+              <Label htmlFor="name"> Name</Label>
+              <Input id="name" name="name" placeholder="Ami" required />
+              {formErrors.name && (
+                <p className="text-red-500 text-sm">{formErrors.name}</p>
+              )}
+            </div>
+
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -178,8 +165,8 @@ export const SignupForm = ({ role }: SignupFormProps) => {
                         passwordScore <= 2
                           ? "bg-red-500 w-1/3"
                           : passwordScore <= 4
-                          ? "bg-yellow-500 w-2/3"
-                          : "bg-green-500 w-full"
+                            ? "bg-yellow-500 w-2/3"
+                            : "bg-green-500 w-full"
                       }`}
                     ></div>
                   </div>
@@ -188,15 +175,15 @@ export const SignupForm = ({ role }: SignupFormProps) => {
                       passwordScore <= 2
                         ? "text-red-500"
                         : passwordScore <= 4
-                        ? "text-yellow-600"
-                        : "text-green-600"
+                          ? "text-yellow-600"
+                          : "text-green-600"
                     }`}
                   >
                     {passwordScore <= 2
                       ? "Weak"
                       : passwordScore <= 4
-                      ? "Medium"
-                      : "Strong"}
+                        ? "Medium"
+                        : "Strong"}
                   </p>
                 </>
               )}
@@ -243,36 +230,35 @@ export const SignupForm = ({ role }: SignupFormProps) => {
 )} */}
 
             <Button
-  type="submit"
-  className="w-full cursor-pointer flex items-center justify-center hover:scale-115"
-
-  disabled={loading}
->
-  {loading ? (
-    <svg
-      className="animate-spin h-5 w-5 text-white"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      ></circle>
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8v8z"
-      ></path>
-    </svg>
-  ) : (
-    "Create an account"
-  )}
-</Button>
+              type="submit"
+              className="w-full cursor-pointer flex items-center justify-center hover:scale-115"
+              disabled={loading}
+            >
+              {loading ? (
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8z"
+                  ></path>
+                </svg>
+              ) : (
+                "Create an account"
+              )}
+            </Button>
           </div>
         </form>
         <div className="mt-4 text-center text-sm">
@@ -283,6 +269,5 @@ export const SignupForm = ({ role }: SignupFormProps) => {
         </div>
       </CardContent>
     </Card>
-    
   );
 };

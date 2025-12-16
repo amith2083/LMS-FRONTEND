@@ -7,8 +7,7 @@ import { useLessonById } from '@/app/hooks/useLesssonQueries';
 const CourseLessonList = ({lessonId}) => {
 
 
-    console.log('lessonid',lessonId)
-    // const lesson = await getLesson(lessonId)
+
       const { data:lesson, isLoading, isError } = useLessonById(lessonId);
     console.log('lesson',lesson);
 

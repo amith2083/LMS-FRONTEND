@@ -1,95 +1,121 @@
-import { redirect } from "next/navigation";
-import { CircleCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import axiosInstance from "@/lib/axios";
+'use client';
 
-import { headers } from "next/headers"; // Add this import
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useEffect } from 'react';
+import Link from 'next/link';
+import { CircleCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-const Success = async ({ searchParams }: { searchParams: { session_id?: string; courseId?: string } }) => {
-  const { session_id, courseId } = searchParams;
-  console.log('id=', session_id, courseId);
+import { useConfirmEnrollment } from '@/app/hooks/useEnrollmentQueries'; // adjust path
+import { useCourseById } from '@/app/hooks/useCourseQueries';
+import { useUserById } from '@/app/hooks/useUserQueries';
 
+export default function SuccessPage() {
+  const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
+
+  const session_id = searchParams.get('session_id');
+  const courseId = searchParams.get('courseId');
+
+  // Redirect unauthenticated users early
+  if (status === 'unauthenticated') {
+    window.location.href = '/login';
+    return null;
+  }
+
+  if (status === 'loading') {
+    return <div className="flex h-screen items-center justify-center">Loading...</div>;
+  }
+
+  // Safety check
   if (!session_id || !courseId) {
-    throw new Error("Missing session_id or courseId");
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-4">
+        <h1 className="text-2xl font-bold text-red-600">Invalid Payment Link</h1>
+        <p>Missing session ID or course ID.</p>
+        <Button asChild>
+          <Link href="/courses">Back to Courses</Link>
+        </Button>
+      </div>
+    );
   }
 
-  const session = await getServerSession(authOptions); // This works fine for session check
-  console.log('session', session);
-  if (!session?.user?.id) {
-    redirect("/login");
+  const userId = session?.user?.id as string;
+
+  // 1. Confirm the enrollment (fires once on mount)
+  const { mutate: confirm, isPending: confirming, isSuccess: confirmed, error: confirmError } = useConfirmEnrollment();
+
+  useEffect(() => {
+    if (session_id && !confirmed) {
+      confirm(session_id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session_id]);
+
+  // 2. Fetch course and user data
+  const {
+    data: course,
+    isLoading: courseLoading,
+    error: courseError,
+  } = useCourseById(courseId);
+
+  const {
+    data: user,
+    isLoading: userLoading,
+    error: userError,
+  } = useUserById(userId);
+
+  const isLoading = confirming || courseLoading || userLoading;
+  const hasError = confirmError || courseError || userError;
+
+  if (hasError) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-4 text-center">
+        <h1 className="text-2xl font-bold text-red-600">Something went wrong</h1>
+        <p>{(confirmError || courseError || userError)?.message || 'Please contact support.'}</p>
+        <Button asChild>
+          <Link href="/courses">Back to Courses</Link>
+        </Button>
+      </div>
+    );
   }
 
-  let enrollment;
-  let course;
-  let user;
-  let errorMessage: string | null = null;
-
-  try {
-    const cookie = (await headers()).get('cookie'); // Get client's cookies
-    console.log('cookie',cookie)
-
-    // Call backend to confirm enrollment (creates in DB and sends emails)
-    const response = await axiosInstance.post("/api/enrollments/confirm", { session_id }, {
-      headers: {
-        "Content-Type": "application/json",
-        "Cookie": cookie || '', // Forward cookies for auth
-      },
-      withCredentials: true, // Keep this, though Cookie header is key
-    });
-    enrollment = response.data;
-    console.log('enrollment', enrollment);
-
-    // Fetch course and user (server-side) - also forward cookies
-    const courseResponse = await axiosInstance.get(`/api/courses/${courseId}`, {
-      headers: {
-        "Cookie": cookie || '',
-      },
-      withCredentials: true,
-    });
-    course = courseResponse.data;
-    console.log('course', course);
-
-    const userResponse = await axiosInstance.get(`/api/users/${session.user.id}`, {
-      headers: {
-        "Cookie": cookie || '',
-      },
-      withCredentials: true,
-    });
-    user = userResponse.data;
-    console.log('user', user);
-  } catch (error: any) {
-    errorMessage = error.response?.data?.message || "Enrollment confirmation failed. Please contact support.";
-    console.log(errorMessage);
+  if (isLoading || !course || !user) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-lg">Confirming your enrollment...</div>
+      </div>
+    );
   }
-
-  if (errorMessage) {
-    return <div>Error: {errorMessage}</div>;
-  }
-
-  const customerName = user?.name || "User";
-  const productName = course?.title || "Course";
 
   return (
-    <div className="h-full w-full flex-1 flex flex-col items-center justify-center">
-      <div className="flex flex-col items-center gap-6 max-w-[600px] text-center">
-        <CircleCheck className="w-32 h-32 bg-green-500 rounded-full p-0 text-white" />
-        <h1 className="text-xl md:text-2xl lg:text-3xl">
-          Congratulations! <strong>{customerName}</strong> Your Enrollment was Successful for <strong>{productName}</strong>
+    <div className="flex h-full w-full flex-1 flex-col items-center justify-center">
+      <div className="flex flex-col items-center gap-8 max-w-[600px] text-center px-4">
+        <CircleCheck className="h-32 w-32 rounded-full bg-green-500 p-8 text-white" />
+
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+          Congratulations, <strong>{user.name || 'Student'}</strong>! 🎉
         </h1>
-        <div className="flex items-center gap-3">
-          <Button asChild size="sm">
-            <Link href="/courses">Browse Courses</Link>
+
+        <p className="text-lg md:text-xl">
+          You are now successfully enrolled in
+          <br />
+          <strong className="text-sky-600">{course.title}</strong>
+        </p>
+
+        <div className="flex flex-wrap justify-center gap-4">
+          <Button asChild size="lg">
+            <Link href="/courses">Browse More Courses</Link>
           </Button>
-          <Button asChild variant='outline' size="sm">
-            <Link href={`/courses/${courseId}/lesson`}>Play Course</Link>
+
+          <Button asChild variant="outline" size="lg">
+            <Link href={`/courses/${courseId}/lesson`}>
+              Start Learning Now
+            </Link>
           </Button>
         </div>
       </div>
     </div>
   );
-};
-
-export default Success;
+}

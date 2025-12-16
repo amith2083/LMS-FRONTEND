@@ -69,7 +69,7 @@ export const useCoursesByInstructorId = (instructorId: string) =>
 // New hook to get course for admin by ID
 export const useCoursesForAdmin = () =>
   useQuery({
-    queryKey: [ "adminCourse", ],
+    queryKey: [ "adminCourse" ],
     queryFn: () => getCoursesForAdmin(),
     
   });
@@ -87,9 +87,11 @@ export const useCreateCourse = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createCourse,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["courses"] });
+    mutationFn :(courseData)=> createCourse(courseData),
+    onSuccess: (newCourse,variables) => {
+      const instructorId =variables.instructor
+
+      queryClient.invalidateQueries({ queryKey: ["instructor",instructorId] });
     },
   });
 };
@@ -103,8 +105,15 @@ export const useUpdateCourse = () => {
   
       return updateCourse(id, data);
     },
-    onSuccess: () => {
-     queryClient.invalidateQueries({ queryKey: ["course"] }); 
+    onSuccess: (updatedCourse, variables) => {
+      const{id}=variables
+ 
+      
+     queryClient.invalidateQueries({ queryKey: ["course",id] }); 
+     // Update admin list cache
+      queryClient.setQueryData(["adminCourse"], (old = []) =>
+        old.map((c) => (c._id === updatedCourse._id ? updatedCourse : c))
+      );
     },
   
   });

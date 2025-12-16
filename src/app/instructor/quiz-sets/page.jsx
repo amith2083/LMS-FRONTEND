@@ -3,8 +3,11 @@ import { useQuizsets } from "@/app/hooks/useQuizQueries";
 
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 const QuizSets = () => {
+
   const { data: quizSetsall, isLoading, error } = useQuizsets();
 
   if (isLoading) {

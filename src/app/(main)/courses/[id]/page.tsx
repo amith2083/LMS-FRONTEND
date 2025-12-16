@@ -19,6 +19,7 @@ const SingleCoursePage = () => {
     isLoading: isCourseLoading,
     isError,
   } = useCourseById(courseId);
+ 
   const { data: isEnrolled, isLoading: isHasEnrollmentLoading } =
     useHasEnrollmentForCourse(course?._id);
   const categoryId = course?.category?._id;
@@ -36,7 +37,7 @@ const SingleCoursePage = () => {
     <>
       <CourseDetailsIntro course={course} isEnrolled={isEnrolled} />
       <CourseDetails course={course} />
-      {course?.testimonials && (
+      {course?.testimonials.length > 0 && (
         <Testimonials testimonials={course?.testimonials} />
       )}
       {relatedCourses?.length > 0 && <RelatedCourses relatedCourses={relatedCourses} />}

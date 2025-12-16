@@ -6,6 +6,7 @@ import { Lock } from "lucide-react";
 import Link from "next/link";
 
 export const SidebarLessonItem = ({courseId,lesson,module}) => {
+  console.log('lesson',lesson)
   
     const isPrivate = (lesson) => {
       return lesson?.access === "private"
@@ -17,21 +18,19 @@ export const SidebarLessonItem = ({courseId,lesson,module}) => {
     return (
         <Link
                 href={
-                  isPrivate(lesson)
-                  ? "#"
-                  : `/courses/${courseId}/lesson?name=${lesson.slug}&module=${module}`
+                   `/courses/${courseId}/lesson?name=${lesson.slug}&module=${module}`
                 }
                 className={cn(
-                  "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600 ",
+                  "flex items-center gap-x-2  text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600 ",
                   isPrivate(lesson) 
                   ? "text-slate-700  hover:text-slate-700 cursor-default" 
                   : isCompleted(lesson) && "text-emerald-700 hover:text-emerald-700"
                 )}
               >
-      <div className="flex items-center gap-x-2">
+      <div className="flex items-center gap-x-2 cursor-pointer ">
       {
         isPrivate(lesson) ? (
-          <Lock size={16} className={cn("text-slate-700")} />
+          <Lock size={16} className={cn("text-slate-700 ")} />
         ) : isCompleted(lesson) ? (
           <CheckCircle size={16} className={cn("text-emerald-700")} />
         ) : (

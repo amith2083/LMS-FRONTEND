@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios, { getAdapter } from "axios";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
-import { useCoursesForAdmin } from "@/app/hooks/useCourseQueries";
+import { useCoursesForAdmin, useUpdateCourse } from "@/app/hooks/useCourseQueries";
 
 
 interface CourseType {
@@ -34,10 +34,10 @@ interface CourseType {
 
 const ListCourses = () => {
   const{data:courses,isLoading}= useCoursesForAdmin()
+  const {mutateAsync} = useUpdateCourse()
   const [selectedCourse, setSelectedCourse] = useState<CourseType | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  console.log("courses", courses);
 
  if (isLoading) {
     return <div>Loading...</div>;
@@ -55,7 +55,7 @@ const ListCourses = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.put("/api/admin/courses", { courseId });
+        await mutateAsync({id:courseId,data:{isApproved:true}})
         toast.success("Course approved successfully");
       
       } catch (err: any) {
@@ -65,7 +65,7 @@ const ListCourses = () => {
   };
   const viewCourseDetails = (id: string) => {
     const course = courses.find((c) => c._id === id);
-    console.log('viewcourse',course)
+    
     if (course) {
       setSelectedCourse(course);
       setShowModal(true);
@@ -87,13 +87,13 @@ const ListCourses = () => {
         </thead>
         <tbody>
           {courses.map((course) => (
-            <tr key={course.id} className="text-center">
+            <tr key={course._id} className="text-center">
               <td className="p-2 border">{course.title}</td>
               <td className="p-2 border">
                 {course.instructor?.name} ({course.instructor?.email})
               </td>
               <td className="p-2 border">
-                {new Date(course.createdOn).toLocaleDateString()}
+                {new Date(course.createdAt).toLocaleDateString()}
               </td>
               <td className="p-2 border">
                 {course.isApproved ? (

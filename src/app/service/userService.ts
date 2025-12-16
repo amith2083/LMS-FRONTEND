@@ -27,9 +27,10 @@ export const getUserById = async (id: string) => {
 
 export const updateUser = async (id: string, userData: any) => {
   try {
-    const response = await axiosInstance.put(`/api/users/${id}`, userData, {
-      headers: { "Content-Type": "application/json" },
-    });
+
+    const response = await axiosInstance.put(`/api/users/${id}`, userData, 
+     { withCredentials: true }
+    );
     return response.data;
   } catch (error: any) {
     const axiosError = error as AxiosError<any>;
