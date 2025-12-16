@@ -10,12 +10,13 @@ import { Button } from '@/components/ui/button';
 import { Lock, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import { Form, FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form';
-import { useUpdateUser } from '@/app/hooks/useUser';
+import { useUpdateUser } from '@/app/hooks/useUserQueries';
+
 
 const formSchema = z.object({
   oldPassword: z.string(),
-  newPassword: z.string().min(6, 'Minimum 6 characters'),
-  confirmPassword: z.string().min(6, 'Minimum 6 characters'),
+  newPassword: z.string().min(8, 'Minimum 8 characters'),
+  confirmPassword: z.string().min(8, 'Minimum 8 characters'),
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
@@ -36,16 +37,17 @@ export default function ChangePassword({ userId }: { userId: string }) {
     },
   });
 
-  const { mutateAsync, isPending } = useUpdateUser(userId);
+  const { mutateAsync, isPending } = useUpdateUser();
 
   const onSubmit = async (values: FormValues) => {
     try {
-      await mutateAsync({ data: values });
+     
+      await mutateAsync({id:userId, data:{oldPassword:values.oldPassword,newPassword:values.newPassword}  });
       toast.success('Password updated');
       form.reset();
       toggleEdit();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Failed to update password');
+      toast.error(error?.message || 'Failed to update password');
     }
   };
 

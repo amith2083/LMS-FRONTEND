@@ -39,7 +39,7 @@ export default function Profile() {
       <PersonalDetails userInfo={loggedInUser} />
       <div className="grid lg:grid-cols-2 grid-cols-1 gap-5">
         <ContactInfo userInfo={loggedInUser} />
-        {/* <ChangePassword userId={loggedInUser?.id} /> */}
+        <ChangePassword userId={loggedInUser?._id} />
       </div>
     </div>
   );

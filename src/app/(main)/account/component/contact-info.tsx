@@ -39,8 +39,8 @@ export default function ContactInfo({ userInfo }) {
   const onSubmit = async (values: FormValues) => {
     try {
        await mutateAsync({
-        id: userInfo.id, 
-        data: { phone: Number(values.phone), website: values.website },
+        id: userInfo._id, 
+        data: values
       });
 
       toast.success('Contact info updated');

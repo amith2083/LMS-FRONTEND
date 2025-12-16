@@ -13,9 +13,9 @@ const AccountSidebar = () => {
   const isLoadingUser = status === "loading";
   const userId = session?.user?.id;
 
+
   // Fetch full user data
   const { data: user, isLoading } = useUserById(userId!);
-
 
   const loading = isLoadingUser || isLoading;
 

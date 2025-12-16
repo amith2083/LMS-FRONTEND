@@ -32,6 +32,7 @@ export const useUpdateUser = () => {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) => {
+     
       return updateUser(id, data);
     },
     onSuccess: (updatedUser,variables) => {

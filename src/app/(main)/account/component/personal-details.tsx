@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Pencil, UserCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Form, FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form';
+import { useUpdateUser } from '@/app/hooks/useUserQueries';
 // import { useUpdateUser } from '@/app/hooks/useUser';
 
 const formSchema = z.object({
@@ -22,6 +23,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function PersonalDetails({ userInfo }) {
+
   const [isEditing, setIsEditing] = useState(false);
   const toggleEdit = () => setIsEditing((prev) => !prev);
 
@@ -34,11 +36,12 @@ export default function PersonalDetails({ userInfo }) {
     },
   });
 
-  // const { mutateAsync, isPending } = useUpdateUser(userInfo?.id);
+  const { mutateAsync, isPending } = useUpdateUser();
 
   const onSubmit = async (values: FormValues) => {
+   
     try {
-      // await mutateAsync({ data: values });
+      await mutateAsync({id:userInfo._id, data: values });
       toast.success('Profile updated successfully');
       toggleEdit();
     } catch (err: any) {
@@ -99,9 +102,9 @@ export default function PersonalDetails({ userInfo }) {
               </FormItem>
             )} />
 
-            {/* <Button disabled={isPending} type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white">
+            <Button disabled={isPending} type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white">
               {isPending ? 'Saving...' : 'Save Changes'}
-            </Button> */}
+            </Button>
           </form>
         </Form>
       )}
