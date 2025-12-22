@@ -10,69 +10,149 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   Legend,
+  Cell,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useCoursesForAdmin } from '@/app/hooks/useCourseQueries';
+import { useEnrollments } from '@/app/hooks/useEnrollmentQueries';
+import { useCategories } from '@/app/hooks/useCategoryQueries';
+import { useTotalEarningsForAdmin } from '@/app/hooks/usePayout';
 
-const data = [
-  { category: 'Development', enrollments: 45 },
-  { category: 'Marketing', enrollments: 30 },
-  { category: 'Business', enrollments: 25 },
-  { category: 'Photography', enrollments: 15 },
-  { category: 'Mobile', enrollments: 10 },
+// Vibrant color palette for each category bar
+const COLORS = [
+  '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16',
+  '#22c55e', '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9',
+  '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef',
+  '#ec4899', '#f43f5e',
 ];
 
-
 const DashboardPage = () => {
+  const { data: courses = [], isLoading: loadingCourses } = useCoursesForAdmin();
+  const { data: allEnrollments = [], isLoading: loadingEnrollments } = useEnrollments();
+  const { data: allCategories = [], isLoading: loadingCategories } = useCategories();
+  const { data: totalEarnings = [], isLoading: loadingEarnings } = useTotalEarningsForAdmin();
+
+  // Calculate enrollments per category
+  const enrollmentsByCategory = allCategories.map((category: any) => {
+    const categoryCourses = courses.filter((course: any) => 
+      course.category === category._id || course.category?._id === category._id
+    );
+
+    const categoryCourseIds = categoryCourses.map((c: any) => c._id);
+
+    const categoryEnrollmentsCount = allEnrollments.filter((enrollment: any) =>
+      categoryCourseIds.includes(enrollment.course) ||
+      categoryCourseIds.includes(enrollment.course?._id)
+    ).length;
+
+    return {
+      category: category.title || 'Uncategorized',
+      enrollments: categoryEnrollmentsCount,
+    };
+  });
+
+  // Sort by enrollments descending
+  enrollmentsByCategory.sort((a: any, b: any) => b.enrollments - a.enrollments);
+
+  // Filter out categories with 0 enrollments (optional, remove if you want all)
+  const filteredChartData = enrollmentsByCategory.filter((item: any) => item.enrollments > 0);
+
+  const isLoading = loadingCourses || loadingEnrollments || loadingCategories;
+
+  if (isLoading) {
+    return (
+      <div className="p-6 text-center text-gray-600">
+        Loading admin dashboard...
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6">
+    <div className="p-6 max-w-7xl mx-auto">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Card className="bg-amber-500 text-white">
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">100</div>
+            <div className="text-3xl font-bold">{courses.length}</div>
+            <p className="text-xs opacity-80 mt-1">Across all instructors</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="bg-green-500 text-white">
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Enrollments</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">30</div>
+            <div className="text-3xl font-bold">{allEnrollments.length}</div>
+            <p className="text-xs opacity-80 mt-1">Platform-wide students</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="bg-blue-500 text-white">
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$254</div>
+            <div className="text-3xl font-bold">${totalEarnings}</div>
+            <p className="text-xs opacity-80 mt-1">Platform earnings </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Enrollments by Categories</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="category" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="enrollments" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      {/* Dynamic Colorful Chart: Enrollments by Category */}
+      {filteredChartData.length > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Enrollments by Category</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart
+                data={filteredChartData}
+                margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="category"
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  fontSize={12}
+                  tick={{ fill: '#374151' }}
+                />
+           <YAxis
+            ticks={[0, 2, 4, 6, 8, 10]}  // Forced even ticks 
+            domain={[0, 10]}  // Fixed range up to 10
+            allowDecimals={false}  // No .0 decimals 
+            tick={{ fill: '#374151' }}
+          />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#fff',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  }}
+                />
+                <Legend />
+                <Bar dataKey="enrollments" radius={[8, 8, 0, 0]} name="Enrollments">
+                  {filteredChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="py-10 text-center text-gray-500">
+            No enrollment data available yet.
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
