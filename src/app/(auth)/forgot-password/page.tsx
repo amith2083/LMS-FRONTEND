@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
             <Button
               type="submit"
               className="w-1/2 mx-auto cursor-pointer"
-              variant="black"
+            
             >
               Send OTP
             </Button>

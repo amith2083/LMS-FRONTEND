@@ -92,7 +92,7 @@ export default function ResetPasswordPage() {
               required
             />
           </div>
-          <Button type="submit" className="w-1/2 mx-auto" variant="black">
+          <Button type="submit" className="w-1/2 mx-auto" >
             Reset Password
           </Button>
         </form>
