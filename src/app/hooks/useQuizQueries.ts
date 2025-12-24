@@ -6,7 +6,7 @@ import {getQuizsets,
   updateQuizset,
   deleteQuizset,
   addQuizToQuizset,
-  deleteQuizFromQuizset,togglePublishQuizset } from "../service/quizsetService";
+  deleteQuizFromQuizset,togglePublishQuizset } from "../services/quizsetService";
 
 export const useQuizsets = () => {
   return useQuery({

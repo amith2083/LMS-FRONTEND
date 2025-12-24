@@ -1,6 +1,6 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getTotalEarningsForAdmin, getTotalEarningsForInstructor } from "../service/payoutService";
+import { getTotalEarningsForAdmin, getTotalEarningsForInstructor } from "../services/payoutService";
 
 
 export const useTotalEarnings = (id:string) =>

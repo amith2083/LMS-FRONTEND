@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { refinedSignupSchema } from "../validations/signupValidation";
 import { sub } from "date-fns";
-import { signupUser } from "@/app/service/authService";
+import { signupUser } from "@/app/services/authService";
 
 interface SignupFormProps {
   role: string;

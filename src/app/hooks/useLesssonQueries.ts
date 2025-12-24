@@ -6,7 +6,7 @@ import {
   updateLesson,
   getVideoUploadUrl,
   getVideoPlaybackUrl,
-} from "../service/lessonService";
+} from "../services/lessonService";
 interface CreateLessonVariables {
   data: {
     title: string;

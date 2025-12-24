@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getReport } from "../service/reportService";
+import { getReport } from "../services/reportService";
 
 
 

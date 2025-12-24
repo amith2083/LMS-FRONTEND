@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 
 import { Separator } from "@/components/ui/separator";
 import VideoDescription from "./_components/video-description";
-import { getCourseById } from "@/app/service/courseService";
-import { getLessonBySlug } from "@/app/service/lessonService";
+import { getCourseById } from "@/app/services/courseService";
+import { getLessonBySlug } from "@/app/services/lessonService";
 import { LessonVideo } from "./_components/lesson-video";
 
 const Course = async ({ params: {id}, searchParams: { name,module} }) => {

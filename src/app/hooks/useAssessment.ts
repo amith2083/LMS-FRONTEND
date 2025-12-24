@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createQuizAssessment } from "../service/assessment";
+import { createQuizAssessment } from "../services/assessment";
 import { toast } from "sonner";
 
 

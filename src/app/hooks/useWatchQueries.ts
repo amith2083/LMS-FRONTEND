@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { createWatch, getWatchByLessonAndModule } from "../service/watchService";
+import { createWatch, getWatchByLessonAndModule } from "../services/watchService";
 
 type CreateWatchVariables = {
   courseId: string;

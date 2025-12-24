@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { createTestimonial } from "@/app/service/testimonialService";
+import { createTestimonial } from "@/app/services/testimonialService";
 import { useCreateTestimonial } from "@/app/hooks/useTestimonial";
 
 const formSchema = z.object({

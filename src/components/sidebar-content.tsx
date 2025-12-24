@@ -11,7 +11,7 @@ import { MessageCircleMore } from "lucide-react";
 import { CirclePlus } from "lucide-react";
 import { Boxes } from "lucide-react";
 import Logo from "./logo";
-import { logout } from "@/app/service/authService";
+import { logout } from "@/app/services/authService";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";

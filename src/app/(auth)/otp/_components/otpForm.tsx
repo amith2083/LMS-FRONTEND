@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { resendOtp, verifyOtp } from "@/app/service/authService";
+import { resendOtp, verifyOtp } from "@/app/services/authService";
 import { Button } from "@/components/ui/button";
 import {
   Card,

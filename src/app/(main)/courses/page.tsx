@@ -2,8 +2,8 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/getQueryClient';
 import CoursesPage from './_components/CoursesPage';
-import { getCategories } from '@/app/service/categoryService';
-import { getCourses } from '@/app/service/courseService';
+import { getCategories } from '@/app/services/categoryService';
+import { getCourses } from '@/app/services/courseService';
 
 
 

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { usePlaybackSignedUrl } from "@/app/hooks/useLesssonQueries";
 import { useEffect, useState } from "react";
-import { createWatch } from "@/app/service/watchService";
+import { createWatch } from "@/app/services/watchService";
 import { useCreateWatch } from "@/app/hooks/useWatchQueries";
 
 export const LessonVideo = ({

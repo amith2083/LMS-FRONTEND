@@ -2,8 +2,8 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/getQueryClient';
 import HomePage from './_components/homepage';
-import { getCategories } from "../service/categoryService";
-import { getCourses } from "../service/courseService";
+import { getCategories } from "../services/categoryService";
+import { getCourses } from "../services/courseService";
 
 
 export default async function Page() {

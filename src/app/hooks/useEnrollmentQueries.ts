@@ -10,7 +10,7 @@ import {
   hasEnrollmentForCourse,
 
 
-} from "../service/enrollmentService";
+} from "../services/enrollmentService";
 
 
 // Fetch all enrollments (e.g., for admin)

@@ -4,7 +4,7 @@ import {
   createModule,
   updateModule,
   deleteModule,
-} from "../service/moduleService";
+} from "../services/moduleService";
 
 // Get Module by ID
 export const useModuleById = (id: string) =>

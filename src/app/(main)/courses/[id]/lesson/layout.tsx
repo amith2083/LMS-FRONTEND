@@ -9,9 +9,9 @@ import { CourseSidebar } from "./_components/course-sidebar";
 import { redirect } from "next/navigation";
 import { getQueryClient } from "@/lib/getQueryClient";
 
-import { getCourseById } from "@/app/service/courseService";
-import { getWatchByLessonAndModule } from "@/app/service/watchService";
-import { hasEnrollmentForCourse } from "@/app/service/enrollmentService";
+import { getCourseById } from "@/app/services/courseService";
+import { getWatchByLessonAndModule } from "@/app/services/watchService";
+import { hasEnrollmentForCourse } from "@/app/services/enrollmentService";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 

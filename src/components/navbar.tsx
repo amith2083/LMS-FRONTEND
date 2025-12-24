@@ -16,7 +16,7 @@ import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
 import { signOut, useSession } from "next-auth/react";
 import { Session } from "next-auth";
 import { usePathname, useRouter } from "next/navigation";
-import { logout } from "@/app/service/authService";
+import { logout } from "@/app/services/authService";
 import { toast } from "sonner";
 
 const navLinks = [

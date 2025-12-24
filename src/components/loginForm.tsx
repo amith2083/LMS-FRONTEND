@@ -15,7 +15,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
-import { setTokens } from "@/app/service/authService";
+import { setTokens } from "@/app/services/authService";
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);

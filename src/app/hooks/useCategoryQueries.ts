@@ -8,7 +8,7 @@ import {
   deleteCategory,
   toggleCategoryPublishState,
   updateCategoryImage,
-} from "../service/categoryService";
+} from "../services/categoryService";
 
 // Fetch all categories
 export const useCategories = () =>

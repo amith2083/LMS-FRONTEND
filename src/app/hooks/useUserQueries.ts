@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getUserById, getUsers, updateUser } from "../service/userService";
+import { getUserById, getUsers, updateUser } from "../services/userService";
 
 // import { useSession } from "next-auth/react";
 interface User {

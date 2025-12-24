@@ -9,7 +9,7 @@ import {
   getCoursesByInstructorId,
   getCoursesForAdmin,
   getRelatedCourses
-} from "../service/courseService";
+} from "../services/courseService";
 import { CoursesResponse } from "../types/course";
 
 interface User {
