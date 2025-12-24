@@ -12,7 +12,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { resetPassword } from "../service/authService";
+import { resetPassword } from "@/app/services/authService";
+
 
 export default function ResetPasswordPage() {
   const router = useRouter();

@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
-import { forgotPassword } from "../service/authService";
+import { forgotPassword } from "@/app/services/authService";
+
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
