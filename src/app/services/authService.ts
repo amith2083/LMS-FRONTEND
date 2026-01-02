@@ -54,7 +54,7 @@ export const setTokens = async (email: string) => {
   try {
     const response = await axiosInstance.post("/api/users/auth/set-tokens", {
       email,
-    });
+    },  { withCredentials: true });
     return response.data;
   } catch (error: any) {
     const message =
@@ -64,31 +64,31 @@ export const setTokens = async (email: string) => {
 };
 
 // Google Sync API (used in Google provider)
-export const syncGoogleUser = async (
-  email: string,
-  name: string,
-  image: string
-) => {
-  try {
-    const response = await axiosInstance.post(
-      "/api/users/auth/google-sync",
-      {
-        email,
-        name,
-        image,
-      },
-      {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      }
-    );
-    return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message = axiosError.response?.data?.message || "Google sync failed";
-    throw new Error(message);
-  }
-};
+// export const syncGoogleUser = async (
+//   email: string,
+//   name: string,
+//   image: string
+// ) => {
+//   try {
+//     const response = await axiosInstance.post(
+//       "/api/users/auth/google-sync",
+//       {
+//         email,
+//         name,
+//         image,
+//       },
+//       {
+//         headers: { "Content-Type": "application/json" },
+//         withCredentials: true,
+//       }
+//     );
+//     return response.data;
+//   } catch (error: any) {
+//     const axiosError = error as AxiosError<any>;
+//     const message = axiosError.response?.data?.message || "Google sync failed";
+//     throw new Error(message);
+//   }
+// };
 //  Forgot Password API
 export const forgotPassword = async (email: string) => {
   try {

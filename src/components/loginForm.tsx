@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { setTokens } from "@/app/services/authService";
 
@@ -21,16 +22,65 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pathname = usePathname();                     
+  const pathname = usePathname();
+  const { data: session, status } = useSession();
 
-  // Detect admin login page
-  const isAdmin = pathname?.startsWith("/admin/login"); 
+  const isAdmin = pathname?.startsWith("/admin/login");
 
+  // Handle custom error messages from NextAuth (blocked, unverified_instructor, etc.)
   useEffect(() => {
-    if (searchParams.get("blocked") === "true") {
-      toast.error("Your account is blocked. Please contact admin.");
+    const error = searchParams.get("error");
+
+    if (error) {
+      let message = "Sign in failed. Please try again.";
+
+      if (error === "blocked") {
+        message = "Your account is blocked. Please contact admin.";
+      } else if (error === "unverified_instructor") {
+        message = "Instructors must verify their account before signing in with Google.";
+      } else if (error === "google_sync_failed") {
+        message = "Failed to sync with Google. Please try again or use email login.";
+      } else if (error === "AccessDenied") {
+        message = "Access denied. Please check your account status.";
+      } else if (error === "CredentialsSignin") {
+        message = "Invalid email or password.";
+      }
+
+      // Show toast with 1 minute duration
+      toast.error(message, {
+        duration: 60000, // 60 seconds
+      });
+
+      // Clean URL after delay to prevent race condition
+      const timer = setTimeout(() => {
+        const newParams = new URLSearchParams(searchParams.toString());
+        newParams.delete("error");
+        const cleanSearch = newParams.toString();
+        const cleanUrl = cleanSearch ? `/login?${cleanSearch}` : "/login";
+
+        router.replace(cleanUrl, { scroll: false });
+      }, 500);
+
+      return () => clearTimeout(timer);
     }
-  }, [searchParams]);
+  }, [searchParams, router]);
+
+  // Call setTokens() after successful login (works for BOTH Credentials and Google)
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.email) {
+      // This runs when user is logged in via any provider
+      setTokens(session.user.email as string);
+
+      toast.success("Login successful!");
+
+      // Redirect based on role/page
+      if (isAdmin) {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/");
+      }
+    }
+  }, [status, session, router, isAdmin]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,26 +98,23 @@ export function LoginForm() {
       });
 
       if (res?.error) {
-        toast.error(res.error);
+        toast.error(res.error || "Invalid credentials");
+        setIsLoading(false);
         return;
       }
 
-      // Set extra tokens (your backend)
-      await setTokens(email);
-
-      toast.success("Login successful!");
-
-      // ---- CONDITIONAL REDIRECT ----
-      if (isAdmin) {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/");
-      }
+      // Note: setTokens and redirect will be handled by the useEffect above
+      // No need to duplicate here
     } catch (error: any) {
-      toast.error(error.message);
-    } finally {
-      setIsLoading(false);
+      toast.error("An unexpected error occurred.");
     }
+    // Do NOT setIsLoading(false) here — redirect will unmount component
+  };
+
+  const handleGoogleSignin = () => {
+    signIn("google", {
+      callbackUrl: "/", // After success, go to home → triggers setTokens via useEffect
+    });
   };
 
   return (
@@ -96,6 +143,7 @@ export function LoginForm() {
                 name="email"
                 placeholder="m@example.com"
                 required
+                disabled={isLoading}
               />
             </div>
             <div className="grid gap-2">
@@ -108,7 +156,13 @@ export function LoginForm() {
                   Forgot your password?
                 </Link>
               </div>
-              <Input id="password" type="password" name="password" required />
+              <Input
+                id="password"
+                type="password"
+                name="password"
+                required
+                disabled={isLoading}
+              />
             </div>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? "Logging in..." : "Login"}
@@ -116,26 +170,30 @@ export function LoginForm() {
           </div>
         </form>
 
-        {/* ---- SHOW "OR" + GOOGLE ONLY FOR NON-ADMIN ---- */}
+        {/* Google Sign-In (only for non-admin) */}
         {!isAdmin && (
           <>
-            <div className="text-center mt-2"> Or</div>
+            <div className="text-center mt-4 text-sm text-gray-500">Or</div>
 
             <Button
-              onClick={() => {
-                signIn("google", { callbackUrl: "/select-role" });
-              }}
-              className="w-full cursor-pointer"
+              onClick={handleGoogleSignin}
+              className="w-full mt-4"
+              disabled={isLoading}
+              variant="outline"
             >
-              <FcGoogle className="h-5 w-5" />
+              <FcGoogle className="mr-2 h-5 w-5" />
               Continue with Google
             </Button>
+
+            <p className="text-xs text-gray-500 text-center mt-3">
+              Note: Instructors must verify their account before using Google sign-in.
+            </p>
           </>
         )}
 
-        {/* ---- REGISTER LINKS (only for normal users) ---- */}
+        {/* Register Links */}
         {!isAdmin && (
-          <div className="mt-4 text-center text-sm">
+          <div className="mt-6 text-center text-sm">
             Don&apos;t have an account?{" "}
             <Link href="/register/instructor" className="underline">
               Instructor

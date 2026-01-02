@@ -21,9 +21,12 @@ import { useCourses } from "@/app/hooks/useCourseQueries";
 import ChatBot from "./chatBot";
 import { Course } from "@/app/types/course";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { setTokens } from "@/app/services/authService";
+import { useSession } from "next-auth/react";
 
 const HomePage = () => {
-  
+  const {data:session,status}= useSession()
   const { data: categories = [],isLoading: catLoading, isFetching: catFetching } = useCategories();
   const router = useRouter();
   
@@ -34,6 +37,20 @@ const HomePage = () => {
   });
  
   const courses:Course[] = coursesData?.courses ?? [];
+   useEffect(() => {
+    if (status === "authenticated" && session?.user?.email) {
+      // This runs when user is logged in via any provider
+     setTokens(session.user.email as string).catch((err) => {
+        console.error("Failed to set tokens:", err);
+        // Optional: show toast error
+      });
+
+    
+
+     
+    }
+  }, [status, session?.user?.email]);
+  
 
   return (
     <>

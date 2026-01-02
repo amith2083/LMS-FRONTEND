@@ -30,3 +30,15 @@ declare module "next-auth/jwt" {
     profilePicture?: string;
   }
 }
+declare module "next-auth" {
+  interface Account {
+    backendUser?: {
+      _id?: string;
+      role: string;
+      isVerified: boolean;
+      isBlocked: boolean;
+      profilePicture?: string;
+      // Add other fields if needed
+    };
+  }
+}

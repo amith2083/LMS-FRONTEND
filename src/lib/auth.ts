@@ -1,7 +1,9 @@
 
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google"
 import axios from "axios";
+import { setTokens } from "@/app/services/authService";
 
 export const authOptions: NextAuthOptions = {
   // Session configuration
@@ -54,16 +56,82 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
+  
+}),
+  
   ],
 
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google" && profile?.email) {
+        try {
+          const res = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/auth/google-sync`,
+            {
+              email: profile.email,
+              name: profile.name,
+              image: profile.picture, // Google uses "picture", not "image"
+            },
+            { withCredentials: true }
+          );
+
+          const backendUser = res.data;
+
+          if (!backendUser) {
+            return false; // Block sign-in
+          }
+
+          if (backendUser.isBlocked) {
+            return "/login?error=blocked"; // Custom redirect
+          }
+
+          if (backendUser.role === "instructor" && !backendUser.isVerified) {
+            return "/login?error=unverified_instructor"; // Custom redirect
+          }
+
+          // Attach backend user data to the NextAuth user object
+          // This will be available in jwt/session callbacks
+   account.backendUser = backendUser;
+          return true
+
+          
+        } catch (error) {
+          console.error("Google sync failed:", error);
+          return "/login?error=google_sync_failed";
+        }
+      }
+
+      return true; // Allow other providers
+    },
+  
+   
+   
+    async jwt({ token, user, account, profile }) {
+     
+      
+      if (user && account?.provider==='credentials') {
         token.id = user.id;
         token.role = user.role;
         token.isVerified = user.isVerified;
         token.isBlocked = user.isBlocked;
         token.profilePicture = user.profilePicture;
+      }else if (account?.provider==='google'&& account?.backendUser){
+        const backendUser = account.backendUser
+    token.id = backendUser._id
+    token.role = backendUser.role
+    token.isVerified = backendUser.isVerified
+    token.isBlocked = backendUser.isBlocked
+    token.profilePicture = backendUser.profilePicture 
       }
       return token;
     },
@@ -79,9 +147,10 @@ export const authOptions: NextAuthOptions = {
     },
   },
 
-  // pages: {
-  //   signIn: "/login",
-  // },
+  pages: {
+    signIn: "/login",
+    error: "/login",
+  },
 
   secret: process.env.NEXTAUTH_SECRET,
 };
