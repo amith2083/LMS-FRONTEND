@@ -139,7 +139,7 @@ export const logout = async () => {
   try {
     
     const response = await axiosInstance.post("api/users/auth/logout");
-    console.log("Backend logout successful:", response.data);
+
   } catch (error) {
     // console.error("Logout failed:", error);
     

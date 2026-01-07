@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function AuthCallback() {
   const { data: session, status } = useSession();
@@ -21,7 +22,7 @@ export default function AuthCallback() {
 useEffect(() => {
   if (status === "authenticated" && session?.user?.email) {
     axios.post(
-      `${API_BASE_URL}/api/auth/set-tokens`,
+      `${API_BASE_URL}/api/users/auth/set-tokens`,
       { email: session.user.email },
       { withCredentials: true } 
     )
