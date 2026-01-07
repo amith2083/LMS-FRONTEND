@@ -60,7 +60,7 @@ export const authOptions: NextAuthOptions = {
         } catch (err) {
        
         const message =
-          err.response?.data?.message ??
+          err?.response?.data?.message ??
           "Google sign-in failed";
 
   

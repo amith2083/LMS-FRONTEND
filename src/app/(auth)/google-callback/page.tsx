@@ -16,15 +16,23 @@ export default function AuthCallback() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    if (status === "authenticated" && session?.user?.email) {
-      fetch("/api/auth/set-tokens", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: session.user.email }),
-      }).then(() => router.replace("/"));
-    }
-  }, [status, session, router]);
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+useEffect(() => {
+  if (status === "authenticated" && session?.user?.email) {
+    axios.post(
+      `${API_BASE_URL}/api/auth/set-tokens`,
+      { email: session.user.email },
+      { withCredentials: true } 
+    )
+    .then(() => {
+      router.replace("/");
+    })
+    .catch((err) => {
+      console.error("Failed to set tokens", err);
+    });
+  }
+}, [status, session, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">

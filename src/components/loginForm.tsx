@@ -17,6 +17,7 @@ import { FcGoogle } from "react-icons/fc";
 import { signIn, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { setTokens } from "@/app/services/authService";
+import axios from "axios";
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -70,11 +71,16 @@ useEffect(() => {
         return;
       }
   //  CALL NEXT API ROUTE 
-  await fetch("/api/auth/set-tokens", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  });
+ await axios.post(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/auth/set-tokens`,
+      { email },
+      {
+        withCredentials: true, 
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   router.push("/");
    
     } catch (error: any) {
