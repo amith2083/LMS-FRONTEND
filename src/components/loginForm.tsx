@@ -27,60 +27,27 @@ export function LoginForm() {
 
   const isAdmin = pathname?.startsWith("/admin/login");
 
-  // Handle custom error messages from NextAuth (blocked, unverified_instructor, etc.)
-  useEffect(() => {
-    const error = searchParams.get("error");
+ 
 
-    if (error) {
-      let message = "Sign in failed. Please try again.";
+useEffect(() => {
+  const error = searchParams.get("error");
 
-      if (error === "blocked") {
-        message = "Your account is blocked. Please contact admin.";
-      } else if (error === "unverified_instructor") {
-        message = "Instructors must verify their account before signing in with Google.";
-      } else if (error === "google_sync_failed") {
-        message = "Failed to sync with Google. Please try again or use email login.";
-      } else if (error === "AccessDenied") {
-        message = "Access denied. Please check your account status.";
-      } else if (error === "CredentialsSignin") {
-        message = "Invalid email or password.";
-      }
+  if (error) {
+    // Decode URL-encoded message
+    const decodedError = decodeURIComponent(error);
 
-      // Show toast with 1 minute duration
-      toast.error(message, {
-        duration: 60000, // 60 seconds
-      });
+    toast.error(decodedError, {
+      duration: 8000,
+    });
 
-      // Clean URL after delay to prevent race condition
-      const timer = setTimeout(() => {
-        const newParams = new URLSearchParams(searchParams.toString());
-        newParams.delete("error");
-        const cleanSearch = newParams.toString();
-        const cleanUrl = cleanSearch ? `/login?${cleanSearch}` : "/login";
+    // Clean URL back to /login (remove error param)
+    const timer = setTimeout(() => {
+      router.replace("/login", { scroll: false });
+    }, 300);
 
-        router.replace(cleanUrl, { scroll: false });
-      }, 500);
-
-      return () => clearTimeout(timer);
-    }
-  }, [searchParams, router]);
-
-  // Call setTokens() after successful login (works for BOTH Credentials and Google)
-  useEffect(() => {
-    if (status === "authenticated" && session?.user?.email) {
-      // This runs when user is logged in via any provider
-      setTokens(session.user.email as string);
-
-      toast.success("Login successful!");
-
-      // Redirect based on role/page
-      if (isAdmin) {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/");
-      }
-    }
-  }, [status, session, router, isAdmin]);
+    return () => clearTimeout(timer);
+  }
+}, [searchParams, router]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -102,19 +69,24 @@ export function LoginForm() {
         setIsLoading(false);
         return;
       }
-
-      // Note: setTokens and redirect will be handled by the useEffect above
-      // No need to duplicate here
+  //  CALL NEXT API ROUTE 
+  await fetch("/api/auth/set-tokens", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  router.push("/");
+   
     } catch (error: any) {
       toast.error("An unexpected error occurred.");
     }
-    // Do NOT setIsLoading(false) here — redirect will unmount component
+   
   };
 
   const handleGoogleSignin = () => {
     signIn("google", {
-      callbackUrl: "/", // After success, go to home → triggers setTokens via useEffect
-    });
+  callbackUrl: "/google-callback",
+});
   };
 
   return (
@@ -185,9 +157,9 @@ export function LoginForm() {
               Continue with Google
             </Button>
 
-            <p className="text-xs text-gray-500 text-center mt-3">
-              Note: Instructors must verify their account before using Google sign-in.
-            </p>
+           <p className="text-xs text-gray-500 text-center mt-3">
+  Note: Google sign-in is available only for students. Instructors must use email and password login.
+</p>
           </>
         )}
 

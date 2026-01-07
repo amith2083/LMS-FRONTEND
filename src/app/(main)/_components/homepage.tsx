@@ -37,19 +37,19 @@ const HomePage = () => {
   });
  
   const courses:Course[] = coursesData?.courses ?? [];
-   useEffect(() => {
-    if (status === "authenticated" && session?.user?.email) {
-      // This runs when user is logged in via any provider
-     setTokens(session.user.email as string).catch((err) => {
-        console.error("Failed to set tokens:", err);
-        // Optional: show toast error
-      });
+  //  useEffect(() => {
+  //   if (status === "authenticated" && session?.user?.email) {
+  //     // This runs when user is logged in via any provider
+  //    setTokens(session.user.email as string).catch((err) => {
+  //       console.error("Failed to set tokens:", err);
+  //       // Optional: show toast error
+  //     });
 
     
 
      
-    }
-  }, [status, session?.user?.email]);
+  //   }
+  // }, [status, session?.user?.email]);
   
 
   return (
