@@ -41,7 +41,7 @@ export const QuizSetForm = ({
   courseId,
   options 
 }:QuizFormProps) => {
-  console.log(title)
+ 
     const [isEditing, setIsEditing] = useState(false);
     const {mutateAsync} = useUpdateCourse();
   const router = useRouter();

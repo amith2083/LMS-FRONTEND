@@ -11,7 +11,7 @@ import { useState, useEffect, useCallback } from "react";
 import { SkeletonWrapper } from "react-skeletonify";
 import { useCourses } from "@/app/hooks/useCourseQueries";
 import { useCategories } from "@/app/hooks/useCategoryQueries";
-import { useQueryClient } from "@tanstack/react-query"; // For manual retry
+
 import {
   Pagination,
   PaginationContent,
@@ -22,8 +22,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-const CoursesPage = () => {
-  const queryClient = useQueryClient(); // For retry invalidation
+const CoursesPage = ({initialCoursesData,initialCategories}) => {
+
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory]= useState<string>('');
@@ -46,20 +46,31 @@ const [price, setPrice] = useState<string>('');
   const { 
     data, 
     isLoading: isCoursesLoading, 
-    error: coursesError, 
-    isError: isCoursesError 
-  } = useCourses(params);
+   
+  } = useCourses(params,initialCoursesData);
 
- 
+ // ADD THIS CONSOLE LOG
+console.log("Frontend params sent to API:", {
+  search,
+  selectedCategory,
+  price,
+  sort,
+  page,
+  finalParams: params
+});
   
   const { 
     data: allCategories = [], 
     isLoading: isCategoriesLoading, 
-    error: categoriesError, 
-    isError: isCategoriesError 
-  } = useCategories();
+ 
+  } = useCategories(initialCategories);
 
+
+
+  // This is the key: use data from hook, fallback to initial
   const courses = data?.courses || [];
+  const totalPages = data?.totalPages || 1;
+  const totalCourses = data?.totalCourses || 0;
 
   
 
@@ -140,7 +151,7 @@ const [price, setPrice] = useState<string>('');
       </section>
    
      {/* ---------- PAGINATION  ---------- */}
-  {data?.totalPages && data.totalPages > 1 && (
+  {totalPages > 1 && (
   <Pagination className="mt-8">
     <PaginationContent className="flex items-center gap-1">
 
@@ -176,14 +187,14 @@ const [price, setPrice] = useState<string>('');
       )}
 
       {/* Current page */}
-      {page !== 1 && page !== data.totalPages && (
+      {page !== 1 && page !== totalPages && (
         <PaginationItem>
           <PaginationLink href="#" isActive>{page}</PaginationLink>
         </PaginationItem>
       )}
 
       {/* Page after current */}
-      {page < data.totalPages - 1 && (
+      {page < totalPages - 1 && (
         <PaginationItem>
           <PaginationLink href="#" onClick={(e) => { e.preventDefault(); setPage(page + 1); }}>
             {page + 1}
@@ -192,12 +203,12 @@ const [price, setPrice] = useState<string>('');
       )}
 
       {/* ... if gap */}
-      {page < data.totalPages - 2 && <PaginationItem><PaginationEllipsis /></PaginationItem>}
+      {page < totalPages - 2 && <PaginationItem><PaginationEllipsis /></PaginationItem>}
 
       {/* Last page */}
       <PaginationItem>
-        <PaginationLink href="#" isActive={page === data.totalPages} onClick={(e) => { e.preventDefault(); setPage(data.totalPages); }}>
-          {data.totalPages}
+        <PaginationLink href="#" isActive={page === totalPages} onClick={(e) => { e.preventDefault(); setPage(totalPages); }}>
+          {totalPages}
         </PaginationLink>
       </PaginationItem>
 
@@ -207,9 +218,9 @@ const [price, setPrice] = useState<string>('');
           href="#"
           onClick={(e) => {
             e.preventDefault();
-            if (page < data.totalPages) setPage(page + 1);
+            if (page < totalPages) setPage(page + 1);
           }}
-          className={page === data.totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+          className={page === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
         />
       </PaginationItem>
 

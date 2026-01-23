@@ -9,7 +9,7 @@ const CourseLessonList = ({lessonId}) => {
 
 
       const { data:lesson, isLoading, isError } = useLessonById(lessonId);
-    console.log('lesson',lesson);
+   
 
     return (
         <div>

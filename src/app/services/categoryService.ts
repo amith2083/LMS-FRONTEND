@@ -1,3 +1,4 @@
+import { handleApiError } from "@/helper/handleApiError";
 import axiosInstance from "@/lib/axios";
 import { AxiosError } from "axios";
 
@@ -8,12 +9,9 @@ export const getCategories = async () => {
       withCredentials: true,
     });
     return res.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to fetch categories";
-    throw new Error(message);
-  }
+  } catch (error) {
+      handleApiError(error);
+    }
 };
 
 // Get category by ID
@@ -24,10 +22,7 @@ export const getCategoryById = async (id: string) => {
     });
     return res.data;
   } catch (error) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to fetch category";
-    throw new Error(message);
+    handleApiError(error);
   }
 };
 
@@ -40,10 +35,7 @@ export const createCategory = async (data: any) => {
     });
     return res.data;
   } catch (error) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to create category";
-    throw new Error(message);
+    handleApiError(error);
   }
 };
 
@@ -56,10 +48,7 @@ export const updateCategory = async (id: string, data: any) => {
     });
     return res.data;
   } catch (error) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to update category";
-    throw new Error(message);
+    handleApiError(error);
   }
 };
 export const updateCategoryImage = async (categoryId: string, file: File) => {
@@ -81,10 +70,7 @@ export const deleteCategory = async (id: string) => {
     });
     return res.data;
   } catch (error) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to delete category";
-    throw new Error(message);
+    handleApiError(error);
   }
 };
 
@@ -100,9 +86,6 @@ export const toggleCategoryPublishState = async (id: string) => {
     );
     return res.data;
   } catch (error) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to toggle publish state";
-    throw new Error(message);
+    handleApiError(error);
   }
 };

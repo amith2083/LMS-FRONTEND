@@ -11,10 +11,11 @@ import {
 } from "../services/categoryService";
 
 // Fetch all categories
-export const useCategories = () =>
+export const useCategories = (initialData) =>
   useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
+    initialData,
     staleTime: 5 * 60 * 1000,
     throwOnError: true, // Bubble errors to boundary
   });

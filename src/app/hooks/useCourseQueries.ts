@@ -18,22 +18,39 @@ interface User {
   isVerified?: boolean;
   isBlocked?: boolean;
 }
-export const useCourses = (params?: {
-  search?: string;
-  category?: string;
-  price?: string;
-  sort?: string;
-  page?: number;
-  limit?: number;
-}) => {
- 
+export const useCourses = (params, initialData) => {
+  console.log(" useCourses triggered with:", params);
+  console.log(" Final queryKey:", [
+    "courses",
+    params?.search ?? "",
+    params?.category ?? "",
+    params?.price ?? "",
+    params?.sort ?? "",
+    params?.page ?? 1,
+    params?.limit ?? 6,
+  ]);
 
-  return useQuery<CoursesResponse>({
-    queryKey: ["courses", params],
-    queryFn: () => getCourses(params),
-    staleTime: 5 * 60 * 1000,
-    keepPreviousData: true, // For smooth pagination/filtering
-    throwOnError: true, // Bubble errors to boundary
+  return useQuery({
+    queryKey: [
+      "courses",
+      params?.search ?? "",
+      params?.category ?? "",
+      params?.price ?? "",
+      params?.sort ?? "",
+      params?.page ?? 1,
+      params?.limit ?? 6,
+    ],
+    queryFn: () => {
+      console.log(" FETCHING from API with params:", params);
+      return getCourses(params);
+    },
+    initialData,
+    // Remove staleTime temporarily to force refetch
+    // staleTime: 5 * 60 * 1000,
+    staleTime: 0,
+    // Force refetch on param change
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   });
 };
 

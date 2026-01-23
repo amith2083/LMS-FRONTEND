@@ -1,6 +1,7 @@
 import axiosInstance from "@/lib/axios";
 import  { AxiosError } from "axios";
-import { CoursesResponse } from "../types/course";
+import { Course, } from "../types/course";
+import { handleApiError } from "@/helper/handleApiError";
 
 
 
@@ -12,17 +13,15 @@ export const getCourses = async (params?: {
   sort?: string;
   page?: number;
   limit?: number;
-}): Promise<CoursesResponse> => {
+})=> {
   try {
+    console.log("Axios is calling /api/courses with params:", params);
     const response = await axiosInstance.get("/api/courses", { params });
 
 
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to fetch courses";
-    throw new Error(message);
+  } catch (error) {
+    handleApiError(error)
   }
 };
 
@@ -31,21 +30,16 @@ export const getCourseById = async (id: string) => {
   try {
    const response = await axiosInstance.get(`/api/courses/${id}`);
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to fetch course";
-    throw new Error(message);
+  } catch (error) {
+   handleApiError(error)
   }
 };
 export const getCoursesByInstructorId = async (instructorId: string) => {
   try {
     const response = await axiosInstance.get(`/api/courses/instructor/${instructorId}`);
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message = axiosError.response?.data?.message || "Failed to fetch instructor courses";
-    throw new Error(message);
+  } catch (error) {
+   handleApiError(error)
   }
 };
 
@@ -55,10 +49,8 @@ export const getCoursesForAdmin = async () => {
     const response = await axiosInstance.get('/api/courses/admin');
   
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message = axiosError.response?.data?.message || "Failed to fetch course for admin";
-    throw new Error(message);
+  } catch (error) {
+    handleApiError(error)
   }
 };
 
@@ -67,11 +59,7 @@ export const getRelatedCourses = async (courseId: string) => {
       const response = await axiosInstance.get(`/api/courses/related/${courseId}`);
   return response.data;
   } catch (error) {
-    
-    const axiosError = error as AxiosError<any>;
-    const message = axiosError.response?.data?.message || "Failed to fetch course";
-    throw new Error(message);
-    
+    handleApiError(error)
   }
  
 };
@@ -85,11 +73,8 @@ export const createCourse = async (courseData: any) => {
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to create course";
-    throw new Error(message);
+  } catch (error) {
+    handleApiError(error)
   }
 };
 
@@ -100,10 +85,8 @@ export const updateCourse = async (id: string, courseData: any) => {
       headers: { "Content-Type": "application/json" },
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message = axiosError.response?.data?.message || "Failed to update course";
-    throw new Error(message);
+  } catch (error) {
+    handleApiError(error)
   }
 };
 //  Update only the course image
@@ -129,6 +112,7 @@ export const updateCourse = async (id: string, courseData: any) => {
 // };
 
 export const updateCourseImage = async (courseId: string, file: File) => {
+  try{
   const formData = new FormData();
   formData.append("image", file); // must match Multer config
 
@@ -137,6 +121,9 @@ export const updateCourseImage = async (courseId: string, file: File) => {
     });
 
   return response.data;
+  }catch (error) {
+    handleApiError(error)
+  }
 };
 
 //  Delete Course
@@ -144,10 +131,7 @@ export const deleteCourse = async (id: string) => {
   try {
     const response = await axiosInstance.delete(`/api/courses/${id}`);
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to delete course";
-    throw new Error(message);
+  } catch (error) {
+    handleApiError(error)
   }
 };

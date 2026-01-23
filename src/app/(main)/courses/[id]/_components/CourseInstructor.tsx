@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import { Presentation } from "lucide-react";
 import { UsersRound } from "lucide-react";
@@ -6,7 +7,7 @@ import { MessageSquare } from "lucide-react";
 import Image from "next/image";
 import { useCoursesByInstructorId } from "@/app/hooks/useCourseQueries";
 import { useEnrollmentsForCourse } from "@/app/hooks/useEnrollmentQueries";
-// import { getCourseDetailsByInstructor } from "@/queries/courses";
+
 
 
 const CourseInstructor = ({ course }) => {

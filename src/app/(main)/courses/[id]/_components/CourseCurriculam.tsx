@@ -13,7 +13,7 @@ import {
 import CourseModuleList from "./module/CourseModuleList";
 
 const CourseCurriculam = ({ course }) => {
-  console.log('curriculum',course)
+ 
 
   const totalDurationSeconds = course?.modules?.reduce((modAcc: number, mod: any) => {
     return modAcc + (mod.lessonIds?.reduce((acc: number, lesson: any) => acc + (lesson.duration || 0), 0) || 0);

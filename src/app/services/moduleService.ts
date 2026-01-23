@@ -1,3 +1,4 @@
+import { handleApiError } from "@/helper/handleApiError";
 import axiosInstance from "@/lib/axios";
 import  { AxiosError } from "axios";
 
@@ -10,11 +11,8 @@ export const getModuleById = async (id: string) => {
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    throw new Error(
-      axiosError.response?.data?.message || "Failed to fetch module"
-    );
+  } catch (error) {
+    handleApiError(error);
   }
 };
 
@@ -28,11 +26,8 @@ export const createModule = async (data: any) => {
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    throw new Error(
-      axiosError.response?.data?.message || "Failed to create module"
-    );
+  } catch (error) {
+    handleApiError(error);
   }
 };
 
@@ -46,11 +41,8 @@ export const updateModule = async (id: string, data: any) => {
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    throw new Error(
-      axiosError.response?.data?.message || "Failed to update module"
-    );
+  } catch (error) {
+    handleApiError(error);
   }
 };
 
@@ -67,10 +59,7 @@ export const deleteModule = async (
       }
     );
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    throw new Error(
-      axiosError.response?.data?.message || "Failed to delete module"
-    );
-  }
+  } catch (error) {
+      handleApiError(error);
+    }
 };

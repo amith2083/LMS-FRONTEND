@@ -1,3 +1,4 @@
+import { handleApiError } from "@/helper/handleApiError";
 import axiosInstance from "@/lib/axios";
 import  { AxiosError } from "axios";
 
@@ -12,10 +13,9 @@ export const createLesson = async (data: any, moduleId: string) => {
       { withCredentials: true }
     );
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    throw new Error(axiosError.response?.data?.message || "Failed to create lesson");
-  }
+  } catch (error) {
+      handleApiError(error);
+    }
 };
 
 // Get a single lesson
@@ -25,9 +25,8 @@ export const getLessonById = async (id: string) => {
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    throw new Error(axiosError.response?.data?.message || "Failed to get lesson");
+  } catch (error) {
+    handleApiError(error);
   }
 };
 export const getLessonBySlug = async(slug:string)=> {
@@ -36,9 +35,8 @@ export const getLessonBySlug = async(slug:string)=> {
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    throw new Error(axiosError.response?.data?.message || "Failed to get lesson");
+  } catch (error) {
+    handleApiError(error);
   }
 };
 
@@ -50,9 +48,8 @@ export const updateLesson = async (id: string, data: any) => {
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    throw new Error(axiosError.response?.data?.message || "Failed to update lesson");
+  } catch (error) {
+    handleApiError(error);
   }
 };
 
@@ -64,9 +61,8 @@ export const deleteLesson = async (id: string, moduleId: string) => {
       { withCredentials: true }
     );
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    throw new Error(axiosError.response?.data?.message || "Failed to delete lesson");
+  } catch (error) {
+    handleApiError(error);
   }
 };
 

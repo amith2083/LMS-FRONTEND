@@ -1,3 +1,4 @@
+import { handleApiError } from "@/helper/handleApiError";
 import axiosInstance from "@/lib/axios";
 import  { AxiosError } from "axios";
 
@@ -10,11 +11,8 @@ export const getTotalEarningsForInstructor = async (id: string) => {
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    throw new Error(
-      axiosError.response?.data?.message || "Failed to fetch totalearnings"
-    );
+  } catch (error) {
+    handleApiError(error);
   }
 };
 
@@ -24,12 +22,9 @@ export const getTotalEarningsForAdmin = async () => {
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    throw new Error(
-      axiosError.response?.data?.message || "Failed to fetch totalearnings"
-    );
-  }
+  } catch (error) {
+      handleApiError(error);
+    }
 };
 
 

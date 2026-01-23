@@ -1,3 +1,4 @@
+'use client'
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
@@ -6,15 +7,16 @@ import Image from 'next/image';
 import EnrollCourse from '@/components/enroll-course';
 
 import { useHasEnrollmentForCourse } from '@/app/hooks/useEnrollmentQueries';
+import { Loader2 } from 'lucide-react';
 
 
-const CourseDetailsIntro =  ({course,isEnrolled}) => {
+const CourseDetailsIntro =  ({course}) => {
   
 
 
 
 
-  // const { data: isEnrolled, isLoading } = useHasEnrollmentForCourse( course?._id);
+  const { data: isEnrolled, isLoading } = useHasEnrollmentForCourse( course?._id);
 
     return (
         <div className="overflow-x-hidden  grainy">
@@ -35,7 +37,18 @@ const CourseDetailsIntro =  ({course,isEnrolled}) => {
                 <div className="mt-6 flex items-center justify-center flex-wrap gap-3">
                 
                   
-              { isEnrolled ? (
+             {isLoading ? (
+                  <button
+    disabled
+    className={cn(
+      buttonVariants({ variant: "default", size: "lg" }),
+      "cursor-not-allowed opacity-80"
+    )}
+  >
+    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+    Loading...
+  </button>
+                ) : isEnrolled ? (
                   <Link
                     href={`/courses/${course?._id}/lesson`}
                     className={cn(buttonVariants({ variant: 'default', size: 'lg' }))}

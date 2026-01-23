@@ -1,3 +1,4 @@
+import { handleApiError } from "@/helper/handleApiError";
 import axiosInstance from "@/lib/axios";
 import { AxiosError } from "axios";
 
@@ -17,13 +18,9 @@ export const getReport = async (courseId:string,cookie?: string) => {
 
     const response = await axiosInstance.get(`/api/report/${courseId}`, config);
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to fetch reports";
-    console.error("Error:", message);
-    throw new Error(message);
-  }
+  } catch (error) {
+      handleApiError(error);
+    }
 };
 
 

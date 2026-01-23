@@ -18,7 +18,7 @@ export const useEnrollments = () => {
   return useQuery({
     queryKey: ["enrollments"],
     queryFn: getEnrollments,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+   
   });
 };
 
@@ -45,7 +45,7 @@ export const useEnrollmentsForUser = () => {
   return useQuery({
     queryKey: ["enrollments", "user"],
     queryFn: getEnrollmentsForUser,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+  
   });
 };
 // Check if user is enrolled in a specific course
@@ -54,7 +54,7 @@ export const useHasEnrollmentForCourse = (courseId: string) => {
     queryKey: ["enrollment", "check", courseId],
     queryFn: () => hasEnrollmentForCourse(courseId),
     enabled: !!courseId, // only runs if courseId exists
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    
   });
 };
 

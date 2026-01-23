@@ -15,13 +15,13 @@ import { FileQuestion } from "lucide-react";
 import CourseLessonList from './CourseLessonList';
 
 const CourseModuleList = ({module}) => {
-    console.log('module+',module)
+   
    
   
    const totalDuration = module?.lessonIds?.reduce(function(acc,obj){
     return acc + obj.duration
    },0)
-   console.log('total',totalDuration)
+  
 
     return (
         <div>

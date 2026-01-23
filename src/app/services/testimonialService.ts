@@ -1,3 +1,4 @@
+import { handleApiError } from "@/helper/handleApiError";
 import axiosInstance from "@/lib/axios";
 import { AxiosError } from "axios";
 interface Data {
@@ -18,13 +19,9 @@ export const createTestimonial = async (
       { withCredentials: true }
     );
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to create review";
-    console.error("Error:", message);
-    throw new Error(message);
-  }
+  } catch (error) {
+      handleApiError(error);
+    }
 };
 
 

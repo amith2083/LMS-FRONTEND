@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Session } from "next-auth";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
@@ -9,7 +8,12 @@ import { useRouter } from "next/navigation";
 import { useCreateEnrollment } from "@/app/hooks/useEnrollmentQueries";
 import { toast } from "sonner";
 
-const EnrollCourse = ({ asLink, courseId }) => {
+interface EnrollCourseProps {
+  asLink?: boolean;
+  courseId: string;
+}
+
+const EnrollCourse = ({ asLink, courseId }: EnrollCourseProps) => {
   const { data: session, status } = useSession();
 
   const { mutateAsync, isPending } = useCreateEnrollment();
@@ -17,6 +21,7 @@ const EnrollCourse = ({ asLink, courseId }) => {
 
   const handleEnroll = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isPending) return; //prevent double submit
 
     if (!session) {
       router.push("/login");
@@ -30,8 +35,7 @@ const EnrollCourse = ({ asLink, courseId }) => {
       if (result.sessionUrl) {
         window.location.assign(result.sessionUrl);
       } else {
-
-        router.push(`/courses/${courseId}/success`); 
+        router.push(`/courses/${courseId}/success`);
       }
     } catch (error: any) {
       toast.error(error?.message || "Failed to enroll in the course.");

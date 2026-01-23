@@ -1,3 +1,4 @@
+
 "use client";
 import Element from "@/components/element";
 import { Marquee } from "@/components/magicui/marquee";
@@ -10,51 +11,24 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { formatPrice } from "@/lib/formatPrice"; 
+import { formatPrice } from "@/lib/formatPrice";
 import { cn } from "@/lib/utils";
-import { BookOpen, ArrowRightIcon, ArrowRight } from "lucide-react";
+import { BookOpen, ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { BorderBeam } from "@/components/magicui/border-beam";
-import { useCategories } from "@/app/hooks/useCategoryQueries";
-import { useCourses } from "@/app/hooks/useCourseQueries";
-import ChatBot from "./chatBot";
 import { Course } from "@/app/types/course";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { setTokens } from "@/app/services/authService";
-import { useSession } from "next-auth/react";
 
-const HomePage = () => {
-  const {data:session,status}= useSession()
-  const { data: categories = [],isLoading: catLoading, isFetching: catFetching } = useCategories();
-  const router = useRouter();
-  
-  const { data: coursesData } = useCourses({
-    page: 1,
-    limit: 8,
-    sort: "newest",
-  });
- 
-  const courses:Course[] = coursesData?.courses ?? [];
-  //  useEffect(() => {
-  //   if (status === "authenticated" && session?.user?.email) {
-  //     // This runs when user is logged in via any provider
-  //    setTokens(session.user.email as string).catch((err) => {
-  //       console.error("Failed to set tokens:", err);
-  //       // Optional: show toast error
-  //     });
+interface HomePageClientProps {
+  categories: any[];
+  courses: Course[];
+}
 
-    
 
-     
-  //   }
-  // }, [status, session?.user?.email]);
-  
-
+const HomePageClient = ({ categories, courses }: HomePageClientProps) => {
   return (
     <>
-      {/* Hero Section - No changes, static */}
+      {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 py-16 mt-12 relative">
         <div className="container flex max-w-[64rem] flex-col items-center gap-6 text-center relative isolate rounded-2xl bg-muted/50 p-8 shadow-xl">
           <BorderBeam className="absolute inset-0" duration={5} size={200} />
@@ -65,8 +39,7 @@ const HomePage = () => {
             Learn By Doing with <br /> SkillSeed
           </h1>
           <p className="max-w-[42rem] leading-relaxed text-muted-foreground sm:text-xl sm:leading-9">
-            “You don’t understand anything until you learn it more than one
-            way.”
+            “You don’t understand anything until you learn it more than one way.”
           </p>
           <div className="flex items-center gap-4 flex-wrap justify-center">
             <Link
@@ -74,8 +47,7 @@ const HomePage = () => {
               className={cn(
                 buttonVariants({
                   size: "lg",
-                  className:
-                    "bg-primary hover:bg-primary/90 transition-all duration-300",
+                  className: "bg-primary hover:bg-primary/90 transition-all duration-300",
                 })
               )}
             >
@@ -87,8 +59,7 @@ const HomePage = () => {
                 buttonVariants({
                   variant: "outline",
                   size: "lg",
-                  className:
-                    "border-primary/20 text-primary hover:bg-primary/10",
+                  className: "border-primary/20 text-primary hover:bg-primary/10",
                 })
               )}
             >
@@ -98,71 +69,57 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Marquee - Static */}
-      <Marquee
-        pauseOnHover
-        className="bg-gradient-to-r from-primary/10 to-purple-100 text-primary py-3 px-6 rounded-xl max-w-7xl mx-auto shadow-sm"
-      >
+      <Marquee pauseOnHover className="bg-gradient-to-r from-primary/10 to-purple-100 text-primary py-3 px-6 rounded-xl max-w-7xl mx-auto shadow-sm">
         <span className="text-sm md:text-lg font-semibold tracking-wide">
-          🎉 New Courses Weekly | Become an Instructor Today | Lifetime Access |
-          Learn by Doing 🚀
+          🎉 New Courses Weekly | Become an Instructor Today | Lifetime Access | Learn by Doing 🚀
         </span>
       </Marquee>
 
       <Element />
 
-      {/* Categories Section with Carousel */}
-<section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 py-16">
-  <div className="flex items-center justify-between">
-    <SectionTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
-      Categories
-    </SectionTitle>
-  </div>
+      {/* Categories Carousel */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 py-16">
+        <div className="flex items-center justify-between">
+          <SectionTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
+            Categories
+          </SectionTitle>
+        </div>
 
-  <Carousel
-    opts={{
-      align: "start",
-      loop: true,
-    }}
-    className="w-full"
-  >
-    <CarouselContent className="px-8">
-      {categories.map((category: any) => (
-        <CarouselItem
-          key={category._id}
-          className="basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 mx-4"
-        >
-          <div
-            onClick={() => router.push(`/courses?category=${category.title}`)}
-            className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-background to-muted/50 p-3 hover:scale-105 transition-all duration-500 ease-in-out shadow-lg hover:shadow-xl group cursor-pointer"
-          >
-            <div className="flex flex-col gap-4 items-center justify-between rounded-md p-6">
-              <Image
-                src={
-                  category.thumbnail ||
-                  "/assets/images/categories/default.jpg"
-                }
-                alt={category.title}
-                width={120}
-                height={120}
-                className="object-cover rounded-md group-hover:scale-110 transition-transform duration-300"
-              />
-              <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors text-center">
-                {category.title}
-              </h3>
-            </div>
-          </div>
-        </CarouselItem>
-      ))}
-    </CarouselContent>
+        <Carousel opts={{ align: "start", loop: true }} className="w-full">
+          <CarouselContent className="px-8">
+            {categories.map((category) => (
+              <CarouselItem
+                key={category._id}
+                className="basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 mx-4"
+              >
+                <Link
+                  href={`/courses?category=${encodeURIComponent(category.title)}`}
+                  className="block"
+                >
+                  <div className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-background to-muted/50 p-3 hover:scale-105 transition-all duration-500 shadow-lg hover:shadow-xl group cursor-pointer">
+                    <div className="flex flex-col gap-4 items-center justify-between rounded-md p-6">
+                      <Image
+                        src={category.thumbnail || "/assets/images/categories/default.jpg"}
+                        alt={category.title}
+                        width={120}
+                        height={120}
+                        className="object-cover rounded-md group-hover:scale-110 transition-transform duration-300"
+                      />
+                      <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors text-center">
+                        {category.title}
+                      </h3>
+                    </div>
+                  </div>
+                </Link>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-0" />
+          <CarouselNext className="right-0" />
+        </Carousel>
+      </section>
 
-    {/* Navigation Buttons */}
-    <CarouselPrevious className="left-0" />
-    <CarouselNext className="right-0" />
-  </Carousel>
-</section>
-
-      {/* Courses Section */}
+      {/* Featured Courses */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 py-16">
         <div className="flex items-center justify-between">
           <SectionTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
@@ -176,17 +133,15 @@ const HomePage = () => {
           </Link>
         </div>
 
-        <div className="grid sm:grid-cols-2 md:grid-cols-2  lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
-          {courses.map((course: any) => (
+        <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
+          {courses.map((course) => (
             <Link key={course._id} href={`/courses/${course._id}`}>
               <div className="group hover:shadow-lg transition-all duration-300 overflow-hidden border rounded-xl p-4 h-full bg-background hover:bg-muted/50">
                 <div className="relative w-full aspect-video rounded-lg overflow-hidden">
                   <Image
-                    src={
-                      course.thumbnail || "/assets/images/courses/default.png"
-                    }
+                    src={course.thumbnail || "/assets/images/courses/default.png"}
                     alt={course.title}
-                    className="object-contain group-hover:scale-115 transition-transform duration-300 "
+                    className="object-contain group-hover:scale-115 transition-transform duration-300"
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                   />
@@ -214,11 +169,10 @@ const HomePage = () => {
               </div>
             </Link>
           ))}
-            <ChatBot />
         </div>
       </section>
     </>
   );
 };
 
-export default HomePage;
+export default HomePageClient;

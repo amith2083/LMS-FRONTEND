@@ -110,11 +110,16 @@ export async function middleware(req:NextRequest) {
 
     // 2️ Admin login redirect
  
-  if (token && pathname === "/admin/login") {
+if (pathname === "/admin/login") {
+    if (!token) {
+      return NextResponse.next(); //  allow admin login
+    }
+
     if (token.role === "admin") {
       return NextResponse.redirect(new URL("/admin/dashboard", req.url));
     }
-    return NextResponse.redirect(new URL("/", req.url));
+
+    return NextResponse.redirect(new URL("/", req.url)); //  user → home
   }
 
  
@@ -127,9 +132,9 @@ export async function middleware(req:NextRequest) {
 
     // 4️ Protect admin routes
 
-  if (pathname.startsWith("/admin")) {
+ if (pathname.startsWith("/admin")) {
     if (!token || token.role !== "admin") {
-      return NextResponse.redirect(new URL("/", req.url));
+      return NextResponse.redirect(new URL("/admin/login", req.url));
     }
   }
 

@@ -1,17 +1,16 @@
+import { handleApiError } from "@/helper/handleApiError";
 import axiosInstance from "@/lib/axios";
 import { AxiosError } from "axios";
+import { QuizSetAction } from "../instructor/quiz-sets/[quizSetId]/_components/quiz-set-action";
 
 // Get all quizsets
 export const getQuizsets = async () => {
   try {
     const response = await axiosInstance.get("/api/quizsets");
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to fetch quizsets";
-    throw new Error(message);
-  }
+  } catch (error) {
+      handleApiError(error);
+    }
 };
 
 // Get a quizset by ID
@@ -19,11 +18,8 @@ export const getQuizsetById = async (id: string) => {
   try {
     const response = await axiosInstance.get(`/api/quizsets/${id}`);
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to fetch quizset";
-    throw new Error(message);
+  } catch (error) {
+    handleApiError(error);
   }
 };
 
@@ -35,12 +31,9 @@ export const createQuizset = async (quizsetData: any) => {
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to create quizset";
-    throw new Error(message);
-  }
+  } catch (error) {
+      handleApiError(error);
+    }
 };
 
 // Update a quizset
@@ -51,12 +44,9 @@ export const updateQuizset = async (id: string, quizsetData: any) => {
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to update quizset";
-    throw new Error(message);
-  }
+  } catch (error) {
+      handleApiError(error);
+    }
 };
 
 // Delete a quizset
@@ -66,16 +56,14 @@ export const deleteQuizset = async (id: string) => {
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to delete quizset";
-    throw new Error(message);
+  } catch (error) {
+    handleApiError(error);
   }
 };
 
 // Add a quiz to a quizset
 export const addQuizToQuizset = async (quizsetId: string, quizData: any) => {
+  console.log('front',quizData)
 
   try {
     const response = await axiosInstance.post(`/api/quizsets/${quizsetId}/quiz`, quizData, {
@@ -83,11 +71,8 @@ export const addQuizToQuizset = async (quizsetId: string, quizData: any) => {
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to add quiz to quizset";
-    throw new Error(message);
+  } catch (error) {
+    handleApiError(error);
   }
 };
 
@@ -98,11 +83,8 @@ export const deleteQuizFromQuizset = async (quizsetId: string, quizId: string) =
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to delete quiz from quizset";
-    throw new Error(message);
+  } catch (error) {
+    handleApiError(error);
   }
 };
 
@@ -115,10 +97,7 @@ export const togglePublishQuizset = async (quizsetId: string) => {
       withCredentials: true,
     });
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to toggle quizset publish state";
-    throw new Error(message);
+  } catch (error) {
+    handleApiError(error);
   }
 };

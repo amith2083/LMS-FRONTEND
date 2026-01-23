@@ -57,6 +57,7 @@ const updateAnswer = (e: React.ChangeEvent<HTMLInputElement>, quizId: string, qu
 };
 
   const submitQuiz = async () => {
+    console.log('answers',answers)
     try {
       await mutateAsync({courseId, quizSetId, answers} );
       setOpen(false);

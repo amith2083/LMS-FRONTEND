@@ -1,9 +1,7 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -92,7 +90,7 @@ export const ModulesForm: React.FC<ModulesFormProps> = ({
       
 
       const moduleCreated = await mutateAsync(payload); 
-      console.log('modcreated',moduleCreated)
+      
 ;
       toast.success("Module created");
       form.reset();

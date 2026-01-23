@@ -48,7 +48,7 @@ const AddQuizSetForm = () => {
 
   const onSubmit = async (values) => {
     try {
-      // console.log("values", values);
+    
       const newQuizset = await mutateAsync(values);
 
       router.push(`/instructor/quiz-sets/${newQuizset._id}`);

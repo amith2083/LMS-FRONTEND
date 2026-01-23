@@ -44,6 +44,7 @@ export const CategoryForm = ({
   options }:CategoryFormProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+   
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
@@ -61,18 +62,23 @@ export const CategoryForm = ({
     try {
       const selectedCategory = options.find(option => option.value === values.value);
       
-  
+
+
+
       if (!selectedCategory) {
       toast.error("Invalid category selected");
       return;
     }
       await mutateAsync({id:courseId, data: { category: selectedCategory.id }})
+     
       toggleEdit();
-      toast.success("Course title updated")
+      toast.success("Course category updated")
     } catch (error) {
       toast.error("Something went wrong");
     }
   };
+
+
 
   // const selectedOptions = options.find(
   //   (option) => option.value === title

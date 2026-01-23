@@ -1,29 +1,33 @@
 
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { getQueryClient } from '@/lib/getQueryClient';
-import CoursesPage from './_components/CoursesPage';
 import { getCategories } from '@/app/services/categoryService';
 import { getCourses } from '@/app/services/courseService';
+import CoursesPage from './_components/Courses';
 
 
 
-export default async function CoursesPageWrapper() {
-  const queryClient = getQueryClient();
+ const CoursesPageWrapper = async ()=> {
 
 
-  await queryClient.prefetchQuery({
-    queryKey: ['categories'],
-    queryFn: getCategories,
-  });
 
-  await queryClient.prefetchQuery({
-    queryKey: ['courses', { page: 1, limit: 6, search: '', category: '', price: '', sort: '' }],
-    queryFn: () => getCourses({ page: 1, limit: 6, search: '', category: '', price: '', sort: '' }),
-  });
+
+ 
+  const [categoriesData, coursesData] = await Promise.all([
+    getCategories(),
+    getCourses({   page: 1,
+    limit: 6}),
+  ]);
+
+
+const categories = categoriesData || [];
+  const initialCoursesResponse = coursesData || { courses: [], totalPages: 1, totalCourses: 0 };
+ 
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <CoursesPage />
-    </HydrationBoundary>
+    <CoursesPage
+      initialCoursesData={initialCoursesResponse}  
+      initialCategories={categories}
+    />
   );
 }
+
+export default CoursesPageWrapper

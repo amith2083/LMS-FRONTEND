@@ -81,7 +81,7 @@ useEffect(() => {
         },
       }
     );
-  router.push("/");
+  router.push( isAdmin ? '/admin/dashboard':"/");
    
     } catch (error: any) {
       toast.error("An unexpected error occurred.");

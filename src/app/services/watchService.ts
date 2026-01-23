@@ -1,3 +1,4 @@
+import { handleApiError } from "@/helper/handleApiError";
 import axiosInstance from "@/lib/axios";
 import { AxiosError } from "axios";
 
@@ -26,13 +27,9 @@ export const getWatchByLessonAndModule = async (
     const response = await axiosInstance.get(`/api/watch/${lessonId}/${moduleId}`, 
     config);
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to fetch watch data";
-      console.log('error is',message)
-    throw new Error(message);
-  }
+  } catch (error) {
+      handleApiError(error);
+    }
 };
 
 
@@ -62,11 +59,7 @@ export const createWatch= async (
     );
 
     return response.data;
-  } catch (error: any) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message || "Failed to update watch state";
-    console.error("error:", message);
-    throw new Error(message);
+  } catch (error) {
+    handleApiError(error);
   }
 };

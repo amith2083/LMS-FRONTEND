@@ -1,4 +1,5 @@
 
+import { handleApiError } from "@/helper/handleApiError";
 import axiosInstance from "@/lib/axios";
 import { AxiosError } from "axios";
 
@@ -15,9 +16,6 @@ export const createQuizAssessment = async (
   },{withCredentials:true});
   return res.data;
 }catch (error) {
-    const axiosError = error as AxiosError<any>;
-    const message =
-      axiosError.response?.data?.message ;
-    throw new Error(message);
+   handleApiError(error)
   }
 };
