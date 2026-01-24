@@ -3,24 +3,13 @@ import axiosInstance from "@/lib/axios";
 import { AxiosError } from "axios";
 
 // Get reports
-export const getReport = async (courseId:string,cookie?: string) => {
+export const getReport = async (courseId: string) => {
   try {
-    const config: any = { withCredentials: true };
-
-    if (cookie) {
-      // Server-side request (Next.js SSR): pass cookies manually
-      config.headers = {
-        ...config.headers,
-        Cookie: cookie,
-      };
-      delete config.withCredentials;
-    }
-
-    const response = await axiosInstance.get(`/api/report/${courseId}`, config);
+    const response = await axiosInstance.get(`/api/report/${courseId}`, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
-      handleApiError(error);
-    }
+    handleApiError(error);
+  }
 };
-
-

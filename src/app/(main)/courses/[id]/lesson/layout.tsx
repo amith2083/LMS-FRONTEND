@@ -5,10 +5,8 @@ import { Lock } from "lucide-react";
 import { CheckCircle } from "lucide-react";
 import { CourseSidebarMobile } from "./_components/course-sidebar-mobile";
 import { CourseSidebar } from "./_components/course-sidebar";
-
 import { redirect } from "next/navigation";
 import { getQueryClient } from "@/lib/getQueryClient";
-
 import { getCourseById } from "@/app/services/courseService";
 import { getWatchByLessonAndModule } from "@/app/services/watchService";
 import { hasEnrollmentForCourse } from "@/app/services/enrollmentService";

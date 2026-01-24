@@ -5,7 +5,6 @@ import { buttonVariants } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 import EnrollCourse from '@/components/enroll-course';
-
 import { useHasEnrollmentForCourse } from '@/app/hooks/useEnrollmentQueries';
 import { Loader2 } from 'lucide-react';
 

@@ -6,7 +6,7 @@ import { Lock } from "lucide-react";
 import Link from "next/link";
 
 export const SidebarLessonItem = ({courseId,lesson,module}) => {
-  console.log('lesson',lesson)
+
   
     const isPrivate = (lesson) => {
       return lesson?.access === "private"

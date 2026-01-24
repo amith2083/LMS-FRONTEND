@@ -27,7 +27,7 @@ const Quiz = ({ courseId,quizSet,isTaken}) => {
         }
      })
 
-     console.log(quizzes);
+ 
 
     return (
     <>
