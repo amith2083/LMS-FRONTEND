@@ -20,17 +20,15 @@ import { toast } from "sonner";
 import { VideoPlayer } from "@/components/video-player";
 
 import { useUpdateLesson, useUploadSignedUrl } from "@/app/hooks/useLesssonQueries";
-import { formatDuration } from "@/lib/duration";
 
-const formSchema = z
-  .object({
-    url: z.instanceof(File).optional(),
-    duration: z.string().min(1, { message: "Required" }),
-  })
-  .refine((data) => data.url instanceof File, {
-    message: "Video file is required",
-    path: ["url"],
-  });
+const formSchema = z.object({
+  url: z
+    .instanceof(File)
+    .refine((file) => file.type.startsWith("video/"), {
+      message: "Please upload a valid video file",
+    }),
+  duration: z.string().min(1, { message: "Duration is required" }),
+});
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -54,33 +52,67 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
 
   const [state, setState] = useState({
     url: initialData?.url ?? "",
-    duration: initialData?.duration != null ? (formatDuration(initialData.duration) ?? "") : "",
+    duration:
+      initialData?.duration != null
+        ? formatDuration(initialData.duration) ?? ""
+        : "",
   });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       url: undefined,
-      duration: state.duration as string,
+      duration: "",
     },
   });
 
   const { isSubmitting, isValid } = form.formState;
- const uploadSignedUrl = useUploadSignedUrl();
+  const uploadSignedUrl = useUploadSignedUrl();
   const { mutateAsync: updateLesson } = useUpdateLesson();
-  const onSubmit = async (values: FormValues) => {
-    const file = values.url;
-    if (!(file instanceof File)) {
-      toast.error("Video file is required");
+
+  // Auto-detect duration when file is selected
+  const handleFileChange = (file: File | undefined) => {
+    if (!file) {
+      form.setValue("duration", "");
       return;
     }
 
+    const video = document.createElement("video");
+    video.preload = "metadata";
+
+    video.onloadedmetadata = () => {
+      window.URL.revokeObjectURL(video.src); // Clean up memory
+
+      const duration = video.duration;
+      const hours = Math.floor(duration / 3600);
+      const minutes = Math.floor((duration % 3600) / 60);
+      const seconds = Math.floor(duration % 60);
+
+      const formatted = `${hours.toString().padStart(2, "0")}:${minutes
+        .toString()
+        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+      form.setValue("duration", formatted);
+      toast.success("Duration detected automatically!");
+    };
+
+    video.onerror = () => {
+      toast.error("Could not read video duration. Please enter manually.");
+    };
+
+    video.src = URL.createObjectURL(file);
+  };
+
+  const onSubmit = async (values: FormValues) => {
+    const file = values.url;
+
     try {
       const durationParts = values.duration.split(":").map(Number);
-      if (durationParts.length !== 3) {
-        toast.error("Duration must be in HH:MM:SS format");
+      if (durationParts.length !== 3 || durationParts.some(isNaN)) {
+        toast.error("Invalid duration format. Use HH:MM:SS");
         return;
       }
+
       const [hours, minutes, seconds] = durationParts;
       const totalDuration = hours * 3600 + minutes * 60 + seconds;
 
@@ -98,7 +130,7 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
       });
 
       if (!uploadRes.ok) {
-        throw new Error("S3 upload failed");
+        throw new Error("Failed to upload video to S3");
       }
 
       await updateLesson({
@@ -111,87 +143,94 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
         url: key,
         duration: values.duration,
       });
-      toast.success("Lesson updated");
+
+      toast.success("Video uploaded successfully!");
       toggleEdit();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Something went wrong";
-      console.error("Error in onSubmit:", message);
-      toast.error("Something went wrong");
+      const message = err instanceof Error ? err.message : "Upload failed";
+      console.error("Upload error:", message);
+      toast.error(message);
     }
   };
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Video URL
+        Lesson Video
         <Button variant="ghost" onClick={toggleEdit}>
           {isEditing ? (
             <>Cancel</>
           ) : (
             <>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit URL
+              {state.url ? "Change Video" : "Add Video"}
             </>
           )}
         </Button>
       </div>
+
       {!isEditing && (
         <>
           <p className="text-sm mt-2">
-            {state?.url || "No video uploaded"}
+            {state.url ? `Duration: ${state.duration}` : "No video uploaded"}
           </p>
-          {state?.url ? (
-            <div className="mt-6">
+          {state.url && (
+            <div className="mt-6 aspect-video">
               <VideoPlayer videoKey={state.url} />
             </div>
-          ) : null}
+          )}
         </>
       )}
+
       {isEditing && (
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((values: FormValues) => onSubmit(values))}
-            className="space-y-4 mt-4"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 mt-4"
           >
-            {/* url */}
-            <FormField
-  control={form.control}
-  name="url"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Upload Video</FormLabel>
-      <FormControl>
-        <Input
-          type="file"
-          accept="video/*"
-          onChange={(e) => field.onChange(e.target.files?.[0])}
-        />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
-            {/* duration */}
             <FormField
               control={form.control}
-              name="duration"
+              name="url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Video Duration</FormLabel>
+                  <FormLabel>Upload Video</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={isSubmitting}
-                      placeholder="e.g. '10:30:18'"
-                      {...field}
+                      type="file"
+                      accept="video/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        field.onChange(file);
+                        handleFileChange(file);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="duration"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Video Duration (auto-detected)</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g., 00:15:30"
+                      {...field}
+                      disabled // Optional: make it read-only since it's auto-filled
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Save
+                {isSubmitting ? "Uploading..." : "Save Video"}
               </Button>
             </div>
           </form>
@@ -200,3 +239,13 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
     </div>
   );
 };
+
+// Helper function 
+function formatDuration(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+}
