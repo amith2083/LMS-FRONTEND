@@ -7,13 +7,10 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { getCourseById, getRelatedCourses } from "@/app/services/courseService";
 import { hasEnrollmentForCourse } from "@/app/services/enrollmentService";
 interface Props {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
-const SingleCoursePage = async({ params }: Props) => {
-  // const params = useParams();
-  const courseId = params?.id ;
+const SingleCoursePage = async ({ params }: Props) => {
+  const { id: courseId } = await params;
 
 const [course, relatedCoursesData] = await Promise.all([
     getCourseById(courseId),

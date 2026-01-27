@@ -7,7 +7,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { LayoutDashboard } from "lucide-react";
 import { Eye } from "lucide-react";
@@ -40,11 +39,10 @@ onClose
   
 }) => {
   
-  const postDelete=(id:string)=>{
+  const postDelete = () => {
     setOpen(false);
     onClose?.();
-      
-  }
+  };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {/* <DialogTrigger>Open</DialogTrigger> */}
@@ -111,13 +109,14 @@ onClose
                 <h2 className="text-xl">Add a video</h2>
               </div>
                 <VideoUrlForm
-                initialData={{
-                  url: lesson?.videoKey,
-                  duration: lesson?.duration
-                }}
-                courseId={courseId}
-                lessonId={lesson?._id}
-              />
+                  initialData={{
+                    url: lesson?.videoKey,
+                    duration: lesson?.duration,
+                  }}
+                  courseId={courseId}
+                  lessonId={lesson._id}
+                  moduleId={moduleId}
+                />
             </div>
           </div>
         </div>

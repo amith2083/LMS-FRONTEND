@@ -15,7 +15,14 @@ import { authOptions } from "@/lib/auth";
 
 
 
-export default async function CourseLayout({ children, params: { id } }: { children: React.ReactNode; params: { id: string } }) {
+export default async function CourseLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
 
   // const session = await getServerSession(authOptions);
   // if (!session?.user?.id) redirect('/login');

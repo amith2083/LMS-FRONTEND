@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import QuizModal from "./quiz-modal";
 
 
-function VideoDescription({description}) {
+function VideoDescription({ description }: { description?: string | null }) {
 
 	return (
 		<div className="mt-4">

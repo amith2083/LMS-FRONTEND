@@ -67,6 +67,14 @@ useEffect(() => {
 
       if (res?.error) {
         toast.error(res.error || "Invalid credentials");
+        if (res.error.includes("Email not verified") || res.error.includes("verification code")) {
+    localStorage.setItem("otpEmail", email);
+
+    setTimeout(() => {
+      router.push("/otp");
+    },300)
+  }
+        
         setIsLoading(false);
         return;
       }

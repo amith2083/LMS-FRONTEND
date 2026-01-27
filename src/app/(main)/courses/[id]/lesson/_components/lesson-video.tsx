@@ -12,7 +12,12 @@ export const LessonVideo = ({
   moduleId,
 }: {
   courseId: string;
-  lesson: { _id: string; videoKey?: string };
+  lesson: {
+    _id: string;
+    title?: string;
+    description?: string;
+    videoKey?: string;
+  };
   moduleId: string;
 }) => {
   const router = useRouter();
@@ -24,9 +29,8 @@ export const LessonVideo = ({
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(0); // seconds
 
-  const { mutateAsync:getPlaybackSignerUrl } = usePlaybackSignedUrl();
-  const { mutateAsync:createWatch } = useCreateWatch();
-
+  const { mutateAsync: getPlaybackSignerUrl } = usePlaybackSignedUrl();
+  const { mutateAsync: createWatch } = useCreateWatch();
 
   /* --------------------------------------------------------------
      1. SSR safety – make sure `window` exists
@@ -39,11 +43,12 @@ export const LessonVideo = ({
      2. Get a signed S3 URL for the video
      -------------------------------------------------------------- */
   useEffect(() => {
-    if (!lesson?.videoKey) return;
+    const key = lesson?.videoKey;
+    if (!key) return;
 
     const fetchUrl = async () => {
       try {
-        const { signedUrl } = await getPlaybackSignerUrl({ key: lesson.videoKey });
+        const { signedUrl } = await getPlaybackSignerUrl({ key });
         setSignedUrl(signedUrl);
       } catch (e) {
         console.error("Signed URL error:", e);
@@ -59,8 +64,14 @@ export const LessonVideo = ({
     if (!started) return;
 
     const send = async () => {
-       await createWatch({courseId, lessonId:lesson._id, moduleId, state:"started", lastTime:0});
-     
+      await createWatch({
+        courseId,
+        lessonId: lesson._id,
+        moduleId,
+        state: "started",
+        lastTime: 0,
+      });
+
       setStarted(false); // reset so we only fire once
     };
     send();
@@ -73,12 +84,13 @@ export const LessonVideo = ({
     if (!ended) return;
 
     const send = async () => {
-    
-    const res=   await createWatch({courseId,
-                     lessonId:lesson._id,
-                    moduleId,
-                    state:"completed", 
-                     lastTime:duration});
+      const res = await createWatch({
+        courseId,
+        lessonId: lesson._id,
+        moduleId,
+        state: "completed",
+        lastTime: duration,
+      });
       if (res.ok) {
         setEnded(false);
         router.refresh();
@@ -90,7 +102,6 @@ export const LessonVideo = ({
   if (!hasWindow) return <p>Loading player…</p>;
   if (!signedUrl) return <p>No video uploaded yet</p>;
 
-  
   return (
     <div className="relative w-full max-w-4xl mx-auto">
       <video
@@ -100,17 +111,15 @@ export const LessonVideo = ({
         className="w-full rounded-lg shadow-lg"
         style={{ height: "470px" }} // same height you used before
         onPlay={() => {
-        
           setStarted(true);
         }}
         onEnded={() => {
-          
           setEnded(true);
         }}
         onLoadedMetadata={(e) => {
           const vid = e.currentTarget as HTMLVideoElement;
           const dur = vid.duration;
-        
+
           setDuration(dur);
         }}
         onTimeUpdate={(e) => {
@@ -122,8 +131,6 @@ export const LessonVideo = ({
       >
         Your browser does not support the video tag.
       </video>
-
-   
     </div>
   );
 };

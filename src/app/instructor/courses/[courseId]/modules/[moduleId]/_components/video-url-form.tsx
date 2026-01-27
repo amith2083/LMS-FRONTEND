@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Pencil } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { VideoPlayer } from "@/components/video-player";
@@ -23,92 +22,100 @@ import { VideoPlayer } from "@/components/video-player";
 import { useUpdateLesson, useUploadSignedUrl } from "@/app/hooks/useLesssonQueries";
 import { formatDuration } from "@/lib/duration";
 
-
+const formSchema = z
+  .object({
+    url: z.instanceof(File).optional(),
+    duration: z.string().min(1, { message: "Required" }),
+  })
+  .refine((data) => data.url instanceof File, {
+    message: "Video file is required",
+    path: ["url"],
+  });
 
 type FormValues = z.infer<typeof formSchema>;
-const formSchema = z.object({
-  // url: z.string().min(1, {
-  //   message: "Required",
-  // }),
-  url: z.any().refine((file) => file instanceof File, { message: "Required" }),
-  duration: z.string().min(1, {
-    message: "Required",
-  }),
-});
+
 interface VideoUrlFormProps {
   initialData: {
-    url: string;
-    duration: number;
+    url?: string;
+    duration?: number;
   };
   courseId: string;
   lessonId: string;
+  moduleId: string;
 }
 
-export const VideoUrlForm: React.FC<VideoUrlFormProps>  = ({ initialData, courseId, lessonId }) => {
-
-  const router = useRouter();
-
+export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
+  initialData,
+  lessonId,
+  moduleId,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
-
   const toggleEdit = () => setIsEditing((current) => !current);
-    const [state, setState] = useState({
-    url: initialData?.url,
-    duration: formatDuration(initialData?.duration)??"",
+
+  const [state, setState] = useState({
+    url: initialData?.url ?? "",
+    duration: initialData?.duration != null ? (formatDuration(initialData.duration) ?? "") : "",
   });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: state,
+    defaultValues: {
+      url: undefined,
+      duration: state.duration as string,
+    },
   });
 
   const { isSubmitting, isValid } = form.formState;
  const uploadSignedUrl = useUploadSignedUrl();
   const { mutateAsync: updateLesson } = useUpdateLesson();
-  const onSubmit = async (values:FormValues) => {
-  
+  const onSubmit = async (values: FormValues) => {
+    const file = values.url;
+    if (!(file instanceof File)) {
+      toast.error("Video file is required");
+      return;
+    }
+
     try {
-      const file = values.url as File;
-          console.log("Selected file:", file);
-     const durationParts = values.duration.split(":").map(Number);
-      if (durationParts.length === 3) {
-        const [hours, minutes, seconds] = durationParts;
-        const totalDuration = hours * 3600 + minutes * 60 + seconds;
-            console.log("Duration in seconds:", totalDuration);
-         // 1. Get signed URL
-   
+      const durationParts = values.duration.split(":").map(Number);
+      if (durationParts.length !== 3) {
+        toast.error("Duration must be in HH:MM:SS format");
+        return;
+      }
+      const [hours, minutes, seconds] = durationParts;
+      const totalDuration = hours * 3600 + minutes * 60 + seconds;
 
-const { signedUrl, fileUrl, key } = await uploadSignedUrl.mutateAsync({
-  fileName: file.name,
-  fileType: file.type,
-});
-     console.log("Signed URL:", signedUrl);
-        console.log("File URL:", fileUrl);
-        console.log('key',key)
+      const { signedUrl, key } = await uploadSignedUrl.mutateAsync({
+        fileName: file.name,
+        fileType: file.type,
+      });
 
-    // 2. Upload file directly to S3
-   const uploadRes= await fetch(signedUrl, {
-      method: "PUT",
-      body: file,
-      headers: {
-        "Content-Type": file.type,
-      },
-    });
-  console.log("S3 Upload response:", uploadRes.status);
-       
-        // await updateLesson(lessonId,payload)
-        // Update local state so UI reflects the change
-      //  await updateLesson({ id: lessonId, data: { video_url: key, duration } });
-      await updateLesson({ id: lessonId, data: { videoKey: key, duration: totalDuration } });
-        setState({
+      const uploadRes = await fetch(signedUrl, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
+
+      if (!uploadRes.ok) {
+        throw new Error("S3 upload failed");
+      }
+
+      await updateLesson({
+        id: lessonId,
+        data: { videoKey: key, duration: totalDuration },
+        moduleId,
+      });
+
+      setState({
         url: key,
         duration: values.duration,
       });
-        toast.success("Lesson updated");
-        toggleEdit();
-      // router.refresh()
-    }
-   } catch(err:any) {
-     console.error("Error in onSubmit:", err.message)
+      toast.success("Lesson updated");
+      toggleEdit();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Something went wrong";
+      console.error("Error in onSubmit:", message);
       toast.error("Something went wrong");
     }
   };
@@ -131,17 +138,19 @@ const { signedUrl, fileUrl, key } = await uploadSignedUrl.mutateAsync({
       {!isEditing && (
         <>
           <p className="text-sm mt-2">
-            {state?.url}
+            {state?.url || "No video uploaded"}
           </p>
-          <div className="mt-6">
-            <VideoPlayer  videoKey={state?.url} />
-          </div>
+          {state?.url ? (
+            <div className="mt-6">
+              <VideoPlayer videoKey={state.url} />
+            </div>
+          ) : null}
         </>
       )}
       {isEditing && (
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit((values: FormValues) => onSubmit(values))}
             className="space-y-4 mt-4"
           >
             {/* url */}
