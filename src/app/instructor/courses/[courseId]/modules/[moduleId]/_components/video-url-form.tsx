@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { VideoPlayer } from "@/components/video-player";
 
 import { useUpdateLesson, useUploadSignedUrl } from "@/app/hooks/useLesssonQueries";
+import { Progress } from "@/components/ui/progress";
 
 const formSchema = z.object({
   url: z
@@ -48,6 +49,8 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
   moduleId,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const [state, setState] = useState({
@@ -92,7 +95,7 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
         .toString()
         .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
-      form.setValue("duration", formatted);
+      form.setValue("duration", formatted,{ shouldValidate: true });
       toast.success("Duration detected automatically!");
     };
 
@@ -105,7 +108,10 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
 
   const onSubmit = async (values: FormValues) => {
     const file = values.url;
+if (!file) return;
 
+    setIsUploading(true);
+    setUploadProgress(0);
     try {
       const durationParts = values.duration.split(":").map(Number);
       if (durationParts.length !== 3 || durationParts.some(isNaN)) {
@@ -120,18 +126,43 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
         fileName: file.name,
         fileType: file.type,
       });
+      // Use XMLHttpRequest for progress tracking
+      const uploadPromise = new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", signedUrl);
+        xhr.setRequestHeader("Content-Type", file.type);
 
-      const uploadRes = await fetch(signedUrl, {
-        method: "PUT",
-        body: file,
-        headers: {
-          "Content-Type": file.type,
-        },
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percent = Math.round((event.loaded / event.total) * 100);
+            setUploadProgress(percent);
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve();
+          } else {
+            reject(new Error(`Upload failed: ${xhr.statusText}`));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error("Network error during upload"));
+        xhr.send(file);
       });
+      await uploadPromise
 
-      if (!uploadRes.ok) {
-        throw new Error("Failed to upload video to S3");
-      }
+      // const uploadRes = await fetch(signedUrl, {
+      //   method: "PUT",
+      //   body: file,
+      //   headers: {
+      //     "Content-Type": file.type,
+      //   },
+      // });
+
+      // if (!uploadRes.ok) {
+      //   throw new Error("Failed to upload video to S3");
+      // }
 
       await updateLesson({
         id: lessonId,
@@ -150,6 +181,9 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
       const message = err instanceof Error ? err.message : "Upload failed";
       console.error("Upload error:", message);
       toast.error(message);
+    }finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -157,7 +191,7 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
         Lesson Video
-        <Button variant="ghost" onClick={toggleEdit}>
+        <Button variant="ghost" onClick={toggleEdit} disabled={isUploading}>
           {isEditing ? (
             <>Cancel</>
           ) : (
@@ -198,10 +232,12 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
                     <Input
                       type="file"
                       accept="video/*"
+                      disabled={isUploading}
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         field.onChange(file);
                         handleFileChange(file);
+                        
                       }}
                     />
                   </FormControl>
@@ -220,17 +256,35 @@ export const VideoUrlForm: React.FC<VideoUrlFormProps> = ({
                     <Input
                       placeholder="e.g., 00:15:30"
                       {...field}
-                      disabled // Optional: make it read-only since it's auto-filled
+                      disabled 
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
+{/* Progress bar – only shown during upload */}
+            {isUploading && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Uploading video...</span>
+                  <span>{uploadProgress}%</span>
+                </div>
+                <Progress value={uploadProgress} className="h-2" />
+                <p className="text-xs text-muted-foreground">
+                  {uploadProgress < 100
+                    ? "Do not close this page. Large videos may take several minutes."
+                    : "Finalizing..."}
+                </p>
+              </div>
+            )}
             <div className="flex items-center gap-x-2">
-              <Button disabled={!isValid || isSubmitting} type="submit">
-                {isSubmitting ? "Uploading..." : "Save Video"}
+              <Button disabled={!isValid || isSubmitting || isUploading} type="submit">
+                {isUploading
+                  ? "Uploading..."
+                  : isSubmitting
+                  ? "Saving..."
+                  : "Save Video"}
               </Button>
             </div>
           </form>
