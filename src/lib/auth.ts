@@ -6,7 +6,7 @@ import axios from "axios";
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
-    maxAge: 24 * 60 * 60,
+    maxAge: 30 * 60 * 1000,
   },
 
   providers: [
