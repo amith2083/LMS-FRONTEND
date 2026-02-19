@@ -18,11 +18,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { Course } from "@/app/types/course";
+import { Category } from "@/app/types/category";
 
 interface HomePageClientProps {
-  categories: any[];
+   categories: Category[];
   courses: Course[];
 }
+
 
 
 const HomePageClient = ({ categories, courses }: HomePageClientProps) => {

@@ -179,14 +179,14 @@ const Navbar = () => {
                   My Courses
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
+              {/* <DropdownMenuItem asChild>
                 <Link
                   href="#"
                   className="hover:bg-primary/10 transition-colors"
                 >
                   Testimonials & Certificates
                 </Link>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem asChild>
                 <Link
                   href=""

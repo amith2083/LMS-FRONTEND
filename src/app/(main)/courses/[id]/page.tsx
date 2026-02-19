@@ -12,15 +12,15 @@ interface Props {
 const SingleCoursePage = async ({ params }: Props) => {
   const { id: courseId } = await params;
 
-const [course, relatedCoursesData] = await Promise.all([
+const [course, relatedCourses] = await Promise.all([
     getCourseById(courseId),
     getRelatedCourses(courseId),
    
   ]);
 
-  const relatedCourses = relatedCoursesData ?? [];
+
   
-    console.log('rel',relatedCourses)
+
 
 
   // if (isCourseLoading || isHasEnrollmentLoading) {
@@ -36,13 +36,17 @@ const [course, relatedCoursesData] = await Promise.all([
   }
 
   return (
-    <>
+       <>
       <CourseDetailsIntro course={course} />
       <CourseDetails course={course} />
-      {course?.testimonials.length > 0 && (
-        <Testimonials testimonials={course?.testimonials} />
+
+      {course.testimonials.length > 0 && (
+        <Testimonials testimonials={course.testimonials} />
       )}
-      {relatedCourses?.length > 0 && <RelatedCourses relatedCourses={relatedCourses} />}
+
+      {relatedCourses.length > 0 && (
+        <RelatedCourses relatedCourses={relatedCourses} />
+      )}
     </>
   );
 };

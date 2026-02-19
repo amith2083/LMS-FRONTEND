@@ -2,8 +2,11 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import Image from "next/image";
 import { SectionTitle } from "@/components/section-title";
 import StarRating from "@/components/star-rating";
-
-const Testimonials = ({ testimonials }) => {
+import { Testimonial } from "@/app/types/Testimonial";
+interface Props {
+  testimonials: Testimonial[];
+}
+const Testimonials = ({ testimonials }:Props) => {
  
   return (
     <section className="pb-8 md:pb-12 lg:pb-24 bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">

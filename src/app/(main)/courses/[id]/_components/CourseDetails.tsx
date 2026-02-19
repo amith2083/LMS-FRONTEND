@@ -3,9 +3,12 @@ import { Tabs,TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CourseCurriculam from "./CourseCurriculam";
 import CourseInstructor from "./CourseInstructor";
 import { formatMyDate } from "@/lib/date";
+import { SingleCourse } from "@/app/types/course";
+interface Props {
+  course: SingleCourse;
+}
 
-
-const CourseDetails = ({course}) => {
+const CourseDetails = ({course}:Props) => {
   
     const lastModifiedDate = formatMyDate(course.updatedAt)
     

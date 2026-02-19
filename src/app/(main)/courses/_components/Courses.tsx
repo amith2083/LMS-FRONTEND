@@ -21,8 +21,14 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Category } from "@/app/types/category";
+import { Course, CoursesResponse } from "@/app/types/course";
+interface CoursesPageProps {
+  initialCoursesData: CoursesResponse;
+  initialCategories: Category[];        
+}
 
-const CoursesPage = ({initialCoursesData,initialCategories}) => {
+const CoursesPage = ({initialCoursesData,initialCategories}:CoursesPageProps) => {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -49,15 +55,7 @@ const [price, setPrice] = useState<string>('');
    
   } = useCourses(params,initialCoursesData);
 
- // ADD THIS CONSOLE LOG
-console.log("Frontend params sent to API:", {
-  search,
-  selectedCategory,
-  price,
-  sort,
-  page,
-  finalParams: params
-});
+
   
   const { 
     data: allCategories = [], 
@@ -133,13 +131,13 @@ console.log("Frontend params sent to API:", {
               {isCoursesLoading ? (
     Array.from({ length: 6 }).map((_, i) => (
       <SkeletonWrapper key={i} loading={true}>
-        <CourseCard course={{}} />
+     <CourseCard course={{} as Course} />
       </SkeletonWrapper>
     ))
-  ) : (
-    courses.map(course => (
-      <CourseCard key={course._id} course={course} />
-    ))
+  ) :(
+  courses.map((course: Course) => (
+    <CourseCard key={course._id} course={course} />
+  ))
   )}
           
           </div>

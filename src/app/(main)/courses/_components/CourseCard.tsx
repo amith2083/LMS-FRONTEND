@@ -7,8 +7,13 @@ import { formatPrice } from "@/lib/formatPrice";
 import { ArrowRightIcon } from "lucide-react";
 import { BookOpen } from "lucide-react";
 import EnrollCourse from '@/components/enroll-course';
+import { Course } from '@/app/types/course';
 
-const CourseCard = ({course}) => {
+interface  CourseCardProps{
+  course:Course
+}
+
+const CourseCard = ({course}:CourseCardProps) => {
  
 
     return (

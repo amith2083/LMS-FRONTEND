@@ -1,51 +1,31 @@
-
-export interface Category {
-  _id: string;
-  title: string;
-  description?: string;
-  thumbnail?: string;
-  status: boolean;
-  __v?: number;
-}
+import { Category } from "./category";
+import { CourseModule } from "./module";
+import { Testimonial } from "./Testimonial";
 
 export interface Instructor {
   _id: string;
   name: string;
-  email: string;
-  profilePicture?: string;
-  password?: string;
 }
 
 export interface Module {
   _id: string;
-  title: string;
-  description: string;
-  status: boolean;
-  slug: string;
-  order?: number;
-  lessonIds?: string[];
-  course?: string;
-  __v?: number;
 }
 
 export interface Course {
   _id: string;
   title: string;
-  subtitle?: string;
-  description: string;
-  thumbnail?: string;
+  description?: string;
   price: number;
-  status: boolean;
-  isApproved: boolean;
-  createdOn: string;
-  modifiedOn: string;
+  thumbnail?: string;
+
   category?: Category;
-  instructor?: Instructor;
-  modules: Module[];
-  quizSet?: string;
-  learning?: string[];
-  testimonials?: any[];
-  __v?: number;
+
+  instructor?: Instructor;  
+
+  modules?: Module[];
+
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CoursesResponse {
@@ -53,4 +33,33 @@ export interface CoursesResponse {
   totalCount: number;
   currentPage: number;
   totalPages: number;
+}
+
+
+export interface RelatedCourse {
+  _id: string;
+  title: string;
+  price: number;
+  thumbnail: string;
+  category: Category;
+}
+
+export interface SingleCourse {
+  _id: string;
+  title: string;
+  description: string;
+  price: number;
+  thumbnail: string;
+  status: boolean;
+  isApproved: boolean;
+
+  category: Category;
+  instructor: Instructor;
+
+  modules: CourseModule[];
+  learning: string[];
+  testimonials: Testimonial[];
+
+  createdAt: string;
+  updatedAt: string;
 }

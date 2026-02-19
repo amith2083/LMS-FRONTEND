@@ -1,33 +1,27 @@
+import { getCategories } from "@/app/services/categoryService";
+import { getCourses } from "@/app/services/courseService";
+import CoursesPage from "./_components/Courses";
+import { Category } from "@/app/types/category";
 
-import { getCategories } from '@/app/services/categoryService';
-import { getCourses } from '@/app/services/courseService';
-import CoursesPage from './_components/Courses';
-
-
-
- const CoursesPageWrapper = async ()=> {
-
-
-
-
- 
+const CoursesPageWrapper = async () => {
   const [categoriesData, coursesData] = await Promise.all([
     getCategories(),
-    getCourses({   page: 1,
-    limit: 6}),
+    getCourses({ page: 1, limit: 6 }),
   ]);
 
-
-const categories = categoriesData || [];
-  const initialCoursesResponse = coursesData || { courses: [], totalPages: 1, totalCourses: 0 };
- 
+  const categories = categoriesData || [];
+  const initialCoursesResponse = coursesData || {
+    courses: [],
+    totalPages: 1,
+    totalCourses: 0,
+  };
 
   return (
     <CoursesPage
-      initialCoursesData={initialCoursesResponse}  
+      initialCoursesData={initialCoursesResponse}
       initialCategories={categories}
     />
   );
-}
+};
 
-export default CoursesPageWrapper
+export default CoursesPageWrapper;

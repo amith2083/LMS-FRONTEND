@@ -1,6 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import  { AxiosError } from "axios";
-import { Course, } from "../types/course";
+import { Course, RelatedCourse, SingleCourse, } from "../types/course";
 import { handleApiError } from "@/helper/handleApiError";
 
 
@@ -26,12 +26,13 @@ export const getCourses = async (params?: {
 };
 
 //  Get Single Course by ID
-export const getCourseById = async (id: string) => {
+export const getCourseById = async (id: string): Promise<SingleCourse> => {
   try {
-   const response = await axiosInstance.get(`/api/courses/${id}`);
+    const response = await axiosInstance.get<SingleCourse>(`/api/courses/${id}`);
     return response.data;
   } catch (error) {
-   handleApiError(error)
+    handleApiError(error);
+    throw error;
   }
 };
 export const getCoursesByInstructorId = async (instructorId: string) => {
@@ -54,14 +55,18 @@ export const getCoursesForAdmin = async () => {
   }
 };
 
-export const getRelatedCourses = async (courseId: string) => {
+export const getRelatedCourses = async (
+  courseId: string
+): Promise<RelatedCourse[]> => {
   try {
-      const response = await axiosInstance.get(`/api/courses/related/${courseId}`);
-  return response.data;
+    const response = await axiosInstance.get<RelatedCourse[]>(
+      `/api/courses/related/${courseId}`
+    );
+    return response.data;
   } catch (error) {
-    handleApiError(error)
+    handleApiError(error);
+    throw error;
   }
- 
 };
 
 //  Create New Course

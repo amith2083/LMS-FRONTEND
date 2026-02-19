@@ -9,10 +9,11 @@ import {
   toggleCategoryPublishState,
   updateCategoryImage,
 } from "../services/categoryService";
+import { Category } from "../types/category";
 
 // Fetch all categories
-export const useCategories = (initialData) =>
-  useQuery({
+export const useCategories = (initialData?: Category[]) =>
+  useQuery<Category[]>({
     queryKey: ["categories"],
     queryFn: getCategories,
     initialData,

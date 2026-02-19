@@ -7,9 +7,12 @@ import Image from 'next/image';
 import EnrollCourse from '@/components/enroll-course';
 import { useHasEnrollmentForCourse } from '@/app/hooks/useEnrollmentQueries';
 import { Loader2 } from 'lucide-react';
+import { SingleCourse } from '@/app/types/course';
+interface Props {
+  course: SingleCourse;
+}
 
-
-const CourseDetailsIntro =  ({course}) => {
+const CourseDetailsIntro =  ({course}:Props) => {
   
 
 

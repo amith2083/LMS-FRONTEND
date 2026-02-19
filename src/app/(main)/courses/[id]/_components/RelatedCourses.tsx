@@ -6,10 +6,13 @@ import { formatPrice } from "@/lib/formatPrice";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { SectionTitle } from "@/components/section-title";
+import { RelatedCourse } from "@/app/types/course";
+interface Props {
+  relatedCourses: RelatedCourse[];
+}
 
 
-
-const RelatedCourses = ({relatedCourses}) => {
+const RelatedCourses = ({relatedCourses}:Props) => {
 
     return (
         <section className="">
