@@ -20,6 +20,8 @@ import { BorderBeam } from "@/components/magicui/border-beam";
 import { Course } from "@/app/types/course";
 import { Category } from "@/app/types/category";
 
+
+
 interface HomePageClientProps {
    categories: Category[];
   courses: Course[];

@@ -8,7 +8,8 @@ import {
   updateCourseImage,
   getCoursesByInstructorId,
   getCoursesForAdmin,
-  getRelatedCourses
+  getRelatedCourses,
+  handleRefreshAI
 } from "../services/courseService";
 import { CoursesResponse } from "../types/course";
 
@@ -159,4 +160,15 @@ export const useDeleteCourse = () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
     },
   });
+};
+
+
+export const useRefreshEmbeddings = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: handleRefreshAI,
+   
+    }) 
+
 };

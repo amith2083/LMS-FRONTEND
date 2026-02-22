@@ -13,10 +13,13 @@ import {
   Cell,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useCoursesForAdmin } from '@/app/hooks/useCourseQueries';
+import { useCoursesForAdmin, useRefreshEmbeddings } from '@/app/hooks/useCourseQueries';
 import { useEnrollments } from '@/app/hooks/useEnrollmentQueries';
 import { useCategories } from '@/app/hooks/useCategoryQueries';
 import { useTotalEarningsForAdmin } from '@/app/hooks/usePayout';
+import { Button } from '@/components/ui/button';
+import { RefreshCw } from 'lucide-react';
+import { toast } from 'sonner';
 
 // Vibrant color palette for each category bar
 const COLORS = [
@@ -31,6 +34,13 @@ const DashboardPage = () => {
   const { data: allEnrollments = [], isLoading: loadingEnrollments } = useEnrollments();
   const { data: allCategories = [], isLoading: loadingCategories } = useCategories();
   const { data: totalEarnings = [], isLoading: loadingEarnings } = useTotalEarningsForAdmin();
+const {
+    mutate: refreshEmbeddings,
+    isPending: isRefreshing,
+    isSuccess,
+    isError,
+    data: refreshResult,
+  } = useRefreshEmbeddings();
 
   // Calculate enrollments per category
   const enrollmentsByCategory = allCategories.map((category: any) => {
@@ -58,6 +68,9 @@ const DashboardPage = () => {
   const filteredChartData = enrollmentsByCategory.filter((item: any) => item.enrollments > 0);
 
   const isLoading = loadingCourses || loadingEnrollments || loadingCategories;
+  const handleRefreshAI = () => {
+    refreshEmbeddings(); 
+  };
 
   if (isLoading) {
     return (
@@ -69,6 +82,23 @@ const DashboardPage = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
+      {/* Dashboard Header with Actions */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <div className="flex flex-wrap gap-3 mb-2 ">
+         <Button
+            variant="outline"
+            onClick={handleRefreshAI}
+            disabled={isRefreshing}
+          >
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+            />
+            AI Refresh Data
+          </Button>
+          
+        </div>
+      </div>
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card className="bg-amber-500 text-white">

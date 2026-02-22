@@ -139,4 +139,19 @@ export const deleteCourse = async (id: string) => {
   } catch (error) {
     handleApiError(error)
   }
+}
+  export const handleRefreshAI = async () => {
+  try {
+  
+    const response = await axiosInstance.post(
+      '/api/courses/refresh-embeddings',{  withCredentials: true,}
+     
+    );
+    console.log('Refresh result:', response.data);
+    return response.data
+  
+  } catch (error) {
+        handleApiError(error)
+  }
+
 };
