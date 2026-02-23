@@ -20,6 +20,10 @@ import { logout } from "@/app/services/authService";
 import { toast } from "sonner";
 
 const navLinks = [
+   {
+    title: "Home",
+    href: "/",
+  },
   {
     title: "Courses",
     href: "/courses",
@@ -201,7 +205,7 @@ const Navbar = () => {
         )}
       </nav>
       {/* MOBILE NAVBAR */}
-      <div className="lg:hidden flex items-center rounded-md  bg-orange-400">
+      <div className="lg:hidden flex items-center ">
         <button
           onClick={toggleMenu}
           className="p-2 rounded-md text-foreground/80 hover:text-foreground transition"

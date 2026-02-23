@@ -1,9 +1,9 @@
-
 "use client";
+import { useState } from "react";
 import Element from "@/components/element";
 import { Marquee } from "@/components/magicui/marquee";
 import { SectionTitle } from "@/components/section-title";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
@@ -13,21 +13,78 @@ import {
 } from "@/components/ui/carousel";
 import { formatPrice } from "@/lib/formatPrice";
 import { cn } from "@/lib/utils";
-import { BookOpen, ArrowRightIcon } from "lucide-react";
+import { BookOpen, ArrowRightIcon, ChevronUp, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { Course } from "@/app/types/course";
 import { Category } from "@/app/types/category";
 
-
-
 interface HomePageClientProps {
-   categories: Category[];
+  categories: Category[];
   courses: Course[];
 }
 
+const ITEMS_PER_PAGE = 4;
 
+const MobileCategoryScroll = ({ categories }: { categories: Category[] }) => {
+  const [startIndex, setStartIndex] = useState(0);
+
+  const visibleCategories = categories.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const canGoUp = startIndex > 0;
+  const canGoDown = startIndex + ITEMS_PER_PAGE < categories.length;
+
+  return (
+    <div className="flex flex-col items-center gap-3 w-full">
+      {/* Up Arrow */}
+      <button
+        onClick={() => setStartIndex((prev) => Math.max(0, prev - ITEMS_PER_PAGE))}
+        disabled={!canGoUp}
+        className="flex items-center justify-center w-10 h-10 rounded-full border bg-background shadow hover:bg-muted transition disabled:opacity-30 disabled:cursor-not-allowed"
+      >
+        <ChevronUp className="w-5 h-5 text-primary" />
+      </button>
+
+      {/* Category Cards */}
+      <div className="flex flex-col gap-3 w-full">
+        {visibleCategories.map((category) => (
+          <Link
+            key={category._id}
+            href={`/courses?category=${encodeURIComponent(category.title)}`}
+            className="block"
+          >
+            <div className="flex items-center gap-4 rounded-xl border bg-gradient-to-br from-background to-muted/50 p-3 shadow hover:shadow-md hover:bg-muted/70 transition-all duration-300 group">
+              <Image
+                src={category.thumbnail || "/assets/images/categories/default.jpg"}
+                alt={category.title}
+                width={60}
+                height={60}
+                className="object-cover rounded-md group-hover:scale-105 transition-transform duration-300 flex-shrink-0"
+              />
+              <h3 className="font-bold text-base text-foreground group-hover:text-primary transition-colors">
+                {category.title}
+              </h3>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* Down Arrow */}
+      <button
+        onClick={() =>
+          setStartIndex((prev) =>
+            Math.min(categories.length - ITEMS_PER_PAGE, prev + ITEMS_PER_PAGE)
+          )
+        }
+        disabled={!canGoDown}
+        className="flex items-center justify-center w-10 h-10 rounded-full border bg-background shadow hover:bg-muted transition disabled:opacity-30 disabled:cursor-not-allowed"
+      >
+        <ChevronDown className="w-5 h-5 text-primary" />
+      </button>
+    </div>
+  );
+};
 
 const HomePageClient = ({ categories, courses }: HomePageClientProps) => {
   return (
@@ -43,7 +100,7 @@ const HomePageClient = ({ categories, courses }: HomePageClientProps) => {
             Learn By Doing with <br /> SkillSeed
           </h1>
           <p className="max-w-[42rem] leading-relaxed text-muted-foreground sm:text-xl sm:leading-9">
-            “You don’t understand anything until you learn it more than one way.”
+            "You don't understand anything until you learn it more than one way."
           </p>
           <div className="flex items-center gap-4 flex-wrap justify-center">
             <Link
@@ -73,7 +130,10 @@ const HomePageClient = ({ categories, courses }: HomePageClientProps) => {
         </div>
       </section>
 
-      <Marquee pauseOnHover className="bg-gradient-to-r from-primary/10 to-purple-100 text-primary py-3 px-6 rounded-xl max-w-7xl mx-auto shadow-sm">
+      <Marquee
+        pauseOnHover
+        className="bg-gradient-to-r from-primary/10 to-purple-100 text-primary py-3 px-6 rounded-xl max-w-7xl mx-auto shadow-sm"
+      >
         <span className="text-sm md:text-lg font-semibold tracking-wide">
           🎉 New Courses Weekly | Become an Instructor Today | Lifetime Access | Learn by Doing 🚀
         </span>
@@ -81,46 +141,54 @@ const HomePageClient = ({ categories, courses }: HomePageClientProps) => {
 
       <Element />
 
-      {/* Categories Carousel */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 py-16">
+      {/* Categories Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 py-16 overflow-hidden">
         <div className="flex items-center justify-between">
           <SectionTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
             Categories
           </SectionTitle>
         </div>
 
-        <Carousel opts={{ align: "start", loop: true }} className="w-full">
-          <CarouselContent className="px-8">
-            {categories.map((category) => (
-              <CarouselItem
-                key={category._id}
-                className="basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 mx-4"
-              >
-                <Link
-                  href={`/courses?category=${encodeURIComponent(category.title)}`}
-                  className="block"
+        {/* Mobile: Vertical scroll with up/down arrows */}
+        <div className="block md:hidden">
+          <MobileCategoryScroll categories={categories} />
+        </div>
+
+        {/* Desktop: Horizontal Carousel */}
+        <div className="hidden md:block">
+          <Carousel opts={{ align: "start", loop: true }} className="w-full px-8">
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {categories.map((category) => (
+                <CarouselItem
+                  key={category._id}
+                  className="md:basis-1/3 lg:basis-1/4 xl:basis-1/5 pl-2 md:pl-4"
                 >
-                  <div className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-background to-muted/50 p-3 hover:scale-105 transition-all duration-500 shadow-lg hover:shadow-xl group cursor-pointer">
-                    <div className="flex flex-col gap-4 items-center justify-between rounded-md p-6">
-                      <Image
-                        src={category.thumbnail || "/assets/images/categories/default.jpg"}
-                        alt={category.title}
-                        width={120}
-                        height={120}
-                        className="object-cover rounded-md group-hover:scale-110 transition-transform duration-300"
-                      />
-                      <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors text-center">
-                        {category.title}
-                      </h3>
+                  <Link
+                    href={`/courses?category=${encodeURIComponent(category.title)}`}
+                    className="block"
+                  >
+                    <div className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-background to-muted/50 p-3 hover:scale-105 transition-all duration-500 shadow-lg hover:shadow-xl group cursor-pointer">
+                      <div className="flex flex-col gap-4 items-center justify-between rounded-md p-6">
+                        <Image
+                          src={category.thumbnail || "/assets/images/categories/default.jpg"}
+                          alt={category.title}
+                          width={120}
+                          height={120}
+                          className="object-cover rounded-md group-hover:scale-110 transition-transform duration-300"
+                        />
+                        <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors text-center">
+                          {category.title}
+                        </h3>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="left-0" />
-          <CarouselNext className="right-0" />
-        </Carousel>
+                  </Link>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-0" />
+            <CarouselNext className="right-0" />
+          </Carousel>
+        </div>
       </section>
 
       {/* Featured Courses */}
