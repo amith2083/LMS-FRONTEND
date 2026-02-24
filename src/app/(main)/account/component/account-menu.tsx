@@ -1,22 +1,33 @@
 "use client";
 
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { User, BookOpenCheck, LogOut } from "lucide-react";
 
-const menu = [
-  { label: "Profile", href: "/account", icon: <User className="w-4 h-4 mr-2" /> },
-  {
-    label: "Enrolled Courses",
-    href: "/account/enrolled-courses",
-    icon: <BookOpenCheck className="w-4 h-4 mr-2" />,
-  },
-];
+ 
 
 function Menu() {
   const pathname = usePathname();
+const { data: session } = useSession();
+ const menu = [
+    {
+      label: "Profile",
+      href: "/account",
+      icon: <User className="w-4 h-4 mr-2" />,
+    },
 
+    // ✅ Show only if student
+    ...(session?.user?.role === "student"
+      ? [
+          {
+            label: "Enrolled Courses",
+            href: "/account/enrolled-courses",
+            icon: <BookOpenCheck className="w-4 h-4 mr-2" />,
+          },
+        ]
+      : []),
+  ];
   return (
     <ul className="space-y-2 text-sm font-medium">
       {menu.map((item, index) => {

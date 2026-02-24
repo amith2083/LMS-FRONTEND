@@ -175,14 +175,16 @@ const Navbar = () => {
                   </Link>
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem asChild>
-                <Link
-                  href="/account/enrolled-courses"
-                  className="hover:bg-primary/10 transition-colors"
-                >
-                  My Courses
-                </Link>
-              </DropdownMenuItem>
+              {session?.user?.role === "student" && (
+  <DropdownMenuItem asChild>
+    <Link
+      href="/account/enrolled-courses"
+      className="hover:bg-primary/10 transition-colors"
+    >
+      My Courses
+    </Link>
+  </DropdownMenuItem>
+)}
               {/* <DropdownMenuItem asChild>
                 <Link
                   href="#"

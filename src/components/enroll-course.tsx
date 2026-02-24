@@ -27,7 +27,11 @@ const EnrollCourse = ({ asLink, courseId }: EnrollCourseProps) => {
       router.push("/login");
       return;
     }
-
+//  Block instructors
+  if (session.user?.role === "instructor") {
+    toast.error("Only students can enroll in courses.");
+    return;
+  }
     try {
       const enrollmentData = { course: courseId, method: "stripe" };
       const result = await mutateAsync(enrollmentData);
