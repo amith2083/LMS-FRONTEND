@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getUserById, getUsers, updateUser } from "../services/userService";
 
-// import { useSession } from "next-auth/react";
+
 interface User {
   id: string;
   role: "admin" | "student" | "instructor";
@@ -9,8 +9,7 @@ interface User {
   isBlocked?: boolean;
 }
 export const useUsers = () => {
-  // const { data: session, status } = useSession();
-  // const user = session?.user as User | undefined;
+
 
   return useQuery({
     queryKey: ["users"],

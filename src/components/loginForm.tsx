@@ -89,7 +89,11 @@ useEffect(() => {
         },
       }
     );
-  router.push( isAdmin ? '/admin/dashboard':"/");
+if (isAdmin) {
+    window.location.href = "/admin/dashboard";   
+  } else {
+    window.location.href = "/";
+  }
    
     } catch (error: any) {
       toast.error("An unexpected error occurred.");

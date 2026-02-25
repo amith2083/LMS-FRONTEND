@@ -11,6 +11,7 @@ const sizeByVariant = {
   sm: "text-xs",
 };
 
+
 export const CourseProgress = ({ value, variant, size }) => {
   return (
     <div>

@@ -19,6 +19,7 @@ import Link from "next/link";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { Course } from "@/app/types/course";
 import { Category } from "@/app/types/category";
+import { useSession } from "next-auth/react";
 
 interface HomePageClientProps {
   categories: Category[];
@@ -28,6 +29,7 @@ interface HomePageClientProps {
 const ITEMS_PER_PAGE = 4;
 
 const MobileCategoryScroll = ({ categories }: { categories: Category[] }) => {
+
   const [startIndex, setStartIndex] = useState(0);
 
   const visibleCategories = categories.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -87,6 +89,8 @@ const MobileCategoryScroll = ({ categories }: { categories: Category[] }) => {
 };
 
 const HomePageClient = ({ categories, courses }: HomePageClientProps) => {
+  const { data: session, status } = useSession();
+  const isAuthenticated = !!session?.user;
   return (
     <>
       {/* Hero Section */}
@@ -114,18 +118,21 @@ const HomePageClient = ({ categories, courses }: HomePageClientProps) => {
             >
               Explore Now
             </Link>
-            <Link
-              href="/instructor/register"
-              className={cn(
-                buttonVariants({
-                  variant: "outline",
-                  size: "lg",
-                  className: "border-primary/20 text-primary hover:bg-primary/10",
-                })
-              )}
-            >
-              Become An Instructor
-            </Link>
+           {/* ── Only show Become an Instructor when NOT logged in ── */}
+            {!isAuthenticated  && (
+              <Link
+                href="/register/instructor"
+                className={cn(
+                  buttonVariants({
+                    variant: "outline",
+                    size: "lg",
+                    className: "border-primary/20 text-primary hover:bg-primary/10",
+                  })
+                )}
+              >
+                Become An Instructor
+              </Link>
+            )}
           </div>
         </div>
       </section>
