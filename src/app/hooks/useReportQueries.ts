@@ -5,7 +5,7 @@ import { getReport } from "../services/reportService";
 
 export const useReport = (courseId: string) =>
   useQuery({
-    queryKey: ["report"],
+    queryKey: ["report",courseId],
     queryFn: () => getReport(courseId),
     enabled: !!courseId
   });
