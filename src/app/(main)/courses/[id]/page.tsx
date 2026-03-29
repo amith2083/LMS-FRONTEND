@@ -1,11 +1,11 @@
 import { formatPrice } from "@/lib/formatPrice";
-import CourseDetailsIntro from "./_components/CourseDetailsIntro";
-import CourseDetails from "./_components/CourseDetails";
-import Testimonials from "./_components/Testimonials";
-import RelatedCourses from "./_components/RelatedCourses";
-import LoadingSpinner from "@/components/LoadingSpinner";
-import { getCourseById, getRelatedCourses } from "@/app/services/courseService";
-import { hasEnrollmentForCourse } from "@/app/services/enrollmentService";
+import CourseDetailsIntro from "@/features/courses/components/CourseDetailsIntro";
+import CourseDetails from "@/features/courses/components/CourseDetails";
+import Testimonials from "@/features/testimonials/components/Testimonials";
+import RelatedCourses from "@/features/courses/components/RelatedCourses";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import { getCourseById, getRelatedCourses } from "@/features/courses/services/courseService";
+
 interface Props {
   params: Promise<{ id: string }>;
 }
@@ -52,3 +52,4 @@ const [course, relatedCourses] = await Promise.all([
 };
 
 export default SingleCoursePage;
+

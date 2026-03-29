@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { SectionTitle } from "@/components/section-title";
+import { SectionTitle } from "@/components/shared/section-title";
 import { cn } from "@/lib/utils";
 import {
   ArrowRightIcon,
@@ -231,3 +231,5 @@ export default function AboutPage() {
     </>
   );
 }
+
+

@@ -1,6 +1,6 @@
 "use client";
-import AlertBanner from "@/components/alert-banner";
-import { IconBadge } from "@/components/icon-badge";
+import AlertBanner from "@/components/shared/alert-banner";
+import { IconBadge } from "@/components/ui/icon-badge";
 import {
   ArrowLeft,
   BookOpenCheck,
@@ -9,13 +9,13 @@ import {
   Video,
 } from "lucide-react";
 import Link from "next/link";
-import { ModuleTitleForm } from "./_components/module-title-form";
-import { LessonForm } from "./_components/lesson-form";
-import { CourseActions } from "../../_components/course-action";
-import { ModuleActions } from "./_components/module-action";
+import { ModuleTitleForm } from "@/features/modules/components/module-title-form";
+import { LessonForm } from "@/features/lessons/components/lesson-form";
+import { CourseActions } from "@/features/courses/components/course-action";
+import { ModuleActions } from "@/features/modules/components/module-action";
 import { useMemo } from "react";
 import { useParams } from "next/navigation";
-import { useModuleById } from "@/app/hooks/useModuleQueries";
+import { useModuleById } from "@/features/modules/hooks/useModuleQueries";
 
 const Module = () => {
   const params = useParams();
@@ -100,3 +100,5 @@ const Module = () => {
 };
 
 export default Module;
+
+

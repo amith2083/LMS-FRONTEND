@@ -5,20 +5,14 @@ import {
 } from "lucide-react";
 
 
-import { TitleForm } from "./_components/title";
-
-import { DescriptionForm } from "./_components/description";
-import { ImageForm } from "./_components/image-form";
-
-import AlertBanner from "@/components/alert-banner";
-import { IconBadge } from "@/components/icon-badge";
-
-
-import { getCategory } from "@/queries/categories";
-import { Category } from "@/model/category";
-import { CategoryActions } from "./_components/category-actions";
-import { useCategoryDetails } from "@/app/hooks/useCategories";
-import { useCategoryById } from "@/app/hooks/useCategoryQueries";
+import { TitleForm } from "@/features/categories/components/category-title-form";
+import { DescriptionForm } from "@/features/categories/components/category-description-form";
+import { ImageForm } from "@/features/categories/components/category-image-form";
+import AlertBanner from "@/components/shared/alert-banner";
+import { IconBadge } from "@/components/ui/icon-badge";
+import { Category } from "@/features/categories/types/category";
+import { CategoryActions } from "@/features/categories/components/category-actions";
+import { useCategoryById } from "@/features/categories/hooks/useCategoryQueries";
 
 
 
@@ -94,3 +88,5 @@ console.log('EditCategory categoryId', categoryId);
 };
 
 export default EditCategory;
+
+

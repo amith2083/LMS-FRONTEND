@@ -1,9 +1,9 @@
 
-import Footer from '@/components/footer';
-import Header from '@/components/header';
+import Footer from '@/components/shared/footer';
+import Header from '@/components/shared/header';
 
 
-import ChatBot from "@/app/(main)/_components/chatBot";
+import ChatBot from "@/features/chatbot/components/chat-bot";
 
 
 import React from 'react';
@@ -24,3 +24,5 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default MainLayout;
+
+

@@ -1,5 +1,5 @@
 
-import AddQuizSetForm from '../_components/add-quizset-form';
+import AddQuizSetForm from '@/features/quizzes/components/add-quizset-form';
 
 const AddQuizSet = () => {
   return (

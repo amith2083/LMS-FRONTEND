@@ -37,3 +37,4 @@ export const AnimatedShinyText: FC<AnimatedShinyTextProps> = ({
     </span>
   );
 };
+

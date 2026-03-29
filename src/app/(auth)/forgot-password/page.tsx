@@ -12,26 +12,46 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { useRouter } from "next/navigation";
-import { forgotPassword } from "@/app/services/authService";
+import { useRouter, useSearchParams } from "next/navigation";
+import { forgotPassword } from "@/features/auth/services/authService";
+import { forgotPasswordSchema } from "@/features/auth/validations/auth-schemas";
 
 
-export default function ForgotPasswordPage() {
+import { Suspense } from "react";
+
+function ForgotPasswordForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const role = searchParams.get("role");
   const [email, setEmail] = useState("");
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const result = forgotPasswordSchema.safeParse({ email });
+
+    if (!result.success) {
+      const errors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        const field = err.path[0] as string;
+        errors[field] = err.message;
+      });
+      setFormErrors(errors);
+      return;
+    }
+    setFormErrors({});
+
     try {
       const res = await forgotPassword(email);
 
       if (res.status === 200) {
         toast.success("OTP sent to your email");
-        router.push("/reset-password");
+        router.push(role ? `/reset-password?role=${role}` : "/reset-password");
         return;
       }
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || error.message);
     }
   };
 
@@ -63,12 +83,11 @@ export default function ForgotPasswordPage() {
                 placeholder="m@example.com"
                 required
               />
+              {formErrors.email && (
+                <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>
+              )}
             </div>
-            <Button
-              type="submit"
-              className="w-1/2 mx-auto cursor-pointer"
-            
-            >
+            <Button type="submit" className="w-1/2 mx-auto cursor-pointer">
               Send OTP
             </Button>
           </form>
@@ -77,3 +96,12 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
+
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ForgotPasswordForm />
+    </Suspense>
+  );
+}
+

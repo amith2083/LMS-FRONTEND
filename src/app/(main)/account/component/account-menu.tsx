@@ -1,16 +1,20 @@
 "use client";
 
-import { signOut, useSession } from "next-auth/react";
+
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { User, BookOpenCheck, LogOut } from "lucide-react";
+import { useUser } from "@/features/auth/context/UserContext";
+import { logout } from "@/features/auth/services/authService";
 
  
 
 function Menu() {
   const pathname = usePathname();
-const { data: session } = useSession();
- const menu = [
+  const { user } = useUser();
+  const menu = [
+
     {
       label: "Profile",
       href: "/account",
@@ -18,7 +22,8 @@ const { data: session } = useSession();
     },
 
     // ✅ Show only if student
-    ...(session?.user?.role === "student"
+    ...(user?.role === "student"
+
       ? [
           {
             label: "Enrolled Courses",
@@ -51,15 +56,17 @@ const { data: session } = useSession();
 
       <li>
         <button
-          onClick={() => signOut()}
+          onClick={() => logout()}
           className="flex items-center w-full px-3 py-2 rounded-md text-red-500 hover:bg-red-100 dark:hover:bg-red-900 dark:text-red-400 transition-all"
         >
           <LogOut className="w-4 h-4 mr-2" />
           Sign Out
         </button>
+
       </li>
     </ul>
   );
 }
 
 export default Menu;
+

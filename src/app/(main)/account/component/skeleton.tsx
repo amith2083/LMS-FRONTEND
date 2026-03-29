@@ -4,3 +4,4 @@ const SkeletonBox = ({ className }: { className?: string }) => (
 );
 
 export default SkeletonBox;
+

@@ -1,14 +1,10 @@
 'use client';
-
-
-
 import SkeletonBox from "../../component/skeleton";
 import EnrolledCourseCard from "../../component/enrolled-coursecard";
-import { useSession } from "next-auth/react";
-import { useUserById } from "@/app/hooks/useUserQueries";
-import { useEnrollmentsForUser } from "@/app/hooks/useEnrollmentQueries";
+import { useEnrollmentsForUser } from "@/features/enrollments/hooks/useEnrollmentQueries";
 import Link from "next/link";
-import { en } from "zod/v4/locales";
+
+
 
 function EnrolledCourses() {
 
@@ -53,3 +49,4 @@ function EnrolledCourses() {
 }
 
 export default EnrolledCourses;
+

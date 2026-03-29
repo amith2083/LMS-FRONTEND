@@ -1,4 +1,4 @@
-import { EmailTemplate } from "@/components/emailTemplate";
+import { EmailTemplate } from "@/components/shared/emailTemplate";
 import { Resend } from "resend";
 
 
@@ -44,3 +44,4 @@ export const sendEmails = async (emailInfo) => {
 
     return response
 }
+

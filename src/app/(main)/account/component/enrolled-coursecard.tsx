@@ -3,8 +3,8 @@ import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, CheckCircle2, Trophy, ClipboardCheck } from "lucide-react";
 import Image from "next/image";
-import { useCategoryById } from "@/app/hooks/useCategoryQueries";
-import { useReport } from "@/app/hooks/useReportQueries";
+import { useCategoryById } from "@/features/categories/hooks/useCategoryQueries";
+import { useReport } from "@/features/admin/hooks/useReportQueries";
 
 const EnrolledCourseCard = ({ enrollment }) => {
   console.log("resss", enrollment);
@@ -167,3 +167,4 @@ const StatPill = ({
 };
 
 export default EnrolledCourseCard;
+

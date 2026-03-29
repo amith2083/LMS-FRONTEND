@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Lock, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import { Form, FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form';
-import { useUpdateUser } from '@/app/hooks/useUserQueries';
+import { useUpdateUser } from '@/features/users/hooks/useUserQueries';
 
 
 const formSchema = z.object({
@@ -104,3 +104,4 @@ export default function ChangePassword({ userId }: { userId: string }) {
     </div>
   );
 }
+

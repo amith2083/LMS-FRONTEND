@@ -13,10 +13,12 @@ import {
   Cell,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useSession } from 'next-auth/react';
-import { useCoursesByInstructorId } from '@/app/hooks/useCourseQueries';
-import { useEnrollments } from '@/app/hooks/useEnrollmentQueries';
-import { useTotalEarnings } from '@/app/hooks/usePayout';
+
+
+import { useCoursesByInstructorId } from '@/features/courses/hooks/useCourseQueries';
+import { useEnrollments } from '@/features/enrollments/hooks/useEnrollmentQueries';
+import { useTotalEarnings } from '@/features/instructor/hooks/usePayout';
+import { useUser } from '@/features/auth/context/UserContext';
 
 // Define a vibrant color palette for the bars
 const COLORS = [
@@ -40,12 +42,14 @@ const COLORS = [
 ];
 
 const DashboardPage = () => {
-  const { data: session } = useSession();
-  const instructorId = session?.user?.id;
+  const { user } = useUser();
+  const instructorId = user?.id;
 
-  const { data: courses = [], isLoading: loadingCourses } = useCoursesByInstructorId(instructorId);
+
+  const { data: courses = [], isLoading: loadingCourses } = useCoursesByInstructorId(instructorId ?? "");
   const { data: allEnrollments = [], isLoading: loadingEnrollments } = useEnrollments();
-  const { data: totalEarnings = 0, isLoading: loadingEarnings } = useTotalEarnings(instructorId);
+  const { data: totalEarnings = 0, isLoading: loadingEarnings } = useTotalEarnings(instructorId ?? "");
+
 
   // Get array of course IDs owned by this instructor
   const instructorCourseIds = courses.map((course: any) => course._id);
@@ -72,7 +76,8 @@ const DashboardPage = () => {
   });
 
   // Sort by enrollments descending (best performing first)
-  chartData.sort((a, b) => b.enrollments - a.enrollments);
+  chartData.sort((a: any, b: any) => b.enrollments - a.enrollments);
+
 
   if (loadingCourses || loadingEnrollments || loadingEarnings) {
     return (
@@ -135,21 +140,22 @@ const DashboardPage = () => {
                   fontSize={12}
                   tick={{ fill: '#374151' }}
                 />
-             <YAxis
-                       ticks={[0, 2, 4, 6, 8, 10]}  // Forced even ticks 
-                       domain={[0, 10]}  // Fixed range up to 10
-                       allowDecimals={false}  // No .0 decimals 
-                       tick={{ fill: '#374151' }}
-                     />
+                <YAxis
+                  ticks={[0, 2, 4, 6, 8, 10]}  // Forced even ticks 
+                  domain={[0, 10]}  // Fixed range up to 10
+                  allowDecimals={false}  // No .0 decimals 
+                  tick={{ fill: '#374151' }}
+                />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                 />
                 <Legend />
                 <Bar dataKey="enrollments" radius={[8, 8, 0, 0]} name="Enrollments">
-                  {chartData.map((entry, index) => (
+                  {chartData.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Bar>
+
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -166,3 +172,4 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
+

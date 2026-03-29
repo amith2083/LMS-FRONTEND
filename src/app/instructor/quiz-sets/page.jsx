@@ -1,10 +1,7 @@
 "use client";
-import { useQuizsets } from "@/app/hooks/useQuizQueries";
-
-import { columns } from "./_components/columns";
-import { DataTable } from "./_components/data-table";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { useQuizsets } from "@/features/quizzes/hooks/useQuizQueries";
+import { columns } from "@/features/quizzes/components/quizset-columns";
+import { DataTable } from "@/features/quizzes/components/quizset-data-table";
 
 const QuizSets = () => {
 
@@ -48,3 +45,4 @@ const QuizSets = () => {
 };
 
 export default QuizSets;
+

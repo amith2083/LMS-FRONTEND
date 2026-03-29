@@ -1,8 +1,8 @@
-import { getCategories } from "@/app/services/categoryService";
-import { getCourses } from "@/app/services/courseService";
-import HomePageClient from "./_components/Home";
-import { Category } from "../types/category";
-import { Course, CoursesResponse } from "../types/course";
+import { getCategories } from "@/features/categories/services/categoryService";
+import { getCourses } from "@/features/courses/services/courseService";
+import HomePageClient from "@/features/courses/components/Home";
+import { Category } from "@/features/categories/types/category";
+import { Course, CoursesResponse } from "@/features/courses/types/course";
 
 export default async function HomePage() {
 

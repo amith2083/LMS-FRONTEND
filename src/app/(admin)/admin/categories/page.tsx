@@ -1,12 +1,11 @@
 'use client'
-import { getInstructorDashboardData, COURSE_DATA } from "@/lib/dashboardHelper";
-import { columns } from "./_components/columns";
-import { DataTable } from "./_components/data-table";
+import { columns } from "@/features/categories/components/columns";
+import { DataTable } from "@/features/categories/components/data-table";
 
 
 
 import { JSX } from "react";
-import { useCategories } from "@/app/hooks/useCategoryQueries";
+import { useCategories } from "@/features/categories/hooks/useCategoryQueries";
 
 // Define a generic type for course objects (you can replace it with a specific interface if you have one)
 interface Category {
@@ -14,7 +13,7 @@ interface Category {
 }
 
 const CategoryPage =  (): JSX.Element => {
-  // const rawData = await GetAllCategories();
+ 
     const { data: categories, isLoading,error } = useCategories();
  
   console.log(categories);

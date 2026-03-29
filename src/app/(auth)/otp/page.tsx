@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { OtpForm } from './_components/otpForm'
+import { OtpForm } from "@/features/auth/components/otp-form";
 
 const OtpPage = () => {
   return (
@@ -13,3 +13,4 @@ const OtpPage = () => {
 }
 
 export default OtpPage
+

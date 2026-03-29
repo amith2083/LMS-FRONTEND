@@ -1,11 +1,11 @@
 "use client";
 import { Loader2 } from "lucide-react";
-import AlertBanner from "@/components/alert-banner";
-import { IconBadge } from "@/components/icon-badge";
+import AlertBanner from "@/components/shared/alert-banner";
+import { IconBadge } from "@/components/ui/icon-badge";
 import { LayoutDashboard } from "lucide-react";
-import { QuizSetAction } from "./_components/quiz-set-action";
-import { TitleForm } from "./_components/title-form";
-import { AddQuizForm } from "./_components/add-quiz-form";
+import { QuizSetAction } from "@/features/quizzes/components/quiz-set-action";
+import { TitleForm } from "@/features/quizzes/components/quizset-title-form";
+import { AddQuizForm } from "@/features/quizzes/components/add-quiz-form";
 import { cn } from "@/lib/utils";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,9 @@ import { Delete } from "lucide-react";
 import { Trash } from "lucide-react";
 import { CircleCheck } from "lucide-react";
 import { Circle } from "lucide-react";
-import { QuizCardActions } from "./_components/quiz-card-action";
+import { QuizCardActions } from "@/features/quizzes/components/quiz-card-action";
 import { useParams } from "next/navigation";
-import { useQuizsetById } from "@/app/hooks/useQuizQueries";
+import { useQuizsetById } from "@/features/quizzes/hooks/useQuizQueries";
 
 const EditQuizSet = () => {
   const params = useParams();
@@ -145,3 +145,5 @@ const EditQuizSet = () => {
   );
 };
 export default EditQuizSet;
+
+

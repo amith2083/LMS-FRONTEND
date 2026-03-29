@@ -32,3 +32,4 @@ function Layout({ tabs }) {
 }
 
 export default Layout;
+

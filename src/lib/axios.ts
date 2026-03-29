@@ -1,6 +1,5 @@
-import { logout } from "@/app/services/authService";
 import axios, { AxiosInstance } from "axios";
-import { signOut } from "next-auth/react";
+import { PUBLIC_ROUTES } from "./route";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL as string;
 
@@ -10,51 +9,41 @@ const axiosInstance: AxiosInstance = axios.create({
 });
 
 
-
-// Handle 401 errors and attempt token refresh
-// axiosInstance.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-    
-//     if (error.response?.status === 401 && !error.config._retry) {
-//       error.config._retry = true;
-//       try {
-//         await axiosInstance.post("api/users/auth/refresh-token");
-//         return axiosInstance(error.config); // Retry original request
-//       } catch (refreshError) {
-       
-        
-//         window.location.href = "/login";
-//         return Promise.reject(new Error("Unauthorized"));
-//       }
-//     }
-//     return Promise.reject(error);
-//   }
-// );
 axiosInstance.interceptors.response.use(
-  res => res,
-  async error => {
-    console.log('errrrrrrrr',error?.response)
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (originalRequest._retry) {
+      return Promise.reject(error);
+    }
+
     const status = error.response?.status;
 
-    //  Access token expired → refresh
-    if (status === 401 && !error.config._retry) {
-      error.config._retry = true;
+    if (status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
 
       try {
-        await axiosInstance.post("/api/users/auth/refresh-token");
-        return axiosInstance(error.config);
-      } catch {
-        await logout();
-        signOut({ callbackUrl: "/login" });
-        return Promise.reject(error);
+        await axiosInstance.post("/api/users/auth/refresh-token", {}, {
+          withCredentials: true,
+        });
+        return axiosInstance(originalRequest);
+      } catch (refreshError: any) {
+        //  Only redirect if on a protected page
+        const protectedRequest = originalRequest.url === "/api/users/me";
+        const onPublicPage = PUBLIC_ROUTES.includes(window.location.pathname);
+
+        if (protectedRequest && !onPublicPage) {
+          window.location.href = "/login";
+        }
+
+        return Promise.reject(refreshError); // ← just reject silently on public pages
       }
     }
 
-    //  User blocked
-    if (status === 403 && error?.response?.data.message==='User blocked by admin') {
-      await logout();
-      signOut({ callbackUrl: "/login" });
+    if (status === 403 &&
+        error.response?.data?.message?.toLowerCase().includes("blocked")) {
+      window.location.href = "/login";
     }
 
     return Promise.reject(error);

@@ -1,7 +1,8 @@
-import { getCategories } from "@/app/services/categoryService";
-import { getCourses } from "@/app/services/courseService";
-import CoursesPage from "./_components/Courses";
-import { Category } from "@/app/types/category";
+import { Suspense } from "react";
+import { getCategories } from "@/features/categories/services/categoryService";
+import { getCourses } from "@/features/courses/services/courseService";
+import CoursesPage from "@/features/courses/components/Courses";
+import { Category } from "@/features/categories/types/category";
 
 const CoursesPageWrapper = async () => {
   const [categoriesData, coursesData] = await Promise.all([
@@ -17,11 +18,15 @@ const CoursesPageWrapper = async () => {
   };
 
   return (
-    <CoursesPage
-      initialCoursesData={initialCoursesResponse}
-      initialCategories={categories}
-    />
+    <Suspense fallback={<div className="container py-24 text-center">Loading courses...</div>}>
+      <CoursesPage
+        initialCoursesData={initialCoursesResponse}
+        initialCategories={categories}
+      />
+    </Suspense>
   );
 };
 
 export default CoursesPageWrapper;
+
+

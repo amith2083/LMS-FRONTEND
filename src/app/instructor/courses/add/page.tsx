@@ -1,6 +1,5 @@
 "use client";
 import * as z from "zod";
-// import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -25,8 +24,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { useCreateCourse } from "@/app/hooks/useCourseQueries";
-import { useSession } from "next-auth/react";
+import { useCreateCourse } from "@/features/courses/hooks/useCourseQueries";
+import { useUser } from "@/features/auth/context/UserContext";
+
+
 
 const formSchema = z.object({
   title: z.string().min(3, {
@@ -50,13 +51,15 @@ const AddCourse = () => {
 
   const { isSubmitting, isValid } = form.formState;
   const { mutateAsync, isPending } = useCreateCourse();
-  const { data: session } = useSession();
+  const { user } = useUser();
+
 
   const onSubmit = async (values: FormValues) => {
     try {
       const courseData = {
         ...values,
-        instructor: session?.user.id, //  include instructor id
+        instructor: user?.id, //  include instructor id
+
       };
       
       await mutateAsync(courseData);
@@ -134,3 +137,4 @@ const AddCourse = () => {
 };
 
 export default AddCourse;
+

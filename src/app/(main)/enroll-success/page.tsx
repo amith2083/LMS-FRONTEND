@@ -1,27 +1,31 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
+
 import { useEffect } from "react";
 import Link from "next/link";
 import { CircleCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useConfirmEnrollment } from "@/app/hooks/useEnrollmentQueries"; 
+import { useConfirmEnrollment } from "@/features/enrollments/hooks/useEnrollmentQueries"; 
+import { useUser } from "@/features/auth/context/UserContext";
 
 
-export default function SuccessPage() {
+import { Suspense } from "react";
+
+function SuccessContent() {
   const searchParams = useSearchParams();
-  const { data: session, status } = useSession();
+  const { user, loading } = useUser();
 
   const session_id = searchParams.get("session_id");
   const courseId = searchParams.get("courseId");
 
-  // Redirect unauthenticated users early
-  if (status === "unauthenticated") {
-    window.location.href = "/login";
-    return null;
-  }
 
-  if (status === "loading") {
+  useEffect(() => {
+    if (!user && !loading) {
+      window.location.href = "/login";
+    }
+  }, [user, loading]);
+
+  if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
         Loading...
@@ -44,8 +48,6 @@ export default function SuccessPage() {
     );
   }
 
-  const userId = session?.user?.id as string;
-
   // 1. Confirm the enrollment (fires once on mount)
   const {
     mutate: confirm,
@@ -59,12 +61,9 @@ export default function SuccessPage() {
     if (session_id && !confirmed) {
       confirm(session_id);
     }
-    
-  }, [session_id]);
+  }, [session_id, confirmed, confirm]);
 
-  const hasError = confirmError;
-
-  if (hasError) {
+  if (confirmError) {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-4 text-center">
         <h1 className="text-2xl font-bold text-red-600">
@@ -116,3 +115,12 @@ export default function SuccessPage() {
     </div>
   );
 }
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+      <SuccessContent />
+    </Suspense>
+  );
+}
+

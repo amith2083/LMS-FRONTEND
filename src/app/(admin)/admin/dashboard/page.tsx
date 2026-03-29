@@ -13,10 +13,10 @@ import {
   Cell,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useCoursesForAdmin, useRefreshEmbeddings } from '@/app/hooks/useCourseQueries';
-import { useEnrollments } from '@/app/hooks/useEnrollmentQueries';
-import { useCategories } from '@/app/hooks/useCategoryQueries';
-import { useTotalEarningsForAdmin } from '@/app/hooks/usePayout';
+import { useCoursesForAdmin, useRefreshEmbeddings } from '@/features/courses/hooks/useCourseQueries';
+import { useEnrollments } from '@/features/enrollments/hooks/useEnrollmentQueries';
+import { useCategories } from '@/features/categories/hooks/useCategoryQueries';
+import { useTotalEarningsForAdmin } from '@/features/instructor/hooks/usePayout';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
@@ -34,7 +34,7 @@ const DashboardPage = () => {
   const { data: allEnrollments = [], isLoading: loadingEnrollments } = useEnrollments();
   const { data: allCategories = [], isLoading: loadingCategories } = useCategories();
   const { data: totalEarnings = [], isLoading: loadingEarnings } = useTotalEarningsForAdmin();
-const {
+  const {
     mutate: refreshEmbeddings,
     isPending: isRefreshing,
     isSuccess,
@@ -44,7 +44,7 @@ const {
 
   // Calculate enrollments per category
   const enrollmentsByCategory = allCategories.map((category: any) => {
-    const categoryCourses = courses.filter((course: any) => 
+    const categoryCourses = courses.filter((course: any) =>
       course.category === category._id || course.category?._id === category._id
     );
 
@@ -69,7 +69,7 @@ const {
 
   const isLoading = loadingCourses || loadingEnrollments || loadingCategories;
   const handleRefreshAI = () => {
-    refreshEmbeddings(); 
+    refreshEmbeddings();
   };
 
   if (isLoading) {
@@ -86,7 +86,7 @@ const {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <div className="flex flex-wrap gap-3 mb-2 ">
-         <Button
+          <Button
             variant="outline"
             onClick={handleRefreshAI}
             disabled={isRefreshing}
@@ -96,7 +96,7 @@ const {
             />
             AI Refresh Data
           </Button>
-          
+
         </div>
       </div>
       {/* Summary Cards */}
@@ -153,12 +153,12 @@ const {
                   fontSize={12}
                   tick={{ fill: '#374151' }}
                 />
-           <YAxis
-            ticks={[0, 2, 4, 6, 8, 10]}  // Forced even ticks 
-            domain={[0, 10]}  // Fixed range up to 10
-            allowDecimals={false}  // No .0 decimals 
-            tick={{ fill: '#374151' }}
-          />
+                <YAxis
+                  ticks={[0, 2, 4, 6, 8, 10]}  // Forced even ticks 
+                  domain={[0, 10]}  // Fixed range up to 10
+                  allowDecimals={false}  // No .0 decimals 
+                  tick={{ fill: '#374151' }}
+                />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: '#fff',
@@ -188,3 +188,4 @@ const {
 };
 
 export default DashboardPage;
+

@@ -11,13 +11,19 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { resetPassword } from "@/app/services/authService";
+import { useRouter, useSearchParams } from "next/navigation";
+import { resetPassword } from "@/features/auth/services/authService";
+import { resetPasswordSchema } from "@/features/auth/validations/auth-schemas";
 
 
-export default function ResetPasswordPage() {
+import { Suspense } from "react";
+
+function ResetPasswordForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const role = searchParams.get("role");
   const [form, setForm] = useState({ email: "", otp: "", password: "" });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -26,24 +32,33 @@ export default function ResetPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formData = {
-      ...form,
-      otp: Number(form.otp), // Convert OTP to number
-    };
+    const result = resetPasswordSchema.safeParse(form);
+
+    if (!result.success) {
+      const errors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        const field = err.path[0] as string;
+        errors[field] = err.message;
+      });
+      setFormErrors(errors);
+      return;
+    }
+    setFormErrors({});
+
     try {
       const res = await resetPassword(
-        formData.email,
-        formData.otp,
-        formData.password
+        form.email,
+        Number(form.otp),
+        form.password
       );
 
       if (res.status === 200) {
         toast.success("Password reset successful");
-        router.push("/login");
+        router.push(role === "admin" ? "/admin/login" : "/login");
         return;
       }
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || error.message);
     }
   };
 
@@ -72,6 +87,9 @@ export default function ResetPasswordPage() {
               onChange={handleChange}
               required
             />
+            {formErrors.email && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>
+            )}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="otp">OTP</Label>
@@ -81,6 +99,9 @@ export default function ResetPasswordPage() {
               onChange={handleChange}
               required
             />
+            {formErrors.otp && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.otp}</p>
+            )}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">New Password</Label>
@@ -91,8 +112,11 @@ export default function ResetPasswordPage() {
               onChange={handleChange}
               required
             />
+            {formErrors.password && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.password}</p>
+            )}
           </div>
-          <Button type="submit" className="w-1/2 mx-auto" >
+          <Button type="submit" className="w-1/2 mx-auto">
             Reset Password
           </Button>
         </form>
@@ -100,3 +124,12 @@ export default function ResetPasswordPage() {
     </Card>
   );
 }
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
+  );
+}
+

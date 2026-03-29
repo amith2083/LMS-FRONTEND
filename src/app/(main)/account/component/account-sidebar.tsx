@@ -4,25 +4,26 @@ import React from "react";
 import SkeletonBox from "./skeleton";
 import Image from "next/image";
 import Menu from "./account-menu";
-import { useSession } from "next-auth/react";
-import { useUserById } from "@/app/hooks/useUserQueries";
+
+
+import { useUserById } from "@/features/users/hooks/useUserQueries";
+import { useUser } from "@/features/auth/context/UserContext";
 
 
 const AccountSidebar = () => {
-  const { data: session, status } = useSession();
-  const isLoadingUser = status === "loading";
-  const userId = session?.user?.id;
+  const { user: authUser, loading: isAuthLoading } = useUser();
+  const userId = authUser?.id;
+
 
 
   // Fetch full user data
   const { data: user, isLoading } = useUserById(userId!);
 
-  const loading = isLoadingUser || isLoading;
 
   return (
     <div className="lg:w-1/4 w-full md:px-3">
       <div className="rounded-xl shadow-md bg-gradient-to-br from-white via-indigo-50 to-white dark:from-slate-800 dark:to-slate-900 p-6">
-        {loading ? (
+        {isAuthLoading ? (
           <div className="space-y-4 text-center">
             <SkeletonBox className="h-28 w-28 mx-auto rounded-full" />
             <SkeletonBox className="h-5 w-1/2 mx-auto" />
@@ -64,3 +65,4 @@ const AccountSidebar = () => {
 };
 
 export default AccountSidebar;
+

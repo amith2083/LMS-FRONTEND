@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { useCreateCategory } from "@/app/hooks/useCategoryQueries";
+import { useCreateCategory } from "@/features/categories/hooks/useCategoryQueries";
 
 
 
@@ -116,3 +116,4 @@ export default function AddCategory() {
     </div>
   );
 }
+

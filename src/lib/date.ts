@@ -24,3 +24,4 @@ export function formatMyDate(dateInput: string | Date | number) {
 
   return new Intl.DateTimeFormat("en-US", options).format(date);
 }
+

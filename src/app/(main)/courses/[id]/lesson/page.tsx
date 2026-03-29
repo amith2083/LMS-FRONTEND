@@ -1,10 +1,10 @@
 import { Separator } from "@/components/ui/separator";
-import VideoDescription from "./_components/video-description";
-import { getCourseById } from "@/app/services/courseService";
-import { getLessonBySlug } from "@/app/services/lessonService";
-import { LessonVideo } from "./_components/lesson-video";
-import { Lesson } from "@/app/types/lesson";
-import type { Module } from "@/app/types/course";
+import VideoDescription from "@/features/watch/components/VideoDescription";
+import { getCourseById } from "@/features/courses/services/courseService";
+import { getLessonBySlug } from "@/features/lessons/services/lessonService";
+import { VideoPlayer } from "@/features/watch/components/VideoPlayer";
+import { Lesson } from "@/features/lessons/types/lesson";
+import type { Module } from "@/features/courses/types/course";
 
 /** Module from API can have lessonIds populated as lesson objects with order */
 type ModuleWithLessons = { _id: string; order?: number; lessonIds?: Array<{ _id: string; order?: number; title?: string; description?: string; videoKey?: string }> };
@@ -62,7 +62,7 @@ const Course = async ({
     <div>
       <div className="flex flex-col max-w-4xl mx-auto pb-20">
         <div className="p-4 w-full">
-          <LessonVideo
+          <VideoPlayer
             courseId={id}
             lesson={lessonToPlay}
             moduleId={defaultModule}
@@ -82,3 +82,4 @@ const Course = async ({
   );
 };
 export default Course;
+

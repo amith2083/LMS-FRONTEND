@@ -1,29 +1,30 @@
 "use client"
-import { useCourses, useCoursesByInstructorId } from "@/app/hooks/useCourseQueries";
-import { columns } from "./_components/columns";
-import { DataTable } from "./_components/data-table";
-import { useSession } from "next-auth/react";
-import { string } from "zod";
+import { useCoursesByInstructorId } from "@/features/courses/hooks/useCourseQueries";
+import { columns } from "@/features/courses/components/columns";
+import { DataTable } from "@/features/courses/components/data-table";
+import { useUser } from "@/features/auth/context/UserContext";
 
 
 
 const CoursesPage = () => {
- const { data: session, status } = useSession();
-  const instructorId = session?.user?.id;
-  const userRole = session?.user?.role;
+  const { user, loading: isAuthLoading } = useUser();
+  const instructorId = user?.id;
+  const userRole = user?.role;
 
-  if (status === "authenticated" && userRole !== "instructor") {
+  if (!user && !isAuthLoading) {
     return <p>Access denied: Only instructors can view this page.</p>;
   }
+
 
   const { data: courses, isLoading, error } = useCoursesByInstructorId(instructorId ??'');
 
 
 
-  if (status === "loading") return <p>Loading ...</p>;
-  if (status === "unauthenticated") return <p>Please sign in to view courses</p>;
+  if (isAuthLoading) return <p>Loading ...</p>;
+  if (!user) return <p>Please sign in to view courses</p>;
   if (isLoading) return <p>Loading courses...</p>;
   if (error) return <p>Failed to load courses: {error.message}</p>;
+
 
   return (
     <div className="p-6">
@@ -36,3 +37,4 @@ const CoursesPage = () => {
 };
 
 export default CoursesPage;
+

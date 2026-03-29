@@ -3,7 +3,7 @@ import { use, useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
-import { useUpdateUser, useUsers } from "@/app/hooks/useUserQueries";
+import { useUpdateUser, useUsers } from "@/features/users/hooks/useUserQueries";
 
 interface UserType {
   _id: string;
@@ -148,3 +148,4 @@ const ListUsers = () => {
   );
 };
 export default ListUsers;
+

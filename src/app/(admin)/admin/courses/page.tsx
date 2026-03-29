@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios, { getAdapter } from "axios";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
-import { useCoursesForAdmin, useUpdateCourse } from "@/app/hooks/useCourseQueries";
+import { useCoursesForAdmin, useUpdateCourse } from "@/features/courses/hooks/useCourseQueries";
 
 
 interface CourseType {
@@ -179,3 +179,4 @@ const ListCourses = () => {
 };
 
 export default ListCourses;
+

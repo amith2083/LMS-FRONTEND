@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { SignupForm } from "../_components/signup-form";
+import { SignupForm } from "@/features/auth/components/signup-form";
 import { useParams } from "next/navigation";
 
 interface PageProps {

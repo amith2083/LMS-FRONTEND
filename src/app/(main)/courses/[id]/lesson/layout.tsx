@@ -1,17 +1,16 @@
-import { CourseProgress } from "@/components/course-progress";
+import { CourseProgress } from "@/features/watch/components/course-progress";
 import { cn } from "@/lib/utils";
 import { PlayCircle } from "lucide-react";
 import { Lock } from "lucide-react";
 import { CheckCircle } from "lucide-react";
-import { CourseSidebarMobile } from "./_components/course-sidebar-mobile";
-import { CourseSidebar } from "./_components/course-sidebar";
+import { CourseSidebarMobile } from "@/features/watch/components/CourseSidebarMobile";
+import { CourseSidebar } from "@/features/watch/components/CourseSidebar";
 import { redirect } from "next/navigation";
 import { getQueryClient } from "@/lib/getQueryClient";
-import { getCourseById } from "@/app/services/courseService";
-import { getWatchByLessonAndModule } from "@/app/services/watchService";
-import { hasEnrollmentForCourse } from "@/app/services/enrollmentService";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getCourseById } from "@/features/courses/services/courseService";
+import { getWatchByLessonAndModule } from "@/features/watch/services/watchService";
+import { hasEnrollmentForCourse } from "@/features/enrollments/services/enrollmentService";
+
 
 
 
@@ -59,3 +58,4 @@ export default async function CourseLayout({
     </div>
   );
 };
+

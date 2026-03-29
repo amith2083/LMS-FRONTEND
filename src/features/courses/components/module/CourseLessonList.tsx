@@ -1,0 +1,35 @@
+import React from 'react';
+import { Tv } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useLessonById } from "@/features/lessons/hooks/useLessonQueries";
+
+
+const CourseLessonList = ({lessonId}) => {
+
+
+
+      const { data:lesson, isLoading, isError } = useLessonById(lessonId);
+   
+
+    return (
+        <div>
+
+<button
+    type="button"
+    className={cn(
+    "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600  w-full"
+    )}
+>
+    <div className="flex items-center gap-x-2">
+    <Tv size={16} className={cn("text-slate-500")} />
+     {lesson?.title}
+    </div>
+</button>
+ 
+ 
+            
+        </div>
+    );
+};
+
+export default CourseLessonList;

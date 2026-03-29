@@ -1,20 +1,20 @@
 "use client";
 import { CircleDollarSign, ListChecks } from "lucide-react";
-import { CourseActions } from "./_components/course-action";
-import { TitleForm } from "./_components/title";
-import { SubTitleForm } from "./_components/sub-title-form";
-import { DescriptionForm } from "./_components/description";
-import { ImageForm } from "./_components/image-form";
-import { ModulesForm } from "./_components/module-form";
-import { PriceForm } from "./_components/price-form";
-import AlertBanner from "@/components/alert-banner";
-import { IconBadge } from "@/components/icon-badge";
-import { CategoryForm } from "./_components/category-form";
+import { CourseActions } from "@/features/courses/components/course-action";
+import { TitleForm } from "@/features/courses/components/course-title-form";
+import { SubTitleForm } from "@/features/courses/components/course-subtitle-form";
+import { DescriptionForm } from "@/features/courses/components/course-description-form";
+import { ImageForm } from "@/features/courses/components/course-image-form";
+import { ModulesForm } from "@/features/modules/components/module-form";
+import { PriceForm } from "@/features/courses/components/course-price-form";
+import AlertBanner from "@/components/shared/alert-banner";
+import { IconBadge } from "@/components/ui/icon-badge";
+import { CategoryForm } from "@/features/categories/components/category-form";
 import { useParams } from "next/navigation";
-import { useCourseById } from "@/app/hooks/useCourseQueries";
-import { useCategories } from "@/app/hooks/useCategoryQueries";
-import { useQuizsets } from "@/app/hooks/useQuizQueries";
-import { QuizSetForm } from "./_components/quiz-form";
+import { useCourseById } from "@/features/courses/hooks/useCourseQueries";
+import { useCategories } from "@/features/categories/hooks/useCategoryQueries";
+import { useQuizsets } from "@/features/quizzes/hooks/useQuizQueries";
+import { QuizSetForm } from "@/features/quizzes/components/quiz-form";
 
 const EditCourse = () => {
   const params = useParams();
@@ -124,3 +124,5 @@ const EditCourse = () => {
 };
 
 export default EditCourse;
+
+

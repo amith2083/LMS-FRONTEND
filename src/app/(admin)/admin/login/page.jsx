@@ -1,13 +1,13 @@
-import { LoginForm } from "@/components/loginForm";
-
+import { LoginForm } from "@/features/auth/components/LoginForm";
+import { Suspense } from "react";
 
 const LoginPage = () => {
   return (
     <div className="w-full flex-col h-screen flex items-center justify-center ">
       <div className="container">
-        
-        <LoginForm />
-        
+        <Suspense fallback={<div>Loading...</div>}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );
