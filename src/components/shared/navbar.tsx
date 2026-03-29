@@ -129,7 +129,7 @@ const Navbar = () => {
                   "px-6 border-primary/20 hover:bg-primary/10 transition-all duration-300 rounded-xl"
                 )}
               >
-                Join Free
+                Register
               </Link>
             </div>
           ) : (
