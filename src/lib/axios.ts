@@ -1,8 +1,11 @@
 import axios, { AxiosInstance } from "axios";
 import { PUBLIC_ROUTES } from "./route";
 
-const BASE_URL =
-  process.env.NODE_ENV === "production"
+const isServer = typeof window === "undefined";
+
+const BASE_URL = isServer
+  ? (process.env.NEXT_PUBLIC_API_BASE_URL as string)
+  : process.env.NODE_ENV === "production"
     ? ""
     : (process.env.NEXT_PUBLIC_API_BASE_URL as string);
 
