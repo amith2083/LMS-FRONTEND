@@ -1,7 +1,10 @@
 import axios, { AxiosInstance } from "axios";
 import { PUBLIC_ROUTES } from "./route";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL as string;
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? ""
+    : (process.env.NEXT_PUBLIC_API_BASE_URL as string);
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -42,7 +45,7 @@ axiosInstance.interceptors.response.use(
     }
 
     if (status === 403 &&
-        error.response?.data?.message?.toLowerCase().includes("blocked")) {
+      error.response?.data?.message?.toLowerCase().includes("blocked")) {
       window.location.href = "/login";
     }
 
